@@ -9,7 +9,7 @@ const { expect } = chai;
 const { getSigners } = ethers;
 
 describe('HEROTokenV1', () => {
-  const totalSupply = '10000000000000000000';
+  const totalSupply = '100000000000000000';
   let token: HEROTokenV1;
   let signers: SignerWithAddress[];
 
