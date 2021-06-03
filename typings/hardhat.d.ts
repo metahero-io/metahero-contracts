@@ -29,9 +29,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Initializable__factory>;
     getContractFactory(
-      name: "HEROTokenV1",
+      name: "HEROToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HEROTokenV1__factory>;
+    ): Promise<Contracts.HEROToken__factory>;
 
     // default types
     getContractFactory(

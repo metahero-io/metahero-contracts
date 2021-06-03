@@ -13,10 +13,10 @@ import "./libs/MathLib.sol";
 /**
  * @title HERO Token
  */
-contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockable {
+contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable {
   using MathLib for uint256;
 
-  struct Tax { // percent with 9 decimals eg. 2% = 2000000000
+  struct Tax { // percent
     uint256 sender;
     uint256 recipient;
   }
@@ -25,16 +25,15 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     Tax lpTax;
     Tax rewardsTax;
     uint256 cycleLength;
+    uint256 cycleWeightGain; // percent
   }
 
   struct Summary {
     uint256 cycleId;
     uint256 totalHolders;
-    uint256 totalRewards;
     uint256 totalHolding;
     uint256 totalLP;
-    uint256 holdersWeightMargin;
-    uint256 holdersWeightBase;
+    uint256 totalRewards;
     uint256 totalSupply;
   }
 
@@ -42,26 +41,19 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     mapping (address => uint256) allowances;
     uint256 balance;
     uint256 lastTransferCycleId;
-    bool excludedFromFee;
-    bool excludedFromRewards;
   }
 
-  // globals
-  uint256 private constant MAX_TAX = 100 * 10 ** 9;
-  uint256 private constant PRECISION = 10 ** 9;
-  uint256 private constant FIRST_CYCLE_ID = 1;
+  uint256 public firstCycleTimestamp;
 
   // metadata
   string private constant NAME = "METAHERO";
   string private constant SYMBOL = "HERO";
   uint8 private constant DECIMALS = 9; // 0.000000000
 
-
   // defaults
   uint256 private constant DEFAULT_CYCLE_LENGTH = 24 * 60 * 60; // 24h
+  uint256 private constant DEFAULT_CYCLE_WEIGHT_GAIN = 1; // 1%
   uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 9; // 10,000,000,000.000000000
-
-  uint256 private firstCycleTimestamp;
 
   Settings private settings;
   Summary private summary;
@@ -87,6 +79,7 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     Tax calldata lpTax,
     Tax calldata rewardsTax,
     uint256 cycleLength,
+    uint256 cycleWeightGain,
     uint256 totalSupply_
   )
     external
@@ -99,7 +92,10 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
       rewardsTax,
       cycleLength == 0
         ? DEFAULT_CYCLE_LENGTH
-        : cycleLength
+        : cycleLength,
+      cycleWeightGain == 0
+        ? DEFAULT_CYCLE_WEIGHT_GAIN
+        : cycleWeightGain
     );
 
     _mint(
@@ -234,14 +230,12 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     require(
       holders[holder].balance == 0 &&
       holders[holder].lastTransferCycleId == 0,
-      "HEROToken: holder already exists"
+      "HEROToken: can not mint to existing holder"
     );
 
     summary.totalSupply = summary.totalSupply.add(amount);
 
     holders[holder].balance = amount;
-    holders[holder].excludedFromFee = true;
-    holders[holder].excludedFromRewards = true;
 
     emit Transfer(
       address(0),
@@ -276,7 +270,7 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
 
     uint256 cycleId = _calcCurrentCycleId();
 
-    uint256 senderBalance = _calcHolderBalanceAtCycle(
+    uint256 senderCycleBalance = _calcHolderBalanceAtCycle(
       sender,
       cycleId
     );
@@ -287,63 +281,53 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     uint256 senderTax;
     uint256 recipientTax;
 
-    if (!holders[sender].excludedFromFee) {
-      if (settings.lpTax.sender != 0) {
-        tax = amount.mul(settings.lpTax.sender).div(MAX_TAX);
-        senderTax = tax;
-        lpTax = tax;
-      }
-
-      if (settings.rewardsTax.sender != 0) {
-        tax = amount.mul(settings.rewardsTax.sender).div(MAX_TAX);
-        senderTax = senderTax.add(tax);
-        rewardsTax = tax;
-      }
+    if (settings.lpTax.sender != 0) {
+      tax = amount.percent(settings.lpTax.sender);
+      senderTax = tax;
+      lpTax = tax;
     }
 
-    if (!holders[recipient].excludedFromFee) {
-      if (settings.lpTax.recipient != 0) {
-        tax = amount.mul(settings.lpTax.recipient).div(MAX_TAX);
-        recipientTax = tax;
-        lpTax = lpTax.add(tax);
-      }
-
-      if (settings.rewardsTax.recipient != 0) {
-        tax = amount.mul(settings.rewardsTax.recipient).div(MAX_TAX);
-        recipientTax = recipientTax.add(tax);
-        rewardsTax = rewardsTax.add(tax);
-      }
+    if (settings.rewardsTax.sender != 0) {
+      tax = amount.percent(settings.rewardsTax.sender);
+      senderTax = senderTax.add(tax);
+      rewardsTax = tax;
     }
 
-    uint256 amountWithFee = amount.add(senderTax);
+    if (settings.lpTax.recipient != 0) {
+      tax = amount.percent(settings.lpTax.recipient);
+      recipientTax = tax;
+      lpTax = lpTax.add(tax);
+    }
 
+    if (settings.rewardsTax.recipient != 0) {
+      tax = amount.percent(settings.rewardsTax.recipient);
+      recipientTax = recipientTax.add(tax);
+      rewardsTax = rewardsTax.add(tax);
+    }
+
+    uint256 amountWithSenderTax = amount.add(senderTax);
 
     require(
-      senderBalance >= amountWithFee,
+      senderCycleBalance >= amountWithSenderTax,
       "HEROToken: transfer amount exceeds balance"
     );
 
-//    {
-//      uint256 senderWeight = _calcHolderWeightAtCycle(sender, cycleId);
-//      uint256 holdersWeight = _calcHoldersWeightAtCycle(cycleId);
-//    }
-
-    summary.totalLP             = summary.totalLP.add(lpTax);
-    summary.totalRewards        = summary.totalRewards.add(rewardsTax);
-
-   summary.holdersWeightMargin = summary.totalRewards.add(rewardsTax);
+    summary.totalLP = summary.totalLP.add(lpTax);
+    summary.totalRewards = summary.totalRewards.add(rewardsTax);
 
     if (summary.cycleId == cycleId)  {
-      summary.cycleId             = cycleId;
+      //
     } else {
       summary.cycleId = cycleId;
     }
 
-    holders[sender].balance    = senderBalance.sub(amountWithFee);
+    holders[sender].balance = holders[sender].balance.sub(
+      amountWithSenderTax
+    );
     holders[recipient].balance = holders[recipient].balance.add(
       recipientTax == 0
       ? amount
-      : amount.add(recipientTax)
+      : amount.sub(recipientTax)
     );
 
     emit Transfer(
@@ -393,10 +377,7 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
   {
     result = holders[holder].balance;
 
-    if (
-      !holders[holder].excludedFromRewards &&
-      result > 0
-    ) {
+    if (result > 0) {
       uint256 holderWeight = _calcHolderWeightAtCycle(
         holder,
         snapshotId
@@ -407,12 +388,14 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
           snapshotId
         );
 
-        result = result.add(
-          summary
-          .totalRewards
-          .mul(holderWeight)
-          .div(holdersWeight)
-        );
+        if (holdersWeight != 0) {
+          result = result.add(
+            summary
+            .totalRewards
+            .mul(holderWeight)
+            .div(holdersWeight)
+          );
+        }
       }
     }
 
@@ -425,10 +408,11 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
   )
     private
     view
-    returns (uint256 result)
+    returns (uint256)
   {
+    uint256 result = holders[holder].balance;
+
     if (
-      !holders[holder].excludedFromRewards &&
       holders[holder].balance != 0 &&
       holders[holder].lastTransferCycleId > cycleId
     ) {
@@ -451,21 +435,43 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
   )
     private
     view
-    returns (uint256 result)
+    returns (uint256)
   {
-    result = summary.holdersWeightMargin;
+    uint256 result;
 
     if (
-      summary.holdersWeightBase > 0 &&
+      summary.totalHolders > 0 &&
+      summary.totalHolding > 0 &&
       summary.cycleId > cycleId
     ) {
-      uint256 multiplier = cycleId.sub(summary.cycleId);
+      result = summary.totalHolders.mul(
+        summary.totalHolding
+      );
+    }
 
-      if (multiplier != 0) {
-        result = result.add(
-          summary
-          .holdersWeightBase
-          .mul(multiplier)
+    return result;
+  }
+
+  function _calcCycleWeight(
+    uint256 cycleIdFrom,
+    uint256 cycleIdTo,
+    uint256 balance
+  )
+    private
+    view
+    returns (uint256)
+  {
+    uint256 result;
+
+    if (cycleIdTo > cycleIdFrom) {
+      uint256 cyclesCount = cycleIdTo.sub(cycleIdFrom);
+
+      if (
+        cyclesCount != 0 &&
+        settings.cycleWeightGain != 0
+      ) {
+        result = balance.percent(
+          cyclesCount.mul(settings.cycleWeightGain)
         );
       }
     }
@@ -478,10 +484,16 @@ contract HEROTokenV1 is ERC20, ERC20Metadata, Controlled, Initializable, Lockabl
     view
     returns (uint256)
   {
-    return block
-    .timestamp
-    .sub(firstCycleTimestamp)
-    .div(settings.cycleLength)
-    .add(FIRST_CYCLE_ID);
+    uint256 result;
+
+    if (settings.cycleLength > 0) {
+      result = block
+      .timestamp
+      .sub(firstCycleTimestamp)
+      .div(settings.cycleLength);
+    }
+
+    return result;
+
   }
 }

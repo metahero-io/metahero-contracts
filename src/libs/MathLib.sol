@@ -65,16 +65,20 @@ library MathLib {
     return a / b;
   }
 
-  function mod(
+  function percent(
     uint256 a,
-    uint256 b
+    uint256 p
   )
     internal
     pure
     returns (uint256)
   {
-    require(b != 0, "Math: modulo by zero");
+    uint256 result;
 
-    return a % b;
+    if (a != 0 && p != 0) {
+      result = div(mul(a, p), 100);
+    }
+
+    return result;
   }
 }

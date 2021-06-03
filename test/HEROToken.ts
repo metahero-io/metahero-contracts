@@ -1,30 +1,28 @@
 import { ethers, waffle } from 'hardhat';
 import chai from 'chai';
-import HEROTokenArtifact from '../artifacts/HEROTokenV1.json';
-import { HEROTokenV1 } from '../typings';
+import HEROTokenArtifact from '../artifacts/HEROToken.json';
+import { HEROToken } from '../typings';
 import { SignerWithAddress } from './shared';
 
 const { deployContract } = waffle;
 const { expect } = chai;
 const { getSigners } = ethers;
 
-describe('HEROTokenV1', () => {
+describe('HEROToken', () => {
   const totalSupply = '100000000000000000';
-  let token: HEROTokenV1;
+  let token: HEROToken;
   let signers: SignerWithAddress[];
 
   beforeEach(async () => {
     signers = await getSigners();
 
-    token = (await deployContract(
-      signers[0],
-      HEROTokenArtifact,
-    )) as HEROTokenV1;
+    token = (await deployContract(signers[0], HEROTokenArtifact)) as HEROToken;
 
     await token.initialize(
       { sender: 1, recipient: 1 },
       { sender: 1, recipient: 1 },
-      0,
+      5, // 5 sec
+      1, // 1 %
       totalSupply,
     );
   });
