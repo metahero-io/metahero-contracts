@@ -16,14 +16,14 @@ import "./libs/MathLib.sol";
 contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable {
   using MathLib for uint256;
 
-  struct Fee {
+  struct Fees {
     uint256 sender; // percent
     uint256 recipient; // percent
   }
 
   struct Settings {
-    Fee lpFee;
-    Fee rewardsFee;
+    Fees lpFees;
+    Fees rewardsFees;
     uint256 cycleLength;
     uint256 cycleWeightGain; // percent
   }
@@ -77,8 +77,8 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
 
   // external functions
   function initialize(
-    Fee calldata lpFee,
-    Fee calldata rewardsFee,
+    Fees calldata lpFees,
+    Fees calldata rewardsFees,
     uint256 cycleLength,
     uint256 cycleWeightGain,
     uint256 totalSupply_,
@@ -90,8 +90,8 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
     firstCycleTimestamp = block.timestamp;
 
     settings = Settings(
-      lpFee,
-      rewardsFee,
+      lpFees,
+      rewardsFees,
       cycleLength == 0
         ? DEFAULT_CYCLE_LENGTH
         : cycleLength,
@@ -220,6 +220,32 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
 
   // private functions
 
+  function _approve(
+    address owner,
+    address spender,
+    uint256 amount
+  )
+    private
+  {
+    require(
+      owner != address(0),
+      "HEROToken: approve from the zero address"
+    );
+
+    require(
+      spender != address(0),
+      "HEROToken: approve to the zero address"
+    );
+
+    holders[owner].allowances[spender] = amount;
+
+    emit Approval(
+      owner,
+      spender,
+      amount
+    );
+  }
+
   function _mint(
     address holder,
     uint256 amount
@@ -249,32 +275,6 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
     );
   }
 
-  function _approve(
-    address owner,
-    address spender,
-    uint256 amount
-  )
-    private
-  {
-    require(
-      owner != address(0),
-      "HEROToken: approve from the zero address"
-    );
-
-    require(
-      spender != address(0),
-      "HEROToken: approve to the zero address"
-    );
-
-    holders[owner].allowances[spender] = amount;
-
-    emit Approval(
-      owner,
-      spender,
-      amount
-    );
-  }
-
   function _transfer(
     address sender,
     address recipient,
@@ -291,6 +291,11 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
     require(
       recipient != address(0),
       "HEROToken: transfer to the zero address"
+    );
+
+    require(
+      sender != recipient,
+      "HEROToken: invalid recipient"
     );
 
     require(
@@ -369,6 +374,7 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
     ) = _calcTransferSenderFees(amount);
 
     uint256 recipientFee;
+    uint256 totalFee;
 
     {
       uint256 recipientLpFee;
@@ -378,15 +384,59 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
         recipientFee,
         recipientLpFee,
         recipientRewardsFee
-      ) = _calcTransferSenderFees(amount);
+      ) = _calcTransferRecipientFees(amount);
 
       lpFee = lpFee.add(recipientLpFee);
       rewardsFee = rewardsFee.add(recipientRewardsFee);
+      totalFee = senderFee.add(recipientFee);
     }
 
+    uint256 amountWithSenderFee = amount.add(senderFee);
+    uint256 amountWithoutRecipientFee = amount.sub(recipientFee);
+
+    uint256 senderBalance = holders[sender].balance;
+
+    if (summary.totalRewards != 0) {
+      uint256 senderBaseWeight = _calcBaseWeightBetweenCycles(
+        holders[sender].cycleId,
+        cycleId,
+        senderBalance
+      );
+
+      uint256 senderWeight = senderBalance.add(senderBaseWeight);
+
+      uint256 holdersWeight = summary.totalHolding.add(
+        summary.baseWeight
+      );
+
+      uint256 senderReward = summary
+      .totalRewards
+      .mul(senderWeight)
+      .div(holdersWeight);
+
+      summary.baseWeight = summary.baseWeight.sub(senderBaseWeight);
+      summary.totalRewards = summary.totalRewards.sub(senderReward);
+
+      senderBalance = senderBalance.add(senderReward);
+    }
+
+    require(
+      senderBalance >= amountWithSenderFee,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    holders[sender].cycleId = cycleId;
+    holders[sender].balance = holders[sender].balance.sub(
+      amountWithSenderFee
+    );
+
+    holders[recipient].balance = holders[recipient].balance.add(
+      amountWithoutRecipientFee
+    );
 
     summary.totalLp = summary.totalLp.add(lpFee);
     summary.totalRewards = summary.totalRewards.add(rewardsFee);
+    summary.totalHolding = summary.totalHolding.sub(totalFee);
   }
 
   function _transferFromExcluded(
@@ -426,7 +476,57 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
   )
     private
   {
+    (
+      uint256 senderFee,
+      uint256 lpFee,
+      uint256 rewardsFee
+    ) = _calcTransferSenderFees(amount);
 
+    uint256 amountWithSenderFee = amount.add(senderFee);
+
+    uint256 senderBalance = holders[sender].balance;
+
+    if (summary.totalRewards != 0) {
+      uint256 senderBaseWeight = _calcBaseWeightBetweenCycles(
+        holders[sender].cycleId,
+        cycleId,
+        senderBalance
+      );
+
+      uint256 senderWeight = senderBalance.add(senderBaseWeight);
+
+      uint256 holdersWeight = summary.totalHolding.add(
+        summary.baseWeight
+      );
+
+      uint256 senderReward = summary
+      .totalRewards
+      .mul(senderWeight)
+      .div(holdersWeight);
+
+      summary.baseWeight = summary.baseWeight.sub(senderBaseWeight);
+      summary.totalRewards = summary.totalRewards.sub(senderReward);
+
+      senderBalance = senderBalance.add(senderReward);
+    }
+
+    require(
+      senderBalance >= amountWithSenderFee,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    holders[sender].cycleId = cycleId;
+    holders[sender].balance = holders[sender].balance.sub(
+      amountWithSenderFee
+    );
+
+    holders[recipient].balance = holders[recipient].balance.add(
+      amount
+    );
+
+    summary.totalLp = summary.totalLp.add(lpFee);
+    summary.totalRewards = summary.totalRewards.add(rewardsFee);
+    summary.totalHolding = summary.totalHolding.sub(amountWithSenderFee);
   }
 
   function _transferBetweenExcluded(
@@ -459,8 +559,8 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
       uint256 rewardsFee
     )
   {
-    lpFee = amount.percent(settings.lpFee.sender);
-    rewardsFee = amount.percent(settings.rewardsFee.sender);
+    lpFee = amount.percent(settings.lpFees.sender);
+    rewardsFee = amount.percent(settings.rewardsFees.sender);
 
     totalFee = lpFee.add(rewardsFee);
 
@@ -478,8 +578,8 @@ contract HEROToken is ERC20, ERC20Metadata, Controlled, Initializable, Lockable 
       uint256 rewardsFee
     )
   {
-    lpFee = amount.percent(settings.lpFee.recipient);
-    rewardsFee = amount.percent(settings.rewardsFee.recipient);
+    lpFee = amount.percent(settings.lpFees.recipient);
+    rewardsFee = amount.percent(settings.rewardsFees.recipient);
 
     totalFee = lpFee.add(rewardsFee);
 

@@ -12,7 +12,7 @@ describe('HEROToken', () => {
   let signers: SignerWithAddress[];
   let excludedHolders: string[];
 
-  beforeEach(async () => {
+  before(async () => {
     signers = await getSigners();
 
     excludedHolders = [signers[1].address];
@@ -30,18 +30,75 @@ describe('HEROToken', () => {
   });
 
   context('transfer()', () => {
+    const logBalances = async (
+      sender: SignerWithAddress,
+      recipient: SignerWithAddress,
+    ) => {
+      const senderBalance = await token.balanceOf(sender.address);
+      const recipientBalance = await token.balanceOf(recipient.address);
+
+      console.log('senderBalance:', senderBalance.toString());
+      console.log('recipientBalance:', recipientBalance.toString());
+    };
+
     it('expect to transfer from excluded to excluded ', async () => {
       const sender = signers[0];
       const recipient = signers[1];
+      const amount = 1000;
 
-      await token.connect(sender).transfer(recipient.address, 1000);
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
     });
 
-    it('expect to transfer from excluded to holder ', async () => {
+    it('expect to transfer from excluded to holder #1', async () => {
       const sender = signers[0];
       const recipient = signers[2];
+      const amount = 1000;
 
-      await token.connect(sender).transfer(recipient.address, 1000);
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
+    });
+
+    it('expect to transfer from excluded to holder #2', async () => {
+      const sender = signers[0];
+      const recipient = signers[3];
+      const amount = 1000;
+
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
+    });
+
+    it('expect to transfer from holder to holder #1', async () => {
+      const sender = signers[3];
+      const recipient = signers[4];
+      const amount = 100;
+
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
+    });
+
+    it('expect to transfer from holder to holder #2', async () => {
+      const sender = signers[3];
+      const recipient = signers[5];
+      const amount = 200;
+
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
+    });
+
+    it('expect to transfer from holder to excluded', async () => {
+      const sender = signers[3];
+      const recipient = signers[1];
+      const amount = 200;
+
+      await token.connect(sender).transfer(recipient.address, amount);
+
+      await logBalances(sender, recipient);
     });
   });
 });

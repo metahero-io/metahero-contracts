@@ -195,8 +195,8 @@ export class HEROToken extends BaseContract {
     firstCycleTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     initialize(
-      lpFee: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsFee: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
       cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
@@ -252,8 +252,8 @@ export class HEROToken extends BaseContract {
   firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   initialize(
-    lpFee: { sender: BigNumberish; recipient: BigNumberish },
-    rewardsFee: { sender: BigNumberish; recipient: BigNumberish },
+    lpFees: { sender: BigNumberish; recipient: BigNumberish },
+    rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
     cycleLength: BigNumberish,
     cycleWeightGain: BigNumberish,
     totalSupply_: BigNumberish,
@@ -309,8 +309,8 @@ export class HEROToken extends BaseContract {
     firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
-      lpFee: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsFee: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
       cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
@@ -389,8 +389,8 @@ export class HEROToken extends BaseContract {
     firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
-      lpFee: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsFee: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
       cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
@@ -452,8 +452,8 @@ export class HEROToken extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     initialize(
-      lpFee: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsFee: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
       cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
