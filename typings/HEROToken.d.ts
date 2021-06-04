@@ -19,14 +19,15 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface HEROTokenV1Interface extends ethers.utils.Interface {
+interface HEROTokenInterface extends ethers.utils.Interface {
   functions: {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "controller()": FunctionFragment;
     "decimals()": FunctionFragment;
-    "initialize(tuple,tuple,uint256,uint256)": FunctionFragment;
+    "firstCycleTimestamp()": FunctionFragment;
+    "initialize(tuple,tuple,uint256,uint256,uint256,address[])": FunctionFragment;
     "initialized()": FunctionFragment;
     "name()": FunctionFragment;
     "setController(address)": FunctionFragment;
@@ -51,12 +52,18 @@ interface HEROTokenV1Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "firstCycleTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
     values: [
       { sender: BigNumberish; recipient: BigNumberish },
       { sender: BigNumberish; recipient: BigNumberish },
       BigNumberish,
-      BigNumberish
+      BigNumberish,
+      BigNumberish,
+      string[]
     ]
   ): string;
   encodeFunctionData(
@@ -87,6 +94,10 @@ interface HEROTokenV1Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "firstCycleTimestamp",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "initialized",
@@ -119,7 +130,7 @@ interface HEROTokenV1Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export class HEROTokenV1 extends BaseContract {
+export class HEROToken extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -160,7 +171,7 @@ export class HEROTokenV1 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: HEROTokenV1Interface;
+  interface: HEROTokenInterface;
 
   functions: {
     allowance(
@@ -181,11 +192,15 @@ export class HEROTokenV1 extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
+    firstCycleTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     initialize(
-      lpTax: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsTax: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
+      cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
+      excludedHolders: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -234,11 +249,15 @@ export class HEROTokenV1 extends BaseContract {
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
+  firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
   initialize(
-    lpTax: { sender: BigNumberish; recipient: BigNumberish },
-    rewardsTax: { sender: BigNumberish; recipient: BigNumberish },
+    lpFees: { sender: BigNumberish; recipient: BigNumberish },
+    rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
     cycleLength: BigNumberish,
+    cycleWeightGain: BigNumberish,
     totalSupply_: BigNumberish,
+    excludedHolders: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -287,11 +306,15 @@ export class HEROTokenV1 extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
+    firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
     initialize(
-      lpTax: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsTax: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
+      cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
+      excludedHolders: string[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -363,11 +386,15 @@ export class HEROTokenV1 extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
+    firstCycleTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
     initialize(
-      lpTax: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsTax: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
+      cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
+      excludedHolders: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -420,11 +447,17 @@ export class HEROTokenV1 extends BaseContract {
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    firstCycleTimestamp(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initialize(
-      lpTax: { sender: BigNumberish; recipient: BigNumberish },
-      rewardsTax: { sender: BigNumberish; recipient: BigNumberish },
+      lpFees: { sender: BigNumberish; recipient: BigNumberish },
+      rewardsFees: { sender: BigNumberish; recipient: BigNumberish },
       cycleLength: BigNumberish,
+      cycleWeightGain: BigNumberish,
       totalSupply_: BigNumberish,
+      excludedHolders: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

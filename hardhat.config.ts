@@ -51,6 +51,9 @@ const config: HardhatUserConfig = {
     target: 'ethers-v5',
     alwaysGenerateOverloads: false,
   },
+  gasReporter: {
+    enabled: false,
+  },
 };
 
 module.exports = config;
