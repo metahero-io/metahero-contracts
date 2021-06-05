@@ -1,5 +1,4 @@
-import './build-artifacts';
-import './test';
+import './tasks';
 import './typings';
 
 export * from './constants';
