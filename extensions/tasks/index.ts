@@ -1,2 +1,2 @@
-import './build-artifacts';
+import './buildArtifacts';
 import './test';

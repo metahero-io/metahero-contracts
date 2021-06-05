@@ -20,14 +20,15 @@ export interface Signer extends BaseSigner {
   toJSON(): string;
 }
 
-export interface Fees {
-  sender: number;
-  recipient: number;
-}
-
 export interface HEROTokenHelperConfig {
-  lpFees: Fees;
-  rewardsFees: Fees;
+  lpFees: {
+    sender: number;
+    recipient: number;
+  };
+  rewardsFees: {
+    sender: number;
+    recipient: number;
+  };
   cycleLength: number;
   cycleWeightGain: number;
   totalSupply: BigNumberish;
