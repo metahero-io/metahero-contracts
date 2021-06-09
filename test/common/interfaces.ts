@@ -1,6 +1,6 @@
-import { Signer, utils, providers } from 'ethers';
+import { Signer as BaseSigner, utils, providers } from 'ethers';
 
-export interface SignerWithAddress extends Signer {
+export interface Signer extends BaseSigner {
   address: string;
 
   getAddress(): Promise<string>;
@@ -15,7 +15,7 @@ export interface SignerWithAddress extends Signer {
     transaction: utils.Deferrable<providers.TransactionRequest>,
   ): Promise<providers.TransactionResponse>;
 
-  connect(provider: providers.Provider): SignerWithAddress;
+  connect(provider: providers.Provider): Signer;
 
   toJSON(): string;
 }

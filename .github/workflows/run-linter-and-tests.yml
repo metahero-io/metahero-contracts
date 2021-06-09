@@ -39,6 +39,9 @@ jobs:
         env:
           CI: true
 
+      - name: Run compile
+        run: npm run compile
+
       - name: Run linter
         run: npm run lint
 

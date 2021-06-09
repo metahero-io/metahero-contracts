@@ -1,5 +1,5 @@
 import { HardhatUserConfig } from 'hardhat/config';
-import { NetworkNames, NETWORK_CONFIGS } from './constants';
+import { NetworkNames, NETWORK_CONFIGS } from '../constants';
 
 export function createConfigNetwork(
   networkName: NetworkNames,
@@ -50,14 +50,4 @@ export function createConfigNetwork(
   }
 
   return result;
-}
-
-export function createConfigNetworks(): HardhatUserConfig['networks'] {
-  return Object.values(NetworkNames).reduce(
-    (result, networkName) => ({
-      ...result,
-      ...createConfigNetwork(networkName),
-    }),
-    {},
-  );
 }

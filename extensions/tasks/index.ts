@@ -1,0 +1,2 @@
+import './buildArtifacts';
+import './test';

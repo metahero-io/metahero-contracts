@@ -26,3 +26,5 @@ coverage.json
 
 # hardhat
 .hardhat
+/artifacts
+/typings
