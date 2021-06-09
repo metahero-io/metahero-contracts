@@ -22,7 +22,7 @@ describe('HEROTokenEconomy', () => {
     sender: 4,
     recipient: 1,
   };
-  const TOTAL_SUPPLY = BigNumber.from(1000).mul(PRECISION);
+  const TOTAL_SUPPLY = BigNumber.from(10000);
 
   let excluded: Signer[];
   let holders: Signer[];
@@ -39,7 +39,7 @@ describe('HEROTokenEconomy', () => {
     await token.initialize(
       LP_FEE,
       REWARDS_FEE,
-      TOTAL_SUPPLY,
+      TOTAL_SUPPLY.mul(PRECISION),
       excluded.slice(1).map(({ address }) => address),
     );
   });
@@ -71,6 +71,19 @@ describe('HEROTokenEconomy', () => {
         await token
           .connect(sender)
           .transfer(recipient.address, amountBN.mul(PRECISION));
+
+        const senderBalance = await token.balanceOf(sender.address);
+        const recipientBalance = await token.balanceOf(recipient.address);
+
+        console.log();
+        console.log(
+          `${' '.repeat(6)}sender balance:`,
+          senderBalance.toString(),
+        );
+        console.log(
+          `${' '.repeat(6)}recipient balance:`,
+          recipientBalance.toString(),
+        );
       });
     };
 
