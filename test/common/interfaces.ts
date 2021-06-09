@@ -1,4 +1,4 @@
-import { Signer as BaseSigner, utils, providers, BigNumberish } from 'ethers';
+import { Signer as BaseSigner, utils, providers } from 'ethers';
 
 export interface Signer extends BaseSigner {
   address: string;
@@ -18,19 +18,4 @@ export interface Signer extends BaseSigner {
   connect(provider: providers.Provider): Signer;
 
   toJSON(): string;
-}
-
-export interface HEROTokenHelperConfig {
-  lpFees: {
-    sender: number;
-    recipient: number;
-  };
-  rewardsFees: {
-    sender: number;
-    recipient: number;
-  };
-  cycleLength: number;
-  cycleWeightGain: number;
-  totalSupply: BigNumberish;
-  excludedAccounts: number;
 }
