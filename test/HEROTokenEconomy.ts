@@ -16,10 +16,10 @@ describe('HEROTokenEconomy', () => {
   const PRECISION = 10 ** 9;
   const LP_FEE = {
     sender: 4,
-    recipient: 1,
+    recipient: 4,
   };
   const REWARDS_FEE = {
-    sender: 4,
+    sender: 1,
     recipient: 1,
   };
   const TOTAL_SUPPLY = BigNumber.from(10000);
