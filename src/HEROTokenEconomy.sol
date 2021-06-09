@@ -1,0 +1,555 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.12;
+pragma experimental ABIEncoderV2;
+
+import "./components/erc20/ERC20.sol";
+import "./components/Lockable.sol";
+import "./components/Lockable.sol";
+import "./libs/MathLib.sol";
+
+
+/**
+ * @title HERO token economy module
+ */
+contract HEROTokenEconomy is ERC20, Lockable {
+  using MathLib for uint256;
+
+  struct Fees {
+    uint256 sender; // percent
+    uint256 recipient; // percent
+  }
+
+  struct Settings {
+    Fees lpFees;
+    Fees rewardsFees;
+  }
+
+  struct Summary {
+    uint256 totalExcluded;
+    uint256 totalHolding;
+    uint256 totalLP;
+    uint256 totalRewards;
+    uint256 totalSupply;
+  }
+
+  // defaults
+  uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 9; // 10,000,000,000.000000000
+
+  Settings public settings;
+  Summary public summary;
+
+  mapping (address => uint256) private balances;
+  mapping (address => mapping (address => uint256)) private allowances;
+  mapping (address => bool) private excluded;
+
+  // events
+
+  event Excluded(
+    address indexed account
+  );
+
+  /**
+   * @dev Internal constructor
+   */
+  constructor ()
+    internal
+  {
+    //
+  }
+
+  // external functions
+
+  function transfer(
+    address recipient,
+    uint256 amount
+  )
+    external
+    override
+    returns (bool)
+  {
+    _transfer(
+      msg.sender,
+      recipient,
+      amount
+    );
+
+    return true;
+  }
+
+  function approve(
+    address spender,
+    uint256 amount
+  )
+    external
+    override
+    returns (bool)
+  {
+    _approve(
+      msg.sender,
+      spender,
+      amount
+    );
+
+    return true;
+  }
+
+  function transferFrom(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    external
+    override
+    returns (bool)
+  {
+    _transfer(
+      sender,
+      recipient,
+      amount
+    );
+
+    uint256 currentAllowance = allowances[sender][msg.sender];
+
+    require(
+      currentAllowance >= amount,
+      "HEROToken: transfer amount exceeds allowance"
+    );
+
+    _approve(
+      sender,
+      msg.sender,
+      currentAllowance.sub(amount)
+    );
+
+    return true;
+  }
+
+  // external functions (views)
+
+  function totalSupply()
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return summary.totalSupply;
+  }
+
+  function allowance(
+    address owner,
+    address spender
+  )
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return allowances[owner][spender];
+  }
+
+  function balanceOf(
+    address account
+  )
+    external
+    view
+    override
+    returns (uint256 result)
+  {
+    result = balances[account];
+
+    if (
+      !excluded[account] &&
+      summary.totalRewards > 0
+    ) {
+      result = result.add(
+        summary.totalRewards
+        .mul(result)
+        .div(summary.totalHolding)
+      );
+    }
+
+
+    return result;
+  }
+
+  // internal functions
+
+  function _initializeEconomy(
+    Fees memory lpFees,
+    Fees memory rewardsFees,
+    uint256 totalSupply_,
+    address[] calldata excluded_
+  )
+    internal
+  {
+    settings = Settings(
+      lpFees,
+      rewardsFees
+    );
+
+    _mint(
+      msg.sender,
+      totalSupply_ == 0
+      ? DEFAULT_TOTAL_SUPPLY
+      : totalSupply_
+    );
+
+    {
+      uint256 excludedLen = excluded_.length;
+
+      for (uint256 index = 0; index < excludedLen; index += 1) {
+        _exclude(excluded_[index]);
+      }
+    }
+  }
+
+  function _exclude(
+    address account
+  )
+    internal
+  {
+    require(
+      account != address(0),
+      "HEROToken: account is the zero address"
+    );
+
+    require(
+      !excluded[account],
+      "HEROToken: account already excluded"
+    );
+
+    require(
+      balances[account] == 0,
+      "HEROToken: can not exclude holder account"
+    );
+
+    excluded[account] = true;
+
+    emit Excluded(
+      account
+    );
+  }
+
+  function _approve(
+    address owner,
+    address spender,
+    uint256 amount
+  )
+    internal
+  {
+    require(
+      owner != address(0),
+      "HEROToken: owner is the zero address"
+    );
+
+    require(
+      spender != address(0),
+      "HEROToken: spender is the zero address"
+    );
+
+    allowances[owner][spender] = amount;
+
+    emit Approval(
+      owner,
+      spender,
+      amount
+    );
+  }
+
+  function _mint(
+    address account,
+    uint256 amount
+  )
+    internal
+    lock
+  {
+    require(
+      account != address(0),
+      "HEROToken: account is the zero address"
+    );
+
+    require(
+      amount > 0,
+      "HEROToken: invalid amount"
+    );
+
+    summary.totalSupply = summary.totalSupply.add(amount);
+    summary.totalExcluded = summary.totalExcluded.add(amount);
+
+    _exclude(account);
+
+    balances[account] = balances[account].add(amount);
+
+    emit Transfer(
+      address(0),
+      account,
+      amount
+    );
+  }
+
+  function _transfer(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    internal
+    lock
+  {
+    require(
+      sender != address(0),
+      "HEROToken: sender is the zero address"
+    );
+
+    require(
+      recipient != address(0),
+      "HEROToken: recipient is the zero address"
+    );
+
+    require(
+      sender != recipient,
+      "HEROToken: invalid recipient"
+    );
+
+    require(
+      amount != 0,
+      "HEROToken: invalid amount"
+    );
+
+    if (
+      !excluded[sender] && !excluded[recipient]
+    ) {
+      _transferBetweenHolders(
+        sender,
+        recipient,
+        amount
+      );
+    } else if (
+      excluded[sender] && !excluded[recipient]
+    ) {
+      _transferFromExcluded(
+        sender,
+        recipient,
+        amount
+      );
+    } else if (
+      !excluded[sender] && excluded[recipient]
+    ) {
+      _transferToExcluded(
+        sender,
+        recipient,
+        amount
+      );
+    } else {
+      _transferBetweenExcluded(
+        sender,
+        recipient,
+        amount
+      );
+    }
+
+    emit Transfer(
+      sender,
+      recipient,
+      amount
+    );
+  }
+
+  function _transferBetweenHolders(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    internal
+  {
+    (
+      uint256 senderFee,
+      uint256 lpFee
+    ) = _calcTransferSenderFees(amount);
+
+    uint256 recipientFee;
+    uint256 totalFee;
+
+    {
+      uint256 recipientLPFee;
+
+      (
+        recipientFee,
+        recipientLPFee
+      ) = _calcTransferRecipientFees(amount);
+
+      lpFee = lpFee.add(recipientLPFee);
+      totalFee = senderFee.add(recipientFee);
+    }
+
+    uint256 senderAmount = amount.add(senderFee);
+    uint256 recipientAmount = amount.sub(recipientFee);
+
+    if (summary.totalRewards != 0) {
+      uint256 totalHoldingWithRewards = summary.totalHolding.add(
+        summary.totalRewards
+      );
+
+      senderAmount = senderAmount.mul(summary.totalHolding).div(
+        totalHoldingWithRewards
+      );
+      recipientAmount = recipientAmount.mul(summary.totalHolding).div(
+        totalHoldingWithRewards
+      );
+    }
+
+    require(
+      balances[sender] >= senderAmount,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    balances[sender] = balances[sender].sub(senderAmount);
+    balances[recipient] = balances[recipient].add(recipientAmount);
+
+    summary.totalHolding = summary.totalHolding.sub(totalFee);
+
+    _increaseTotalLP(lpFee);
+    _updateTotalRewards();
+  }
+
+  function _transferFromExcluded(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    internal
+  {
+    require(
+      balances[sender] >= amount,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    (
+      uint256 recipientFee,
+      uint256 lpFee
+    ) = _calcTransferSenderFees(amount);
+
+    uint256 recipientAmount = amount.sub(recipientFee);
+
+    balances[sender] = balances[sender].sub(amount);
+    balances[recipient] = balances[recipient].add(recipientAmount);
+
+    summary.totalExcluded = summary.totalExcluded.sub(amount);
+    summary.totalHolding = summary.totalHolding.add(recipientAmount);
+
+    _increaseTotalLP(lpFee);
+    _updateTotalRewards();
+  }
+
+  function _transferToExcluded(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    internal
+  {
+    (
+      uint256 senderFee,
+      uint256 lpFee
+    ) = _calcTransferSenderFees(amount);
+
+    uint256 senderAmount = amount.add(senderFee);
+
+    if (summary.totalRewards != 0) {
+      uint256 totalHoldingWithRewards = summary.totalHolding.add(
+        summary.totalRewards
+      );
+
+      senderAmount = senderAmount.mul(summary.totalHolding).div(
+        totalHoldingWithRewards
+      );
+    }
+
+    require(
+      balances[sender] >= senderAmount,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    balances[sender] = balances[sender].sub(senderAmount);
+    balances[recipient] = balances[recipient].add(amount);
+
+    summary.totalExcluded = summary.totalExcluded.add(amount);
+    summary.totalHolding = summary.totalHolding.sub(senderAmount);
+
+    _increaseTotalLP(lpFee);
+    _updateTotalRewards();
+  }
+
+  function _transferBetweenExcluded(
+    address sender,
+    address recipient,
+    uint256 amount
+  )
+    internal
+  {
+    require(
+      balances[sender] >= amount,
+      "HEROToken: transfer amount exceeds balance"
+    );
+
+    balances[sender] = balances[sender].sub(amount);
+    balances[recipient] = balances[recipient].add(amount);
+  }
+
+  function _increaseTotalLP(
+    uint256 amount
+  )
+    internal
+    virtual
+  {
+    summary.totalLP = summary.totalLP.add(amount);
+  }
+
+  // private functions
+
+  function _updateTotalRewards()
+    private
+  {
+    summary.totalRewards = summary.totalSupply
+    .sub(summary.totalExcluded)
+    .sub(summary.totalHolding)
+    .sub(summary.totalLP);
+  }
+
+  // private functions (views)
+
+  function _calcTransferSenderFees(
+    uint256 amount
+  )
+    private
+    view
+    returns (
+      uint256 totalFee,
+      uint256 lpFee
+    )
+  {
+    uint256 rewardsFee = amount.percent(settings.rewardsFees.sender);
+
+    lpFee = amount.percent(settings.lpFees.sender);
+    totalFee = lpFee.add(rewardsFee);
+
+    return (totalFee, lpFee);
+  }
+
+  function _calcTransferRecipientFees(
+    uint256 amount
+  )
+    private
+    view
+    returns (
+      uint256 totalFee,
+      uint256 lpFee
+    )
+  {
+    uint256 rewardsFee = amount.percent(settings.rewardsFees.recipient);
+
+    lpFee = amount.percent(settings.lpFees.recipient);
+    totalFee = lpFee.add(rewardsFee);
+
+    return (totalFee, lpFee);
+  }
+}
