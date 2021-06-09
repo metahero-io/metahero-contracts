@@ -17,15 +17,13 @@ contract HEROTokenLP is HEROTokenEconomy {
     //
   }
 
-  // external functions
+  // internal functions
 
   function _initializeLP()
     internal
   {
     // TODO
   }
-
-  // internal functions
 
   function _increaseTotalLP(
     uint256 amount
