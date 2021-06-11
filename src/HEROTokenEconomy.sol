@@ -76,6 +76,20 @@ contract HEROTokenEconomy is ERC20, Lockable {
     return true;
   }
 
+  function burn(
+    uint256 amount
+  )
+    external
+    returns (bool)
+  {
+    _burn(
+      msg.sender,
+      amount
+    );
+
+    return true;
+  }
+
   function approve(
     address spender,
     uint256 amount
