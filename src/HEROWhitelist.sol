@@ -136,10 +136,12 @@ contract HEROWhitelist is Controlled, Initializable {
       "HEROWhitelist: can not destroy before deadline"
     );
 
-    if (unclaimedTokens != 0) {
+    uint256 unclaimedTokens_ = token.balanceOf(address(this));
+
+    if (unclaimedTokens_ != 0) {
       token.transfer(
         msg.sender,
-        token.balanceOf(address(this))
+        unclaimedTokens_
       );
     }
 
