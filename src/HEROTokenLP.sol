@@ -17,6 +17,15 @@ contract HEROTokenLP is HEROTokenEconomy {
     //
   }
 
+  // external functions
+
+  receive()
+    external
+    payable
+  {
+    //
+  }
+
   // internal functions
 
   function _initializeLP()

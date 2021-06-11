@@ -50,7 +50,7 @@ contract HEROWhitelist is Controlled, Initializable {
   // external functions
 
   function initialize(
-    address token_,
+    address payable token_,
     uint256 deadlineIn_, // in seconds
     uint256 claimUnitPrice_,
     uint256 claimUnitTokens_,
