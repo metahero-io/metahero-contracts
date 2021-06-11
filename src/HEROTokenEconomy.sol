@@ -112,7 +112,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
 
     require(
       currentAllowance >= amount,
-      "HEROToken: transfer amount exceeds allowance"
+      "HEROTokenEconomy: amount exceeds allowance"
     );
 
     _approve(
@@ -159,7 +159,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
 
     if (
       !excluded[account] &&
-      summary.totalRewards > 0
+      summary.totalRewards != 0
     ) {
       result = result.add(
         summary.totalRewards
@@ -210,17 +210,17 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       account != address(0),
-      "HEROToken: account is the zero address"
+      "HEROTokenEconomy: account is the zero address"
     );
 
     require(
       !excluded[account],
-      "HEROToken: account already excluded"
+      "HEROTokenEconomy: account already excluded"
     );
 
     require(
       balances[account] == 0,
-      "HEROToken: can not exclude holder account"
+      "HEROTokenEconomy: can not exclude holder account"
     );
 
     excluded[account] = true;
@@ -239,12 +239,12 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       owner != address(0),
-      "HEROToken: owner is the zero address"
+      "HEROTokenEconomy: owner is the zero address"
     );
 
     require(
       spender != address(0),
-      "HEROToken: spender is the zero address"
+      "HEROTokenEconomy: spender is the zero address"
     );
 
     allowances[owner][spender] = amount;
@@ -265,12 +265,12 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       account != address(0),
-      "HEROToken: account is the zero address"
+      "HEROTokenEconomy: account is the zero address"
     );
 
     require(
-      amount > 0,
-      "HEROToken: invalid amount"
+      amount != 0,
+      "HEROTokenEconomy: invalid amount"
     );
 
     summary.totalSupply = summary.totalSupply.add(amount);
@@ -287,6 +287,45 @@ contract HEROTokenEconomy is ERC20, Lockable {
     );
   }
 
+  function _burn(
+    address account,
+    uint256 amount
+  )
+    internal
+    lock
+  {
+    require(
+      account != address(0),
+      "HEROTokenEconomy: account is the zero address"
+    );
+
+    require(
+      amount != 0,
+      "HEROTokenEconomy: invalid amount"
+    );
+
+    require(
+      balances[account] >= amount,
+      "HEROTokenEconomy: amount exceeds balance"
+    );
+
+    require(
+      excluded[account],
+      "HEROTokenEconomy: can not burn from holder account"
+    );
+
+    summary.totalSupply = summary.totalSupply.sub(amount);
+    summary.totalExcluded = summary.totalExcluded.sub(amount);
+
+    balances[account] = balances[account].sub(amount);
+
+    emit Transfer(
+      account,
+      address(0),
+      amount
+    );
+  }
+
   function _transfer(
     address sender,
     address recipient,
@@ -297,22 +336,22 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       sender != address(0),
-      "HEROToken: sender is the zero address"
+      "HEROTokenEconomy: sender is the zero address"
     );
 
     require(
       recipient != address(0),
-      "HEROToken: recipient is the zero address"
+      "HEROTokenEconomy: recipient is the zero address"
     );
 
     require(
       sender != recipient,
-      "HEROToken: invalid recipient"
+      "HEROTokenEconomy: invalid recipient"
     );
 
     require(
       amount != 0,
-      "HEROToken: invalid amount"
+      "HEROTokenEconomy: invalid amount"
     );
 
     if (
@@ -367,7 +406,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
     ) = _calcTransferSenderFees(amount);
 
     uint256 recipientFee;
-    uint256 totalFee;
+    uint256 totalFee = senderFee;
 
     {
       uint256 recipientLPFee;
@@ -378,7 +417,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
       ) = _calcTransferRecipientFees(amount);
 
       lpFee = lpFee.add(recipientLPFee);
-      totalFee = senderFee.add(recipientFee);
+      totalFee = totalFee.add(recipientFee);
     }
 
     uint256 senderAmount = amount.add(senderFee);
@@ -395,11 +434,14 @@ contract HEROTokenEconomy is ERC20, Lockable {
       recipientAmount = recipientAmount.mul(summary.totalHolding).div(
         totalHoldingWithRewards
       );
+      totalFee = totalFee.mul(summary.totalHolding).div(
+        totalHoldingWithRewards
+      );
     }
 
     require(
       balances[sender] >= senderAmount,
-      "HEROToken: transfer amount exceeds balance"
+      "HEROTokenEconomy: amount exceeds balance"
     );
 
     balances[sender] = balances[sender].sub(senderAmount);
@@ -420,7 +462,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       balances[sender] >= amount,
-      "HEROToken: transfer amount exceeds balance"
+      "HEROTokenEconomy: amount exceeds balance"
     );
 
     (
@@ -466,7 +508,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
 
     require(
       balances[sender] >= senderAmount,
-      "HEROToken: transfer amount exceeds balance"
+      "HEROTokenEconomy: amount exceeds balance"
     );
 
     balances[sender] = balances[sender].sub(senderAmount);
@@ -488,7 +530,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     require(
       balances[sender] >= amount,
-      "HEROToken: transfer amount exceeds balance"
+      "HEROTokenEconomy: amount exceeds balance"
     );
 
     balances[sender] = balances[sender].sub(amount);
