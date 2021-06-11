@@ -38,7 +38,7 @@ task(TASK_BUILD_ARTIFACTS, 'Build artifacts').setAction(async (args, hre) => {
       const contractName = basename(artifactPath, '.json');
       const fileName = `${contractName}.json`;
 
-      if (!contractName.endsWith('Lib') && !contractName.endsWith('Mock')) {
+      if (!contractName.endsWith('Lib')) {
         const filePath = join(buildPath, fileName);
 
         if (!(await pathExists(filePath))) {

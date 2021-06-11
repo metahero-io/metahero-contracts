@@ -1,8 +1,9 @@
 import { ethers, waffle } from 'hardhat';
+import { expect } from 'chai';
 import { BigNumber, BigNumberish } from 'ethers';
-import HEROTokenArtifact from '../artifacts/HEROToken.json';
-import { HEROToken } from '../typings';
-import { Signer } from './common';
+import HEROTokenEconomyMockArtifact from '../artifacts/HEROTokenEconomyMock.json';
+import { HEROTokenEconomyMock } from '../typings';
+import { Signer, PRECISION } from './common';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -10,10 +11,10 @@ const { getSigners } = ethers;
 interface TransferAccountOptions {
   type: 'exclude' | 'holder';
   index: number;
+  expectedBalance: BigNumberish;
 }
 
 describe('HEROTokenEconomy', () => {
-  const PRECISION = 10 ** 9;
   const LP_FEE = {
     sender: 4,
     recipient: 4,
@@ -26,7 +27,7 @@ describe('HEROTokenEconomy', () => {
 
   let excluded: Signer[];
   let holders: Signer[];
-  let token: HEROToken;
+  let token: HEROTokenEconomyMock;
 
   before(async () => {
     const signers = await getSigners();
@@ -34,7 +35,10 @@ describe('HEROTokenEconomy', () => {
     excluded = signers.slice(0, 2);
     holders = signers.slice(2);
 
-    token = (await deployContract(excluded[0], HEROTokenArtifact)) as HEROToken;
+    token = (await deployContract(
+      excluded[0],
+      HEROTokenEconomyMockArtifact,
+    )) as HEROTokenEconomyMock;
 
     await token.initialize(
       LP_FEE,
@@ -72,18 +76,17 @@ describe('HEROTokenEconomy', () => {
           .connect(sender)
           .transfer(recipient.address, amountBN.mul(PRECISION));
 
-        const senderBalance = await token.balanceOf(sender.address);
-        const recipientBalance = await token.balanceOf(recipient.address);
+        const { expectedBalance } = senderOptions;
+        const balance = await token.balanceOf(sender.address);
 
-        console.log();
-        console.log(
-          `${' '.repeat(6)}sender balance:`,
-          senderBalance.toString(),
-        );
-        console.log(
-          `${' '.repeat(6)}recipient balance:`,
-          recipientBalance.toString(),
-        );
+        expect(balance).to.eq(expectedBalance);
+
+        {
+          const { expectedBalance } = recipientOptions;
+          const balance = await token.balanceOf(recipient.address);
+
+          expect(balance).to.eq(expectedBalance);
+        }
       });
     };
 
@@ -91,10 +94,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'exclude',
         index: 0,
+        expectedBalance: '9850000000000',
       },
       {
         type: 'exclude',
         index: 1,
+        expectedBalance: '150000000000',
       },
       150,
     );
@@ -103,10 +108,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'exclude',
         index: 0,
+        expectedBalance: '9350000000000',
       },
       {
         type: 'holder',
         index: 0,
+        expectedBalance: '480000000000',
       },
       500,
     );
@@ -115,10 +122,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'holder',
         index: 0,
+        expectedBalance: '272347826086',
       },
       {
         type: 'holder',
         index: 1,
+        expectedBalance: '191652173912',
       },
       200,
     );
@@ -127,10 +136,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'holder',
         index: 1,
+        expectedBalance: '87033901551',
       },
       {
         type: 'holder',
         index: 2,
+        expectedBalance: '95418502202',
       },
       100,
     );
@@ -139,10 +150,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'holder',
         index: 0,
+        expectedBalance: '116837035675',
       },
       {
         type: 'holder',
         index: 1,
+        expectedBalance: '231095356663',
       },
       150,
     );
@@ -151,10 +164,12 @@ describe('HEROTokenEconomy', () => {
       {
         type: 'holder',
         index: 0,
+        expectedBalance: '64419203027',
       },
       {
         type: 'exclude',
         index: 1,
+        expectedBalance: '200000000000',
       },
       50,
     );

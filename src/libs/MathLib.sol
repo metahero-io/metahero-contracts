@@ -60,7 +60,7 @@ library MathLib {
     pure
     returns (uint256)
   {
-    require(b > 0, "Math: division by zero");
+    require(b != 0, "Math: division by zero");
 
     return a / b;
   }
