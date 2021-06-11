@@ -15,7 +15,7 @@ library MathLib {
   {
     uint256 c = a + b;
 
-    require(c >= a, "Math: addition overflow");
+    require(c >= a, "MathLib: addition overflow");
 
     return c;
   }
@@ -28,7 +28,7 @@ library MathLib {
     pure
     returns (uint256)
   {
-    require(b <= a, "Math: subtraction overflow");
+    require(b <= a, "MathLib: subtraction overflow");
 
     return a - b;
   }
@@ -47,7 +47,7 @@ library MathLib {
 
     uint256 c = a * b;
 
-    require(c / a == b, "Math: multiplication overflow");
+    require(c / a == b, "MathLib: multiplication overflow");
 
     return c;
   }
@@ -60,7 +60,7 @@ library MathLib {
     pure
     returns (uint256)
   {
-    require(b != 0, "Math: division by zero");
+    require(b != 0, "MathLib: division by zero");
 
     return a / b;
   }
