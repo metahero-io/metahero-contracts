@@ -19,12 +19,11 @@ const func: DeployFunction = async (hre) => {
   if (await read('HEROToken', 'initialized')) {
     log('HEROToken already initialized');
   } else {
-    const excluded: string[] = [];
+    const { address: whitelist } = await get('HEROWhitelist');
 
-    {
-      const { address } = await get('HEROWhitelist');
-      excluded.push(address);
-    }
+    const excluded: string[] = [
+      whitelist, //
+    ];
 
     await execute(
       'HEROToken',

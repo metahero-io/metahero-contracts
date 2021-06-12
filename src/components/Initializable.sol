@@ -15,7 +15,7 @@ contract Initializable {
 
   modifier onlyInitializer() {
     require(
-      msg.sender != address(0),
+      initializer != address(0),
       "Initializable: already initialized"
     );
 
