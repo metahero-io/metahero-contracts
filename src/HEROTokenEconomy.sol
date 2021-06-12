@@ -38,7 +38,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
   Settings public settings;
   Summary public summary;
 
-  mapping (address => uint256) private balances;
+  mapping (address => uint256) internal balances;
   mapping (address => mapping (address => uint256)) private allowances;
   mapping (address => bool) private excluded;
 
