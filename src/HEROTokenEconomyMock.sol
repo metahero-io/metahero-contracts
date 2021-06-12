@@ -2,20 +2,18 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "./components/Initializable.sol";
 import "./HEROTokenEconomy.sol";
 
 
 /**
  * @title HERO token economy module (mock)
  */
-contract HEROTokenEconomyMock is Initializable, HEROTokenEconomy {
+contract HEROTokenEconomyMock is HEROTokenEconomy {
   /**
    * @dev Public constructor
    */
   constructor ()
     public
-    Initializable()
   {
     //
   }
@@ -29,7 +27,6 @@ contract HEROTokenEconomyMock is Initializable, HEROTokenEconomy {
     address[] calldata excluded_
   )
     external
-    onlyInitializer
   {
     _initializeEconomy(
       lpFees,

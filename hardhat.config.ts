@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
         mnemonic:
           HARDHAT_MNEMONIC ||
           'test test test test test test test test test test test junk',
-        count: 128,
+        count: 32,
       },
       chainId: 192,
       gasPrice: 20 * 1000000000,

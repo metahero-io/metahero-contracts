@@ -58,8 +58,7 @@ func.tags = [
   'HEROWhitelist',
 ];
 func.dependencies = [
-  'deployHEROToken', //
-  'deployHEROWhitelist',
+  'initializeHEROToken', //
 ];
 
 module.exports = func;

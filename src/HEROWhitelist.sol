@@ -108,7 +108,7 @@ contract HEROWhitelist is Controlled, Initializable {
       "HEROWhitelist: msg.sender not on the whitelist"
     );
     require(
-      msg.value != claimUnitPrice,
+      msg.value == claimUnitPrice,
       "HEROWhitelist: invalid msg.value"
     );
 
@@ -139,8 +139,7 @@ contract HEROWhitelist is Controlled, Initializable {
     uint256 unclaimedTokens_ = token.balanceOf(address(this));
 
     if (unclaimedTokens_ != 0) {
-      token.transfer(
-        msg.sender,
+      token.burn(
         unclaimedTokens_
       );
     }
