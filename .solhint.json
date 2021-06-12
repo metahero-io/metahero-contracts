@@ -5,8 +5,6 @@
       "error",
       "^0.6.0"
     ],
-    "no-empty-blocks": "off",
-    "mark-callable-contracts": "off",
     "reason-string": "off"
   }
 }
