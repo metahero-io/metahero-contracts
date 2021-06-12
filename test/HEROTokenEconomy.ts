@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { BigNumber, BigNumberish } from 'ethers';
 import HEROTokenEconomyMockArtifact from '../artifacts/HEROTokenEconomyMock.json';
 import { HEROTokenEconomyMock } from '../typings';
-import { Signer, PRECISION } from './common';
+import { Signer } from './common';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -23,7 +23,7 @@ describe('HEROTokenEconomy', () => {
     sender: 1,
     recipient: 1,
   };
-  const TOTAL_SUPPLY = BigNumber.from(10000).mul(PRECISION);
+  const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
   let excluded: Signer[];
   let excludedAddresses: string[];
@@ -79,9 +79,7 @@ describe('HEROTokenEconomy', () => {
               ? excluded[recipientOptions.index]
               : holders[recipientOptions.index];
 
-          await token
-            .connect(sender)
-            .transfer(recipient.address, amountBN.mul(PRECISION));
+          await token.connect(sender).transfer(recipient.address, amountBN);
 
           const { expectedBalance } = senderOptions;
           const balance = await token.balanceOf(sender.address);
@@ -108,7 +106,7 @@ describe('HEROTokenEconomy', () => {
           index: 1,
           expectedBalance: '150000000000',
         },
-        150,
+        '150000000000',
       );
 
       createTestCase(
@@ -122,7 +120,7 @@ describe('HEROTokenEconomy', () => {
           index: 0,
           expectedBalance: '480000000000',
         },
-        500,
+        '500000000000',
       );
 
       createTestCase(
@@ -136,7 +134,7 @@ describe('HEROTokenEconomy', () => {
           index: 1,
           expectedBalance: '191652173912',
         },
-        200,
+        '200000000000',
       );
 
       createTestCase(
@@ -150,7 +148,7 @@ describe('HEROTokenEconomy', () => {
           index: 2,
           expectedBalance: '95418502202',
         },
-        100,
+        '100000000000',
       );
 
       createTestCase(
@@ -164,7 +162,7 @@ describe('HEROTokenEconomy', () => {
           index: 1,
           expectedBalance: '231095356663',
         },
-        150,
+        '150000000000',
       );
 
       createTestCase(
@@ -178,7 +176,7 @@ describe('HEROTokenEconomy', () => {
           index: 1,
           expectedBalance: '200000000000',
         },
-        50,
+        '50000000000',
       );
     });
   });
