@@ -6,9 +6,13 @@ import 'hardhat-deploy-ethers';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 import { HardhatUserConfig } from 'hardhat/config';
-import { createConfigNetworks } from './extensions';
+import {
+  createConfigNetworks,
+  NETWORK_CONFIGS,
+  NetworkNames,
+} from './extensions';
 
-const { HARDHAT_MNEMONIC } = process.env;
+const { HARDHAT_MNEMONIC, HARDHAT_FORKING_URL } = process.env;
 
 const config: HardhatUserConfig = {
   namedAccounts: {
@@ -16,13 +20,18 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
+      forking: {
+        url:
+          HARDHAT_FORKING_URL ||
+          NETWORK_CONFIGS[NetworkNames.Bsc].defaultProviderUrl,
+      },
       accounts: {
         mnemonic:
           HARDHAT_MNEMONIC ||
           'test test test test test test test test test test test junk',
         count: 32,
       },
-      chainId: 192,
+      chainId: 56,
       gasPrice: 20 * 1000000000,
     },
     ...createConfigNetworks(),

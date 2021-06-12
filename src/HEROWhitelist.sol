@@ -47,6 +47,40 @@ contract HEROWhitelist is Controlled, Initializable {
     //
   }
 
+  // external functions (payable)
+
+  function claimTokens()
+    external
+    payable
+  {
+    require(
+      block.timestamp < deadline,
+      "HEROWhitelist: can not claim tokens after deadline"
+    );
+    require(
+      whitelist[msg.sender],
+      "HEROWhitelist: msg.sender not on the whitelist"
+    );
+    require(
+      msg.value == claimUnitPrice,
+      "HEROWhitelist: invalid msg.value"
+    );
+
+    whitelist[msg.sender] = false;
+
+    unclaimedAccounts = unclaimedAccounts.sub(1);
+    unclaimedTokens = unclaimedTokens.sub(claimUnitTokens);
+
+    token.transfer(
+      msg.sender,
+      claimUnitTokens
+    );
+
+    TokensClaimed(
+      msg.sender
+    );
+  }
+
   // external functions
 
   function initialize(
@@ -93,38 +127,6 @@ contract HEROWhitelist is Controlled, Initializable {
     external
   {
     _addAccounts(accounts);
-  }
-
-  function claimTokens()
-    external
-    payable
-  {
-    require(
-      block.timestamp < deadline,
-      "HEROWhitelist: can not claim tokens after deadline"
-    );
-    require(
-      whitelist[msg.sender],
-      "HEROWhitelist: msg.sender not on the whitelist"
-    );
-    require(
-      msg.value == claimUnitPrice,
-      "HEROWhitelist: invalid msg.value"
-    );
-
-    whitelist[msg.sender] = false;
-
-    unclaimedAccounts = unclaimedAccounts.sub(1);
-    unclaimedTokens = unclaimedTokens.sub(claimUnitTokens);
-
-    token.transfer(
-      msg.sender,
-      claimUnitTokens
-    );
-
-    TokensClaimed(
-      msg.sender
-    );
   }
 
   function destroy()
