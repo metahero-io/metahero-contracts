@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+/* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
 interface UniswapV2Pair {
@@ -197,6 +198,7 @@ interface UniswapV2Pair {
     external
     pure
     returns (uint8);
+
 
   function PERMIT_TYPEHASH()
     external

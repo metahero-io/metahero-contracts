@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+/* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
 interface UniswapV2Router01 {
