@@ -8,6 +8,8 @@
 $ npm i @metahero/contracts -S
 ```
 
+## Usage
+
 ### Javascript
 
 ```javascript
