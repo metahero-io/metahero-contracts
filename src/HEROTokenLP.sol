@@ -103,7 +103,7 @@ contract HEROTokenLP is HEROTokenEconomy {
       0,
       path,
       address(this),
-      block.timestamp
+      block.timestamp // solhint-disable-line not-rely-on-time
     );
   }
 
@@ -125,7 +125,7 @@ contract HEROTokenLP is HEROTokenEconomy {
       0, // slippage is unavoidable
       0, // slippage is unavoidable
       address(this),
-      block.timestamp
+      block.timestamp // solhint-disable-line not-rely-on-time
     );
   }
 }

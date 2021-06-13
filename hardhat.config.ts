@@ -10,6 +10,7 @@ import {
   createConfigNetworks,
   NETWORK_CONFIGS,
   NetworkNames,
+  NetworkChainIds,
 } from './extensions';
 
 const { HARDHAT_MNEMONIC, HARDHAT_FORKING_URL } = process.env;
@@ -31,7 +32,7 @@ const config: HardhatUserConfig = {
           'test test test test test test test test test test test junk',
         count: 32,
       },
-      chainId: 56,
+      chainId: NetworkChainIds.Bsc,
       gasPrice: 20 * 1000000000,
     },
     ...createConfigNetworks(),
