@@ -1,8 +1,21 @@
 {
   "name": "@metahero/contracts",
-  "version": "0.0.1",
+  "version": "1.0.0-alpha.1",
   "description": "MetaHERO contracts",
-  "private": true,
+  "keywords": [
+    "ERC20",
+    "HERO",
+    "contracts",
+    "ethereum",
+    "solidity"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metahero-token/metahero-contracts.git"
+  },
+  "homepage": "https://metahero.io",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "build": "hardhat build-dist",
