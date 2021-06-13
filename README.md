@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-$ npm i
+$ npm i @metahero/contracts -S
 ```
 
 ### Javascript
