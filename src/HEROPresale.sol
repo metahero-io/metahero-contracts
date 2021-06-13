@@ -119,7 +119,9 @@ contract HEROPresale is Controlled, Initializable {
       : DEFAULT_DEADLINE_IN
     );
 
-    _addAccounts(accounts);
+    if (accounts.length != 0) {
+      _addAccounts(accounts);
+    }
   }
 
   function updateDeadline(
