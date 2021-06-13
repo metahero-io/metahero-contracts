@@ -21,20 +21,22 @@ const func: DeployFunction = async (hre) => {
 
     const signers = await getSigners();
 
-    ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
+    if (signers.length > 1) {
+      ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
 
-    const pendingTokens = UNIT_TOKENS.mul(ACCOUNTS.length);
+      const pendingTokens = UNIT_TOKENS.mul(ACCOUNTS.length);
 
-    await execute(
-      'HEROToken',
-      {
-        from,
-        log: true,
-      },
-      'transfer',
-      whitelist,
-      pendingTokens,
-    );
+      await execute(
+        'HEROToken',
+        {
+          from,
+          log: true,
+        },
+        'transfer',
+        whitelist,
+        pendingTokens,
+      );
+    }
 
     await execute(
       'HEROPresale',

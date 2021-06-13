@@ -1,4 +1,5 @@
 import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
 import 'hardhat-deploy';
@@ -63,6 +64,9 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: false,
+  },
+  etherscan: {
+    apiKey: null,
   },
 };
 

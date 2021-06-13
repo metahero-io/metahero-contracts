@@ -4,6 +4,7 @@ import 'hardhat/types/runtime';
 declare module 'hardhat/types/config' {
   interface BuildPathsConfig {
     artifacts?: string;
+    dist?: string;
   }
 
   export interface HardhatUserConfig {
