@@ -47,9 +47,7 @@ contract HEROPresale is Controlled, Initializable {
     public
     Controlled()
     Initializable()
-  {
-    //
-  }
+  {}
 
   // external functions (payable)
 
@@ -58,9 +56,10 @@ contract HEROPresale is Controlled, Initializable {
     payable
   {
     require(
-      block.timestamp < deadline,
+      block.timestamp < deadline, // solhint-disable-line not-rely-on-time
       "HEROPresale: can not buy after deadline"
     );
+
     require(
       whitelist[msg.sender],
       "HEROPresale: msg.sender not on the whitelist"
@@ -126,8 +125,8 @@ contract HEROPresale is Controlled, Initializable {
   function updateDeadline(
     uint256 deadlineIn_ // in seconds
   )
-    onlyController
     external
+    onlyController
   {
     _updateDeadline(deadlineIn_);
   }
@@ -135,18 +134,18 @@ contract HEROPresale is Controlled, Initializable {
   function addAccounts(
     address[] calldata accounts
   )
-    onlyController
     external
+    onlyController
   {
     _addAccounts(accounts);
   }
 
   function destroy()
-    onlyController
     external
+    onlyController
   {
     require(
-      block.timestamp >= deadline,
+      block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
       "HEROPresale: can not destroy before deadline"
     );
 
@@ -168,7 +167,7 @@ contract HEROPresale is Controlled, Initializable {
   )
     private
   {
-    deadline = block.timestamp.add(deadlineIn_);
+    deadline = block.timestamp.add(deadlineIn_); // solhint-disable-line not-rely-on-time
 
     emit DeadlineUpdated(
       deadline
