@@ -20,6 +20,20 @@ task(TASK_VERIFY_ALL, 'Verify all contracts').setAction(async (args, hre) => {
   switch (networkName) {
     case NetworkNames.Bsc:
     case NetworkNames.BscTest: {
+      const envPrefix = getNetworkEnvPrefix(networkName);
+      const envName = `${envPrefix}_API_KEY`;
+      const apiKey = process.env[envName];
+
+      if (!apiKey) {
+        throw new HardhatPluginError(
+          `Undefined ${envName} environment variable`,
+        );
+      }
+
+      config.etherscan = {
+        apiKey,
+      };
+
       for (const [name, { address }] of entries) {
         const verifyArgs: {
           contract?: string;
@@ -30,23 +44,10 @@ task(TASK_VERIFY_ALL, 'Verify all contracts').setAction(async (args, hre) => {
           constructorArgsParams: [],
         };
 
-        const envPrefix = getNetworkEnvPrefix(networkName);
-        const envName = `${envPrefix}_API_KEY`;
-
-        const apiKey = process.env[envName];
-
-        if (!apiKey) {
-          throw new HardhatPluginError(`Undefined ${envName} env`);
-        }
-
-        config.etherscan = {
-          apiKey,
-        };
-
         try {
           await run(TASK_VERIFY, verifyArgs);
         } catch (err) {
-          console.warn(`${name} verification error:`, err.toString());
+          console.warn(`Contract ${name} verification error:`, err.toString());
         }
       }
       break;
