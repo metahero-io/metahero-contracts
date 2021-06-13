@@ -24,7 +24,7 @@ const func: DeployFunction = async (hre) => {
   if (await read('HEROToken', 'initialized')) {
     log('HEROToken already initialized');
   } else {
-    const { address: whitelist } = await get('HEROWhitelist');
+    const { address: whitelist } = await get('HEROPresale');
 
     const excluded: string[] = [
       whitelist, //
@@ -64,8 +64,7 @@ func.tags = [
   'HEROToken',
 ];
 func.dependencies = [
-  'deployHEROToken', //
-  'deployHEROWhitelist',
+  'deploy', //
 ];
 
 module.exports = func;

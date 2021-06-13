@@ -7,16 +7,16 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy('HEROWhitelist', {
+  await deploy('HEROPresale', {
     from,
     log: true,
   });
 };
 
-func.id = 'deployHEROWhitelist';
+func.id = 'deployHEROPresale';
 func.tags = [
   'deploy', //
-  'HEROWhitelist',
+  'HEROPresale',
 ];
 
 module.exports = func;
