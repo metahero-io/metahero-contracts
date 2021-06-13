@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import { NetworkNames, NETWORK_CONFIGS } from '../constants';
+import { getNetworkEnvPrefix } from './getNetworkEnvPrefix';
 
 export function createConfigNetwork(
   networkName: NetworkNames,
@@ -10,7 +11,7 @@ export function createConfigNetwork(
     const { chainId, defaultGas, defaultGasPrice, defaultProviderUrl } =
       NETWORK_CONFIGS[networkName];
 
-    const envPrefix = networkName.replace(/([A-Z])+/, '_$1').toUpperCase();
+    const envPrefix = getNetworkEnvPrefix(networkName);
 
     const url =
       process.env[`${envPrefix}_PROVIDER_ENDPOINT`] || defaultProviderUrl;
