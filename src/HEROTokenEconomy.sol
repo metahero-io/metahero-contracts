@@ -3,7 +3,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "./components/erc20/ERC20.sol";
-import "./components/Lockable.sol";
+import "./components/Controlled.sol";
 import "./components/Lockable.sol";
 import "./libs/MathLib.sol";
 
@@ -11,7 +11,7 @@ import "./libs/MathLib.sol";
 /**
  * @title HERO token economy module
  */
-contract HEROTokenEconomy is ERC20, Lockable {
+contract HEROTokenEconomy is ERC20, Controlled, Lockable {
   using MathLib for uint256;
 
   struct Fees {
@@ -53,11 +53,20 @@ contract HEROTokenEconomy is ERC20, Lockable {
    */
   constructor ()
     internal
+    Controlled()
   {
     //
   }
 
   // external functions
+
+  function exclude(
+    address account
+  )
+    external
+  {
+    _exclude(account);
+  }
 
   function transfer(
     address recipient,
@@ -80,14 +89,11 @@ contract HEROTokenEconomy is ERC20, Lockable {
     uint256 amount
   )
     external
-    returns (bool)
   {
     _burn(
       msg.sender,
       amount
     );
-
-    return true;
   }
 
   function approve(

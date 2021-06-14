@@ -21,10 +21,11 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
    */
   constructor ()
     public
-    Initializable()
     ERC20Metadata(
       Metadata(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS)
     )
+    Initializable()
+    HEROTokenLP()
   {
     //
   }

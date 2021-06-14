@@ -14,6 +14,7 @@ contract HEROTokenEconomyMock is HEROTokenEconomy {
    */
   constructor ()
     public
+    HEROTokenEconomy()
   {
     //
   }

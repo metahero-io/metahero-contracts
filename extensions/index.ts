@@ -1,3 +1,4 @@
+import './environment';
 import './tasks';
 import './typings';
 

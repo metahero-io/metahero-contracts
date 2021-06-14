@@ -1,6 +1,5 @@
-import { constants } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { NetworkChainIds } from '../extensions';
+import { ContractNames } from '../extensions';
 
 const LP_FEE = {
   sender: 4,
@@ -13,11 +12,9 @@ const REWARDS_FEE = {
 
 const func: DeployFunction = async (hre) => {
   const {
-    network: {
-      config: { chainId },
-    },
     deployments: { get, read, execute, log },
     getNamedAccounts,
+    knownContracts,
   } = hre;
   const { from } = await getNamedAccounts();
 
@@ -30,18 +27,6 @@ const func: DeployFunction = async (hre) => {
       whitelist, //
     ];
 
-    let swapRouter = constants.AddressZero;
-
-    switch (chainId) {
-      case NetworkChainIds.Bsc:
-        swapRouter = '0x05ff2b0db69458a0750badebc4f9e13add608c7f';
-        break;
-
-      case NetworkChainIds.BscTest:
-        swapRouter = '0xD99D1c33F9fC3444f8101754aBC46c52416550D1';
-        break;
-    }
-
     await execute(
       'HEROToken',
       {
@@ -53,7 +38,7 @@ const func: DeployFunction = async (hre) => {
       REWARDS_FEE,
       0, // use default totalSupply
       excluded,
-      swapRouter,
+      knownContracts.getAddress(ContractNames.SwapRouter),
     );
   }
 };

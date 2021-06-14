@@ -18,6 +18,7 @@ contract HEROTokenLP is HEROTokenEconomy {
    */
   constructor ()
     internal
+    HEROTokenEconomy()
   {
     //
   }
