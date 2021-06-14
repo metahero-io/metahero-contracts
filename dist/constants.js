@@ -11,7 +11,6 @@ module.exports = {
     HEROTokenEconomyMock: 'HEROTokenEconomyMock',
     HEROTokenLP: 'HEROTokenLP',
     Initializable: 'Initializable',
-    Lockable: 'Lockable',
     UniswapV2Factory: 'UniswapV2Factory',
     UniswapV2Pair: 'UniswapV2Pair',
     UniswapV2Router01: 'UniswapV2Router01',

@@ -533,7 +533,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x9b0e40C4c8138cc8Ac8Bd8B0ae5Ba7Fea3992332"
+      "97": "0xF67f5473faf7ABb66944Be807181F153001Be927"
     }
   },
   "HEROToken": {
@@ -585,6 +585,12 @@ module.exports = {
         "anonymous": false,
         "inputs": [],
         "name": "Initialized",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [],
+        "name": "PresaleFinished",
         "type": "event"
       },
       {
@@ -688,14 +694,21 @@ module.exports = {
           }
         ],
         "name": "burn",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "controller",
         "outputs": [
           {
-            "internalType": "bool",
+            "internalType": "address",
             "name": "",
-            "type": "bool"
+            "type": "address"
           }
         ],
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -709,6 +722,26 @@ module.exports = {
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "exclude",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "finishPresale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -746,6 +779,11 @@ module.exports = {
             "internalType": "struct HEROTokenEconomy.Fees",
             "name": "rewardsFees",
             "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
           },
           {
             "internalType": "uint256",
@@ -795,6 +833,19 @@ module.exports = {
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "controller_",
+            "type": "address"
+          }
+        ],
+        "name": "setController",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "settings",
         "outputs": [
@@ -831,6 +882,11 @@ module.exports = {
             "internalType": "struct HEROTokenEconomy.Fees",
             "name": "rewardsFees",
             "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -980,7 +1036,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x9639C98B1F315C3bA5A6A8F6a36F95675342ed9d"
+      "97": "0x6Df688F5B075e40D658fDE96c8eCbDb161A2F2c2"
     }
   },
   "HEROTokenEconomy": {
@@ -1021,6 +1077,12 @@ module.exports = {
           }
         ],
         "name": "Excluded",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [],
+        "name": "PresaleFinished",
         "type": "event"
       },
       {
@@ -1124,13 +1186,53 @@ module.exports = {
           }
         ],
         "name": "burn",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "controller",
         "outputs": [
           {
-            "internalType": "bool",
+            "internalType": "address",
             "name": "",
-            "type": "bool"
+            "type": "address"
           }
         ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "exclude",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "finishPresale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "controller_",
+            "type": "address"
+          }
+        ],
+        "name": "setController",
+        "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -1171,6 +1273,11 @@ module.exports = {
             "internalType": "struct HEROTokenEconomy.Fees",
             "name": "rewardsFees",
             "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -1327,6 +1434,12 @@ module.exports = {
       },
       {
         "anonymous": false,
+        "inputs": [],
+        "name": "PresaleFinished",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
         "inputs": [
           {
             "indexed": true,
@@ -1426,13 +1539,40 @@ module.exports = {
           }
         ],
         "name": "burn",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "controller",
         "outputs": [
           {
-            "internalType": "bool",
+            "internalType": "address",
             "name": "",
-            "type": "bool"
+            "type": "address"
           }
         ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "exclude",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "finishPresale",
+        "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -1473,6 +1613,11 @@ module.exports = {
             "type": "tuple"
           },
           {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
+          },
+          {
             "internalType": "uint256",
             "name": "totalSupply_",
             "type": "uint256"
@@ -1484,6 +1629,19 @@ module.exports = {
           }
         ],
         "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "controller_",
+            "type": "address"
+          }
+        ],
+        "name": "setController",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1525,6 +1683,11 @@ module.exports = {
             "internalType": "struct HEROTokenEconomy.Fees",
             "name": "rewardsFees",
             "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -1676,6 +1839,12 @@ module.exports = {
       },
       {
         "anonymous": false,
+        "inputs": [],
+        "name": "PresaleFinished",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
         "inputs": [
           {
             "indexed": true,
@@ -1775,13 +1944,53 @@ module.exports = {
           }
         ],
         "name": "burn",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "controller",
         "outputs": [
           {
-            "internalType": "bool",
+            "internalType": "address",
             "name": "",
-            "type": "bool"
+            "type": "address"
           }
         ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "exclude",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "finishPresale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "controller_",
+            "type": "address"
+          }
+        ],
+        "name": "setController",
+        "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       },
@@ -1822,6 +2031,11 @@ module.exports = {
             "internalType": "struct HEROTokenEconomy.Fees",
             "name": "rewardsFees",
             "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "presale",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -1983,12 +2197,6 @@ module.exports = {
         "type": "function"
       }
     ],
-    "addresses": {
-      "97": null
-    }
-  },
-  "Lockable": {
-    "abi": [],
     "addresses": {
       "97": null
     }
