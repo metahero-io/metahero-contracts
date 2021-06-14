@@ -1,11 +1,10 @@
 import 'hardhat/types/runtime';
 import 'hardhat/types/config';
-import type { ContractNames } from './constants';
 
 declare module 'hardhat/types/runtime' {
   export interface HardhatRuntimeEnvironment {
     knownContracts?: {
-      getAddress(contractName: ContractNames): string;
+      getAddress(contractName: string): string;
     };
   }
 }
