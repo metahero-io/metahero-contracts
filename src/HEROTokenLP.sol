@@ -18,6 +18,7 @@ contract HEROTokenLP is HEROTokenEconomy {
    */
   constructor ()
     internal
+    HEROTokenEconomy()
   {
     //
   }
@@ -57,10 +58,12 @@ contract HEROTokenLP is HEROTokenEconomy {
     internal
     override
   {
-    balances[address(this)] = balances[address(this)].add(amount);
-    summary.totalLP = summary.totalLP.add(amount);
+    if (amount != 0) {
+      balances[address(this)] = balances[address(this)].add(amount);
+      summary.totalLP = summary.totalLP.add(amount);
 
-    swapAndLiquify(amount);
+      swapAndLiquify(amount);
+    }
   }
 
   // private functions
@@ -122,8 +125,8 @@ contract HEROTokenLP is HEROTokenEconomy {
     swapRouter.addLiquidityETH{value : ethAmount}(
       address(this),
       tokenAmount,
-      0, // slippage is unavoidable
-      0, // slippage is unavoidable
+      0,
+      0,
       address(this),
       block.timestamp // solhint-disable-line not-rely-on-time
     );

@@ -1,7 +1,7 @@
-import { constants } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { NetworkChainIds } from '../extensions';
+import { ContractNames } from '../extensions';
 
+// settings
 const LP_FEE = {
   sender: 4,
   recipient: 4,
@@ -10,40 +10,28 @@ const REWARDS_FEE = {
   sender: 1,
   recipient: 1,
 };
+const PRESALE = true;
+const TOTAL_SUPPLY = 0; // use default
 
 const func: DeployFunction = async (hre) => {
   const {
-    network: {
-      config: { chainId },
-    },
     deployments: { get, read, execute, log },
     getNamedAccounts,
+    knownContracts,
   } = hre;
   const { from } = await getNamedAccounts();
 
-  if (await read('HEROToken', 'initialized')) {
-    log('HEROToken already initialized');
+  if (await read(ContractNames.HEROToken, 'initialized')) {
+    log(`${ContractNames.HEROToken} already initialized`);
   } else {
-    const { address: whitelist } = await get('HEROPresale');
+    const { address: whitelist } = await get(ContractNames.HEROPresale);
 
     const excluded: string[] = [
       whitelist, //
     ];
 
-    let swapRouter = constants.AddressZero;
-
-    switch (chainId) {
-      case NetworkChainIds.Bsc:
-        swapRouter = '0x05ff2b0db69458a0750badebc4f9e13add608c7f';
-        break;
-
-      case NetworkChainIds.BscTest:
-        swapRouter = '0xD99D1c33F9fC3444f8101754aBC46c52416550D1';
-        break;
-    }
-
     await execute(
-      'HEROToken',
+      ContractNames.HEROToken,
       {
         from,
         log: true,
@@ -51,17 +39,17 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       LP_FEE,
       REWARDS_FEE,
-      0, // use default totalSupply
+      PRESALE,
+      TOTAL_SUPPLY,
       excluded,
-      swapRouter,
+      knownContracts.getAddress(ContractNames.SwapRouter),
     );
   }
 };
 
-func.id = 'initializeHEROToken';
 func.tags = [
   'initialize', //
-  'HEROToken',
+  ContractNames.HEROToken,
 ];
 func.dependencies = [
   'deploy', //

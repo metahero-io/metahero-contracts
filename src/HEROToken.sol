@@ -21,10 +21,11 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
    */
   constructor ()
     public
-    Initializable()
     ERC20Metadata(
       Metadata(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS)
     )
+    Initializable()
+    HEROTokenLP()
   {
     //
   }
@@ -34,6 +35,7 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
   function initialize(
     Fees calldata lpFees,
     Fees calldata rewardsFees,
+    bool presale,
     uint256 totalSupply_,
     address[] calldata excluded_,
     address swapRouter_
@@ -44,6 +46,7 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
     _initializeEconomy(
       lpFees,
       rewardsFees,
+      presale,
       totalSupply_,
       excluded_
     );

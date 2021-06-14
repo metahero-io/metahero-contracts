@@ -47,7 +47,9 @@ contract HEROPresale is Controlled, Initializable {
     public
     Controlled()
     Initializable()
-  {}
+  {
+    //
+  }
 
   // external functions (payable)
 

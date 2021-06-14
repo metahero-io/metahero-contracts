@@ -1,3 +1,9 @@
+export enum ContractNames {
+  HEROPresale = 'HEROPresale',
+  HEROToken = 'HEROToken',
+  SwapRouter = 'SwapRouter',
+}
+
 export enum NetworkNames {
   Bsc = 'bsc',
   BscTest = 'bscTest',

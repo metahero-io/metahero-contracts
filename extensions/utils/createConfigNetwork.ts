@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import { NetworkNames, NETWORK_CONFIGS } from '../constants';
 import { getNetworkEnvPrefix } from './getNetworkEnvPrefix';
+import { getNetworkProviderUrl } from './getNetworkProviderUrl';
 
 export function createConfigNetwork(
   networkName: NetworkNames,
@@ -8,13 +9,11 @@ export function createConfigNetwork(
   let result: HardhatUserConfig['networks'] = null;
 
   if (NETWORK_CONFIGS[networkName]) {
-    const { chainId, defaultGas, defaultGasPrice, defaultProviderUrl } =
+    const { chainId, defaultGas, defaultGasPrice } =
       NETWORK_CONFIGS[networkName];
 
+    const url = getNetworkProviderUrl(networkName);
     const envPrefix = getNetworkEnvPrefix(networkName);
-
-    const url =
-      process.env[`${envPrefix}_PROVIDER_ENDPOINT`] || defaultProviderUrl;
 
     if (url) {
       let gas = parseInt(process.env[`${envPrefix}_PROVIDER_GAS`], 10);

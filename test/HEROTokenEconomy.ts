@@ -47,6 +47,7 @@ describe('HEROTokenEconomy', () => {
       await token.initialize(
         LP_FEE, //
         REWARDS_FEE,
+        false,
         TOTAL_SUPPLY,
         excludedAddresses,
       );

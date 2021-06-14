@@ -3,15 +3,14 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "./components/erc20/ERC20.sol";
-import "./components/Lockable.sol";
-import "./components/Lockable.sol";
+import "./components/Controlled.sol";
 import "./libs/MathLib.sol";
 
 
 /**
  * @title HERO token economy module
  */
-contract HEROTokenEconomy is ERC20, Lockable {
+contract HEROTokenEconomy is ERC20, Controlled {
   using MathLib for uint256;
 
   struct Fees {
@@ -22,6 +21,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
   struct Settings {
     Fees lpFees;
     Fees rewardsFees;
+    bool presale;
   }
 
   struct Summary {
@@ -44,6 +44,8 @@ contract HEROTokenEconomy is ERC20, Lockable {
 
   // events
 
+  event PresaleFinished();
+
   event Excluded(
     address indexed account
   );
@@ -53,11 +55,35 @@ contract HEROTokenEconomy is ERC20, Lockable {
    */
   constructor ()
     internal
+    Controlled()
   {
     //
   }
 
   // external functions
+
+  function finishPresale()
+    external
+    onlyController
+  {
+    require(
+      settings.presale,
+      "HEROTokenEconomy: presale already finished"
+    );
+
+    settings.presale = false;
+
+    emit PresaleFinished();
+  }
+
+  function exclude(
+    address account
+  )
+    external
+    onlyController
+  {
+    _exclude(account);
+  }
 
   function transfer(
     address recipient,
@@ -80,14 +106,11 @@ contract HEROTokenEconomy is ERC20, Lockable {
     uint256 amount
   )
     external
-    returns (bool)
   {
     _burn(
       msg.sender,
       amount
     );
-
-    return true;
   }
 
   function approve(
@@ -191,6 +214,7 @@ contract HEROTokenEconomy is ERC20, Lockable {
   function _initializeEconomy(
     Fees memory lpFees,
     Fees memory rewardsFees,
+    bool presale,
     uint256 totalSupply_,
     address[] calldata excluded_
   )
@@ -198,7 +222,8 @@ contract HEROTokenEconomy is ERC20, Lockable {
   {
     settings = Settings(
       lpFees,
-      rewardsFees
+      rewardsFees,
+      presale
     );
 
     _mint(
@@ -275,7 +300,6 @@ contract HEROTokenEconomy is ERC20, Lockable {
     uint256 amount
   )
     internal
-    lock
   {
     require(
       account != address(0),
@@ -306,7 +330,6 @@ contract HEROTokenEconomy is ERC20, Lockable {
     uint256 amount
   )
     internal
-    lock
   {
     require(
       account != address(0),
@@ -346,7 +369,6 @@ contract HEROTokenEconomy is ERC20, Lockable {
     uint256 amount
   )
     internal
-    lock
   {
     require(
       sender != address(0),
@@ -366,6 +388,11 @@ contract HEROTokenEconomy is ERC20, Lockable {
     require(
       amount != 0,
       "HEROTokenEconomy: invalid amount"
+    );
+
+    require(
+      excluded[sender] || !settings.presale,
+      "HEROTokenEconomy: locked for presale"
     );
 
     if (
@@ -572,6 +599,25 @@ contract HEROTokenEconomy is ERC20, Lockable {
   }
 
   // private functions (views)
+
+  function _calcRewards(
+    address account
+  )
+    private
+    view
+    returns (uint256 result)
+  {
+    if (
+      !excluded[account] &&
+      summary.totalRewards != 0
+    ) {
+      result = summary.totalRewards
+        .mul(balances[account])
+        .div(summary.totalHolding);
+    }
+
+    return result;
+  }
 
   function _calcTransferSenderFees(
     uint256 amount

@@ -52,6 +52,7 @@ describe('HEROPresale', () => {
       await token.initialize(
         fee, //
         fee,
+        false,
         0,
         [
           whitelist.address, //

@@ -8,13 +8,14 @@ import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 import { HardhatUserConfig } from 'hardhat/config';
 import {
-  createConfigNetworks,
-  NETWORK_CONFIGS,
-  NetworkNames,
+  ContractNames,
   NetworkChainIds,
+  NetworkNames,
+  createConfigNetworks,
+  getNetworkProviderUrl,
 } from './extensions';
 
-const { HARDHAT_MNEMONIC, HARDHAT_FORKING_URL } = process.env;
+const { HARDHAT_MNEMONIC } = process.env;
 
 const config: HardhatUserConfig = {
   namedAccounts: {
@@ -23,9 +24,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url:
-          HARDHAT_FORKING_URL ||
-          NETWORK_CONFIGS[NetworkNames.Bsc].defaultProviderUrl,
+        url: getNetworkProviderUrl(NetworkNames.Bsc),
       },
       accounts: {
         mnemonic:
@@ -67,6 +66,14 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: null,
+  },
+  knownContractsAddresses: {
+    [NetworkChainIds.Bsc]: {
+      [ContractNames.SwapRouter]: '0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F',
+    },
+    [NetworkChainIds.BscTest]: {
+      [ContractNames.SwapRouter]: '0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3',
+    },
   },
 };
 
