@@ -1,6 +1,7 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ContractNames } from '../extensions';
 
+// settings
 const LP_FEE = {
   sender: 4,
   recipient: 4,
@@ -9,6 +10,8 @@ const REWARDS_FEE = {
   sender: 1,
   recipient: 1,
 };
+const PRESALE = true;
+const TOTAL_SUPPLY = 0; // use default
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -18,17 +21,17 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  if (await read('HEROToken', 'initialized')) {
-    log('HEROToken already initialized');
+  if (await read(ContractNames.HEROToken, 'initialized')) {
+    log(`${ContractNames.HEROToken} already initialized`);
   } else {
-    const { address: whitelist } = await get('HEROPresale');
+    const { address: whitelist } = await get(ContractNames.HEROPresale);
 
     const excluded: string[] = [
       whitelist, //
     ];
 
     await execute(
-      'HEROToken',
+      ContractNames.HEROToken,
       {
         from,
         log: true,
@@ -36,17 +39,17 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       LP_FEE,
       REWARDS_FEE,
-      0, // use default totalSupply
+      PRESALE,
+      TOTAL_SUPPLY,
       excluded,
       knownContracts.getAddress(ContractNames.SwapRouter),
     );
   }
 };
 
-func.id = 'initializeHEROToken';
 func.tags = [
   'initialize', //
-  'HEROToken',
+  ContractNames.HEROToken,
 ];
 func.dependencies = [
   'deploy', //

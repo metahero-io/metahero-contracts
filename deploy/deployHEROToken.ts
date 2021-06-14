@@ -1,4 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types';
+import { ContractNames } from '../extensions';
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -7,16 +8,15 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy('HEROToken', {
+  await deploy(ContractNames.HEROToken, {
     from,
     log: true,
   });
 };
 
-func.id = 'deployHEROToken';
 func.tags = [
   'deploy', //
-  'HEROToken',
+  ContractNames.HEROToken,
 ];
 
 module.exports = func;

@@ -1,9 +1,13 @@
 import { BigNumber } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
+import { ContractNames } from '../extensions';
 
-const ACCOUNTS: string[] = [];
+// settings
 const UNIT_PRICE = BigNumber.from(1000);
 const UNIT_TOKENS = BigNumber.from(100);
+const DEADLINE_IN = 0; // use default
+
+const ACCOUNTS: string[] = [];
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -13,11 +17,11 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  if (await read('HEROPresale', 'initialized')) {
-    log('HEROPresale already initialized');
+  if (await read(ContractNames.HEROPresale, 'initialized')) {
+    log(`${ContractNames.HEROPresale} already initialized`);
   } else {
-    const { address: whitelist } = await get('HEROPresale');
-    const { address: token } = await get('HEROToken');
+    const { address: whitelist } = await get(ContractNames.HEROPresale);
+    const { address: token } = await get(ContractNames.HEROToken);
 
     const signers = await getSigners();
 
@@ -27,7 +31,7 @@ const func: DeployFunction = async (hre) => {
       const pendingTokens = UNIT_TOKENS.mul(ACCOUNTS.length);
 
       await execute(
-        'HEROToken',
+        ContractNames.HEROToken,
         {
           from,
           log: true,
@@ -39,14 +43,14 @@ const func: DeployFunction = async (hre) => {
     }
 
     await execute(
-      'HEROPresale',
+      ContractNames.HEROPresale,
       {
         from,
         log: true,
       },
       'initialize',
       token,
-      0, // use default deadline in
+      DEADLINE_IN,
       UNIT_PRICE,
       UNIT_TOKENS,
       ACCOUNTS,
@@ -54,14 +58,13 @@ const func: DeployFunction = async (hre) => {
   }
 };
 
-func.id = 'initializeHEROPresale';
 func.tags = [
   'initialize', //
-  'HEROPresale',
+  ContractNames.HEROPresale,
 ];
 func.dependencies = [
   'deploy', //
-  'HEROToken',
+  ContractNames.HEROToken,
 ];
 
 module.exports = func;

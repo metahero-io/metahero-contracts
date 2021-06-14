@@ -24,6 +24,7 @@ contract HEROTokenEconomyMock is HEROTokenEconomy {
   function initialize(
     Fees calldata lpFees,
     Fees calldata rewardsFees,
+    bool presale,
     uint256 totalSupply_,
     address[] calldata excluded_
   )
@@ -32,6 +33,7 @@ contract HEROTokenEconomyMock is HEROTokenEconomy {
     _initializeEconomy(
       lpFees,
       rewardsFees,
+      presale,
       totalSupply_,
       excluded_
     );
