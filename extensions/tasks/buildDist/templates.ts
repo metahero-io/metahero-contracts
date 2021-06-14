@@ -1,28 +1,33 @@
 import { ContractsMD } from './interfaces';
 import { getScanUrl } from './utils';
 
-const contractsJs = (data: any) => `/* eslint-disable */
+function contractsJs(data: unknown): string {
+  return `/* eslint-disable */
 
 module.exports = ${JSON.stringify(data, null, 2)};
 `;
+}
 
-const constantsJs = (data: string[]) => `/* eslint-disable */
+function constantsJs(data: string[]): string {
+  return `/* eslint-disable */
 
 module.exports = {
-  ContractNames: {${data.map(name => `\n    ${name}: '${name}',`).join('')}
+  ContractNames: {${data.map((name) => `\n    ${name}: '${name}',`).join('')}
   },
 };
 `;
+}
 
-const constantsDts = (
-  data: string[],
-) => `export declare enum ContractNames {${data
-  .map(name => `\n  ${name} = '${name}',`)
-  .join('')}
+function constantsDts(data: string[]): string {
+  return `export declare enum ContractNames {${data
+    .map((name) => `\n  ${name} = '${name}',`)
+    .join('')}
 }
 `;
+}
 
-const deploymentsMd = (data: ContractsMD) => `# Deployments
+function deploymentsMd(data: ContractsMD): string {
+  return `# Deployments
 
 | contract name | network | contract address | transaction hash |  
 | --- | --- | --- |  --- | 
@@ -56,9 +61,10 @@ ${Object.entries(data)
 
     return result;
   })
-  .filter(value => !!value)
+  .filter((value) => !!value)
   .join('')}
 `;
+}
 
 export default {
   contractsJs,
