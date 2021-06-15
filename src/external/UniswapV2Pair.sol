@@ -199,7 +199,6 @@ interface UniswapV2Pair {
     pure
     returns (uint8);
 
-
   function PERMIT_TYPEHASH()
     external
     pure

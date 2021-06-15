@@ -27,7 +27,6 @@ contract HEROTokenEconomy is ERC20, Controlled {
   struct Summary {
     uint256 totalExcluded;
     uint256 totalHolding;
-    uint256 totalLP;
     uint256 totalRewards;
     uint256 totalSupply;
   }
@@ -233,12 +232,12 @@ contract HEROTokenEconomy is ERC20, Controlled {
       : totalSupply_
     );
 
-    {
-      uint256 excludedLen = excluded_.length;
+    _exclude(address(this));
 
-      for (uint256 index = 0; index < excludedLen; index += 1) {
-        _exclude(excluded_[index]);
-      }
+    uint256 excludedLen = excluded_.length;
+
+    for (uint256 index = 0; index < excludedLen; index += 1) {
+      _exclude(excluded_[index]);
     }
   }
 
@@ -490,7 +489,10 @@ contract HEROTokenEconomy is ERC20, Controlled {
 
     summary.totalHolding = summary.totalHolding.sub(totalFee);
 
-    _increaseTotalLP(lpFee);
+    if (lpFee != 0) {
+      _increaseTotalLP(lpFee);
+    }
+
     _updateTotalRewards();
   }
 
@@ -519,7 +521,10 @@ contract HEROTokenEconomy is ERC20, Controlled {
     summary.totalExcluded = summary.totalExcluded.sub(amount);
     summary.totalHolding = summary.totalHolding.add(recipientAmount);
 
-    _increaseTotalLP(lpFee);
+    if (lpFee != 0) {
+      _increaseTotalLP(lpFee);
+    }
+
     _updateTotalRewards();
   }
 
@@ -558,7 +563,10 @@ contract HEROTokenEconomy is ERC20, Controlled {
     summary.totalExcluded = summary.totalExcluded.add(amount);
     summary.totalHolding = summary.totalHolding.sub(senderAmount);
 
-    _increaseTotalLP(lpFee);
+    if (lpFee != 0) {
+      _increaseTotalLP(lpFee);
+    }
+
     _updateTotalRewards();
   }
 
@@ -584,7 +592,14 @@ contract HEROTokenEconomy is ERC20, Controlled {
     internal
     virtual
   {
-    summary.totalLP = summary.totalLP.add(amount);
+    balances[address(this)] = balances[address(this)].add(amount);
+    summary.totalExcluded = summary.totalExcluded.add(amount);
+
+    emit Transfer(
+      address(0),
+      address(this),
+      amount
+    );
   }
 
   // private functions
@@ -594,8 +609,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
   {
     summary.totalRewards = summary.totalSupply
     .sub(summary.totalExcluded)
-    .sub(summary.totalHolding)
-    .sub(summary.totalLP);
+    .sub(summary.totalHolding);
   }
 
   // private functions (views)
