@@ -10,7 +10,6 @@ const REWARDS_FEE = {
   sender: 1,
   recipient: 1,
 };
-const PRESALE = true;
 const TOTAL_SUPPLY = 0; // use default
 
 const func: DeployFunction = async (hre) => {
@@ -39,7 +38,6 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       LP_FEE,
       REWARDS_FEE,
-      PRESALE,
       TOTAL_SUPPLY,
       excluded,
       knownContracts.getAddress(ContractNames.SwapRouter),
