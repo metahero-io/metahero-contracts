@@ -13,7 +13,9 @@ contract HEROTokenLP is HEROTokenEconomy {
   UniswapV2Router02 public swapRouter;
   address public swapPair;
 
-  address private swapWETH;
+  address private wETH;
+  bool private swapLocked;
+  uint256 private pendingLPAmount;
 
   /**
    * @dev Internal constructor
@@ -42,15 +44,17 @@ contract HEROTokenLP is HEROTokenEconomy {
     internal
   {
     swapRouter = UniswapV2Router02(swapRouter_);
-    swapWETH = swapRouter.WETH();
+
+    wETH = swapRouter.WETH();
+
     swapPair = UniswapV2Factory(swapRouter.factory())
     .createPair(
       address(this),
-      swapWETH
+      wETH
     );
 
-    _exclude(swapRouter_);
-    _exclude(swapPair);
+    _excludeAccount(swapRouter_, true);
+    _excludeAccount(swapPair, true);
   }
 
   function _increaseTotalLP(
@@ -61,17 +65,25 @@ contract HEROTokenLP is HEROTokenEconomy {
   {
     HEROTokenEconomy._increaseTotalLP(amount);
 
-    uint256 half = amount.div(2);
-    uint256 otherHalf = amount.sub(half);
+    pendingLPAmount = pendingLPAmount.add(amount);
 
-    _swapTokensForEth(half);
+    if (!swapLocked) {
+      swapLocked = true;
 
-    uint256 ethAmount = address(this).balance;
+      uint256 half = pendingLPAmount.div(2);
+      uint256 otherHalf = pendingLPAmount.sub(half);
 
-    _addLiquidity(
-      otherHalf,
-      ethAmount
-    );
+      _swapTokensForEth(half);
+
+      uint256 ethAmount = address(this).balance;
+
+      _addLiquidity(
+        otherHalf,
+        ethAmount
+      );
+
+      swapLocked = false;
+    }
   }
 
   // private functions
@@ -91,7 +103,7 @@ contract HEROTokenLP is HEROTokenEconomy {
       address[] memory swapPath = new address[](2);
 
       swapPath[0] = address(this);
-      swapPath[1] = swapWETH;
+      swapPath[1] = wETH;
 
       swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
         tokenAmount,

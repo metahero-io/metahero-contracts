@@ -14,7 +14,7 @@ contract HEROPresale is Controlled, Initializable {
   using MathLib for uint256;
 
   // defaults
-  uint256 private constant DEFAULT_DEADLINE_IN = 7 * 24 * 60 * 60; // 7 days
+  uint256 private constant DEFAULT_DEADLINE_IN = 14 * 24 * 60 * 60; // 14 days
 
   HEROToken public token;
 
