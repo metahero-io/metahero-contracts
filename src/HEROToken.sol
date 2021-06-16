@@ -2,7 +2,7 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "./components/erc20/ERC20Metadata.sol";
+import "./components/ERC20Metadata.sol";
 import "./components/Initializable.sol";
 import "./HEROTokenLP.sol";
 

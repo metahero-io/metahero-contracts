@@ -2,15 +2,15 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "./components/erc20/ERC20.sol";
 import "./components/Controlled.sol";
+import "./components/ERC20.sol";
 import "./libs/MathLib.sol";
 
 
 /**
  * @title HERO token economy module
  */
-contract HEROTokenEconomy is ERC20, Controlled {
+contract HEROTokenEconomy is Controlled, ERC20 {
   using MathLib for uint256;
 
   struct Fees {

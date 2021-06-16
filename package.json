@@ -25,7 +25,7 @@
     "deploy:bscTest": "hardhat deploy --network bscTest",
     "format": "prettier --write \"{deploy,extensions,test}/**/*.ts\"",
     "lint": "npm run lint:ts && npm run lint:sol",
-    "lint:sol": "solhint ./src/*.sol ./src/**/*.sol ./src/**/**/*.sol",
+    "lint:sol": "solhint ./src/*.sol ./src/**/*.sol",
     "lint:ts": "eslint \"{deploy,extensions,test}/**/*.ts\"",
     "lint:ts-fix": "npm run lint -- --fix",
     "start": "hardhat node",

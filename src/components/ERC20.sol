@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-abstract contract ERC20 {
+interface ERC20 {
   // events
 
   event Approval(
@@ -23,7 +23,6 @@ abstract contract ERC20 {
     uint256 value
   )
     external
-    virtual
     returns (bool);
 
   function transfer(
@@ -31,7 +30,6 @@ abstract contract ERC20 {
     uint256 value
   )
     external
-    virtual
     returns (bool);
 
   function transferFrom(
@@ -40,7 +38,6 @@ abstract contract ERC20 {
     uint256 value
   )
     external
-    virtual
     returns (bool);
 
   // external functions (views)
@@ -48,7 +45,6 @@ abstract contract ERC20 {
   function totalSupply()
     external
     view
-    virtual
     returns (uint256);
 
   function balanceOf(
@@ -56,7 +52,6 @@ abstract contract ERC20 {
   )
     external
     view
-    virtual
     returns (uint256);
 
   function allowance(
@@ -65,6 +60,5 @@ abstract contract ERC20 {
   )
     external
     view
-    virtual
     returns (uint256);
 }
