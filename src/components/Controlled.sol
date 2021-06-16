@@ -12,7 +12,7 @@ contract Controlled {
   modifier onlyController() {
     require(
       msg.sender == controller,
-      "Controlled: msg.sender is not the controller"
+      "Controlled#1"
     );
 
     _;
@@ -38,7 +38,7 @@ contract Controlled {
     require(
       controller_ != address(0) &&
       controller_ != controller,
-      "Controlled: invalid controller"
+      "Controlled#2"
     );
 
     controller = controller_;

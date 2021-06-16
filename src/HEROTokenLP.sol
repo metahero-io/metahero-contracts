@@ -13,10 +13,10 @@ import "./HEROTokenEconomy.sol";
 contract HEROTokenLP is HEROTokenEconomy {
   UniswapV2Factory public swapFactory;
   UniswapV2Router02 public swapRouter;
-  UniswapV2Pair public ownPair;
-  UniswapV2Pair public stableCoinPair;
+  UniswapV2Pair public swapPair;
+  address public stableCoin;
 
-  address private wETH;
+  address private wrappedNative;
   bool private swapLocked;
   uint256 private pendingLPAmount;
 
@@ -45,6 +45,37 @@ contract HEROTokenLP is HEROTokenEconomy {
     external
   {
     uint256 totalLP = accountBalances[address(this)];
+
+    require(
+      totalLP != 0,
+      "HEROTokenLP: #1"
+    );
+
+    uint256[] memory amounts;
+    address[] memory path = new address[](2);
+
+    path[0] = address(this);
+    path[1] = wrappedNative;
+
+    amounts = swapRouter.getAmountsOut(totalLP, path);
+
+    uint256 totalValue = amounts[1];
+
+    require(
+      totalValue != 0,
+      "HEROTokenLP: #2"
+    );
+
+    path[0] = wrappedNative;
+    path[1] = stableCoin;
+
+    amounts = swapRouter.getAmountsOut(totalValue, path);
+
+    totalValue = amounts[1];
+
+    require(
+      totalValue != 0
+    );
   }
 
   // internal functions
@@ -57,31 +88,28 @@ contract HEROTokenLP is HEROTokenEconomy {
   {
     require(
       swapRouter_ != address(0),
-      "HEROTokenLP: swap router is the zero address"
+      "HEROTokenLP: #3"
     );
 
     require(
       stableCoin_ != address(0),
-      "HEROTokenLP: stable coin is the zero address"
+      "HEROTokenLP: #4"
     );
 
     swapRouter = UniswapV2Router02(swapRouter_);
     swapFactory = UniswapV2Factory(swapRouter.factory());
 
-    wETH = swapRouter.WETH();
+    wrappedNative = swapRouter.WETH();
 
-    ownPair = _getOrCreateSwapPair(
+    swapPair = UniswapV2Pair(swapFactory.createPair(
       address(this),
-      wETH
-    );
+      wrappedNative
+    ));
 
-    stableCoinPair = _getOrCreateSwapPair(
-      stableCoin_,
-      wETH
-    );
+    stableCoin = stableCoin_;
 
     _excludeAccount(address(swapRouter), true);
-    _excludeAccount(address(ownPair), true);
+    _excludeAccount(address(swapPair), true);
   }
 
   function _increaseTotalLP(
@@ -116,27 +144,6 @@ contract HEROTokenLP is HEROTokenEconomy {
 
   // private functions
 
-  function _getOrCreateSwapPair(
-    address tokenA,
-    address tokenB
-  )
-    private
-    returns (UniswapV2Pair)
-  {
-    (
-    address token0,
-    address token1
-    ) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
-
-    address pair = swapFactory.getPair(token0, token1);
-
-    if (pair == address(0)) {
-      pair = swapFactory.createPair(token0, token1);
-    }
-
-    return UniswapV2Pair(pair);
-  }
-
   function _swapTokensForEth(
     uint256 tokenAmount
   )
@@ -149,15 +156,15 @@ contract HEROTokenLP is HEROTokenEconomy {
         tokenAmount
       );
 
-      address[] memory swapPath = new address[](2);
+      address[] memory path = new address[](2);
 
-      swapPath[0] = address(this);
-      swapPath[1] = wETH;
+      path[0] = address(this);
+      path[1] = wrappedNative;
 
       swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
         tokenAmount,
         0,
-        swapPath,
+          path,
         address(this),
         block.timestamp // solhint-disable-line not-rely-on-time
       );

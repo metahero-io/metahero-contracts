@@ -108,7 +108,7 @@ describe('HEROPresale', () => {
             UNIT_TOKENS,
             accounts.map(({ address }) => address),
           ),
-        ).to.be.revertedWith('Initializable: already initialized');
+        ).to.be.revertedWith('Initializable#1');
       });
     });
   });
@@ -184,18 +184,18 @@ describe('HEROPresale', () => {
         it('expect to revert when sender is not on the whitelist', async () => {
           await expect(
             whitelist.connect(external).buyUnit(),
-          ).to.be.revertedWith('HEROPresale: msg.sender not on the whitelist');
+          ).to.be.revertedWith('HEROPresale#2');
         });
 
         it('expect to revert when sender is not on the whitelist', async () => {
           await expect(
             whitelist.connect(external).buyUnit(),
-          ).to.be.revertedWith('HEROPresale: msg.sender not on the whitelist');
+          ).to.be.revertedWith('HEROPresale#2');
         });
 
         it('expect to revert on invalid msg.value', async () => {
           await expect(whitelist.connect(account).buyUnit()).to.be.revertedWith(
-            'HEROPresale: invalid msg.value',
+            'HEROPresale#3',
           );
         });
 
@@ -218,9 +218,7 @@ describe('HEROPresale', () => {
 
       context('destroy()', () => {
         it('expect to revert before deadline', async () => {
-          await expect(whitelist.destroy()).to.be.revertedWith(
-            'HEROPresale: can not destroy before deadline',
-          );
+          await expect(whitelist.destroy()).to.be.revertedWith('HEROPresale#7');
         });
       });
     });
@@ -235,7 +233,7 @@ describe('HEROPresale', () => {
           const claimer = accounts.pop();
 
           await expect(whitelist.connect(claimer).buyUnit()).to.be.revertedWith(
-            'HEROPresale: can not buy after deadline',
+            'HEROPresale#1',
           );
         });
       });

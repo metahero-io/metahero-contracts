@@ -31,7 +31,7 @@ describe('HEROTokenLP (using mock)', () => {
   let holders: Signer[];
   let token: HEROTokenLPMock;
   let wETH: ERC20;
-  let ownPair: UniswapV2Pair;
+  let swapPair: UniswapV2Pair;
   let swapRouter: UniswapV2Router02;
 
   before(async () => {
@@ -61,8 +61,8 @@ describe('HEROTokenLP (using mock)', () => {
       deployer,
     );
 
-    ownPair = UniswapV2PairFactory.connect(
-      await token.ownPair(), //
+    swapPair = UniswapV2PairFactory.connect(
+      await token.swapPair(), //
       deployer,
     );
 
@@ -100,8 +100,8 @@ describe('HEROTokenLP (using mock)', () => {
 
       swapTokenAmount = swapTokenAmount.add(lpFee);
 
-      expect(await token.balanceOf(ownPair.address)).to.equal(swapTokenAmount);
-      expect(await wETH.balanceOf(ownPair.address)).to.equal(
+      expect(await token.balanceOf(swapPair.address)).to.equal(swapTokenAmount);
+      expect(await wETH.balanceOf(swapPair.address)).to.equal(
         swapEthAmount.sub(await getBalance(token.address)),
       );
     });
