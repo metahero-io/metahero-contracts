@@ -50,7 +50,6 @@ describe('HEROTokenLP (using mock)', () => {
     await token.initialize(
       LP_FEE, //
       REWARDS_FEE,
-      false,
       TOTAL_SUPPLY,
       [],
       swapRouter.address,
@@ -65,6 +64,8 @@ describe('HEROTokenLP (using mock)', () => {
       await token.swapPair(), //
       deployer,
     );
+
+    await token.finishPresale();
   });
 
   context('_increaseTotalLP()', () => {

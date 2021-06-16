@@ -30,7 +30,7 @@ describe('HEROTokenEconomy (using mock)', () => {
   let holders: Signer[];
   let token: HEROTokenEconomyMock;
 
-  const createBeforeHook = () => {
+  const createBeforeHook = (finishPresale = true) => {
     before(async () => {
       const signers = await getSigners();
 
@@ -47,10 +47,13 @@ describe('HEROTokenEconomy (using mock)', () => {
       await token.initialize(
         LP_FEE, //
         REWARDS_FEE,
-        false,
         TOTAL_SUPPLY,
         excludedAddresses,
       );
+
+      if (finishPresale) {
+        await token.finishPresale();
+      }
     });
   };
   context('transfer()', () => {
