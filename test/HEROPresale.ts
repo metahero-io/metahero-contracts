@@ -18,7 +18,6 @@ const { getSigners } = ethers;
 describe('HEROPresale', () => {
   const UNIT_PRICE = BigNumber.from(1000);
   const UNIT_TOKENS = BigNumber.from(10);
-  const DEADLINE_BASE = Math.floor(Date.now() / 1000) + 1000;
   const DEADLINE_IN = 60; // 60 sec
 
   let token: HEROTokenEconomyMock;
@@ -27,6 +26,7 @@ describe('HEROPresale', () => {
   let external: Signer;
   let accounts: Signer[];
   let unclaimedTokens: BigNumber;
+  let deadline: number;
 
   const createBeforeHook = (initialize = true) => {
     before(async () => {
@@ -63,7 +63,7 @@ describe('HEROPresale', () => {
       await token.transfer(whitelist.address, unclaimedTokens);
 
       if (initialize) {
-        await setNextBlockTimestamp(DEADLINE_BASE);
+        deadline = (await setNextBlockTimestamp()) + DEADLINE_IN;
 
         await whitelist.initialize(
           token.address,
@@ -121,7 +121,7 @@ describe('HEROPresale', () => {
       it('expect to return correct deadline', async () => {
         const output = await whitelist.deadline();
 
-        expect(output).to.equal(DEADLINE_BASE + DEADLINE_IN);
+        expect(output).to.equal(deadline);
       });
     });
 
@@ -228,7 +228,7 @@ describe('HEROPresale', () => {
 
     context('# after deadline', () => {
       before(async () => {
-        await setNextBlockTimestamp(DEADLINE_BASE + DEADLINE_IN);
+        await setNextBlockTimestamp(deadline + DEADLINE_IN);
       });
 
       context('claimTokens()', () => {
@@ -248,8 +248,8 @@ describe('HEROPresale', () => {
           const whitelistBalance = await getBalance(whitelist);
           const whitelistTokens = await token.balanceOf(whitelist.address);
 
-          const tx = whitelist.destroy();
-          const txCost = await calcTxCost(await tx);
+          const tx = await whitelist.destroy();
+          const txCost = await calcTxCost(tx);
 
           const summaryAfter = await token.summary();
 

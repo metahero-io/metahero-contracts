@@ -13,6 +13,8 @@ contract HEROTokenLP is HEROTokenEconomy {
   UniswapV2Router02 public swapRouter;
   address public swapPair;
 
+  address private swapWETH;
+
   /**
    * @dev Internal constructor
    */
@@ -40,15 +42,14 @@ contract HEROTokenLP is HEROTokenEconomy {
     internal
   {
     swapRouter = UniswapV2Router02(swapRouter_);
-
+    swapWETH = swapRouter.WETH();
     swapPair = UniswapV2Factory(swapRouter.factory())
     .createPair(
       address(this),
-        swapRouter.WETH()
+      swapWETH
     );
 
-    _exclude(address(this));
-    _exclude(address(swapRouter));
+    _exclude(swapRouter_);
     _exclude(swapPair);
   }
 
@@ -58,77 +59,71 @@ contract HEROTokenLP is HEROTokenEconomy {
     internal
     override
   {
-    if (amount != 0) {
-      balances[address(this)] = balances[address(this)].add(amount);
-      summary.totalLP = summary.totalLP.add(amount);
+    HEROTokenEconomy._increaseTotalLP(amount);
 
-      swapAndLiquify(amount);
-    }
+    uint256 half = amount.div(2);
+    uint256 otherHalf = amount.sub(half);
+
+    _swapTokensForEth(half);
+
+    uint256 ethAmount = address(this).balance;
+
+    _addLiquidity(
+      otherHalf,
+      ethAmount
+    );
   }
 
   // private functions
 
-  function swapAndLiquify(
-    uint256 amount
-  )
-    private
-  {
-    uint256 half = amount.div(2);
-    uint256 otherHalf = amount.sub(half);
-
-    uint256 initialBalance = address(this).balance;
-
-    swapTokensForEth(half);
-
-    uint256 newBalance = address(this).balance.sub(initialBalance);
-
-    addLiquidity(otherHalf, newBalance);
-  }
-
-  function swapTokensForEth(
+  function _swapTokensForEth(
     uint256 tokenAmount
   )
     private
   {
-    address[] memory path = new address[](2);
+    if (tokenAmount != 0) {
+      _approve(
+        address(this),
+        address(swapRouter),
+        tokenAmount
+      );
 
-    path[0] = address(this);
-    path[1] = swapRouter.WETH();
+      address[] memory swapPath = new address[](2);
 
-    _approve(
-      address(this),
-      address(swapRouter),
-      tokenAmount
-    );
+      swapPath[0] = address(this);
+      swapPath[1] = swapWETH;
 
-    swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
-      tokenAmount,
-      0,
-      path,
-      address(this),
-      block.timestamp // solhint-disable-line not-rely-on-time
-    );
+      swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+        tokenAmount,
+        0,
+        swapPath,
+        address(this),
+        block.timestamp // solhint-disable-line not-rely-on-time
+      );
+    }
   }
 
-  function addLiquidity(
+  function _addLiquidity(
     uint256 tokenAmount,
     uint256 ethAmount
   )
     private
   {
-    _approve(
-      address(this),
-      address(swapRouter),
-      tokenAmount
-    );
+    if (tokenAmount != 0 && ethAmount != 0) {
+      _approve(
+        address(this),
+        address(swapRouter),
+        tokenAmount
+      );
 
-    swapRouter.addLiquidityETH{value : ethAmount}(
-      address(this),
-      tokenAmount,
-      0,
-      0,
-      address(this),
-      block.timestamp // solhint-disable-line not-rely-on-time
-    );
+      swapRouter.addLiquidityETH{value : ethAmount}(
+        address(this),
+        tokenAmount,
+        0,
+        0,
+        address(this),
+        block.timestamp // solhint-disable-line not-rely-on-time
+      );
+    }
   }
 }
