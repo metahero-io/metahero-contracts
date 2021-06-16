@@ -2,12 +2,12 @@ import { BigNumber } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ContractNames } from '../extensions';
 
-// settings
 const UNIT_PRICE = BigNumber.from(1000);
 const UNIT_TOKENS = BigNumber.from(100);
-const DEADLINE_IN = 0; // use default
-
-const ACCOUNTS: string[] = [];
+const DEADLINE_IN = 0; // use default (14 days)
+const ACCOUNTS: string[] = [
+  //
+];
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -26,8 +26,11 @@ const func: DeployFunction = async (hre) => {
     const signers = await getSigners();
 
     if (signers.length > 1) {
+      // for local node only
       ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
+    }
 
+    if (ACCOUNTS.length) {
       const pendingTokens = UNIT_TOKENS.mul(ACCOUNTS.length);
 
       await execute(
