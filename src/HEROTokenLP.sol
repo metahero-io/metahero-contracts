@@ -2,6 +2,7 @@
 pragma solidity ^0.6.12;
 
 import "./external/UniswapV2Factory.sol";
+import "./external/UniswapV2Pair.sol";
 import "./external/UniswapV2Router02.sol";
 import "./HEROTokenEconomy.sol";
 
@@ -10,8 +11,10 @@ import "./HEROTokenEconomy.sol";
  * @title HERO token liquidity pool module
  */
 contract HEROTokenLP is HEROTokenEconomy {
+  UniswapV2Factory public swapFactory;
   UniswapV2Router02 public swapRouter;
-  address public swapPair;
+  UniswapV2Pair public ownPair;
+  UniswapV2Pair public stableCoinPair;
 
   address private wETH;
   bool private swapLocked;
@@ -36,25 +39,49 @@ contract HEROTokenLP is HEROTokenEconomy {
     //
   }
 
+  function burnLP(
+    uint256 amount
+  )
+    external
+  {
+    uint256 totalLP = accountBalances[address(this)];
+  }
+
   // internal functions
 
   function _initializeLP(
-    address swapRouter_
+    address swapRouter_,
+    address stableCoin_
   )
     internal
   {
+    require(
+      swapRouter_ != address(0),
+      "HEROTokenLP: swap router is the zero address"
+    );
+
+    require(
+      stableCoin_ != address(0),
+      "HEROTokenLP: stable coin is the zero address"
+    );
+
     swapRouter = UniswapV2Router02(swapRouter_);
+    swapFactory = UniswapV2Factory(swapRouter.factory());
 
     wETH = swapRouter.WETH();
 
-    swapPair = UniswapV2Factory(swapRouter.factory())
-    .createPair(
+    ownPair = _getOrCreateSwapPair(
       address(this),
       wETH
     );
 
-    _excludeAccount(swapRouter_, true);
-    _excludeAccount(swapPair, true);
+    stableCoinPair = _getOrCreateSwapPair(
+      stableCoin_,
+      wETH
+    );
+
+    _excludeAccount(address(swapRouter), true);
+    _excludeAccount(address(ownPair), true);
   }
 
   function _increaseTotalLP(
@@ -82,11 +109,33 @@ contract HEROTokenLP is HEROTokenEconomy {
         ethAmount
       );
 
+      pendingLPAmount = 0;
       swapLocked = false;
     }
   }
 
   // private functions
+
+  function _getOrCreateSwapPair(
+    address tokenA,
+    address tokenB
+  )
+    private
+    returns (UniswapV2Pair)
+  {
+    (
+    address token0,
+    address token1
+    ) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+
+    address pair = swapFactory.getPair(token0, token1);
+
+    if (pair == address(0)) {
+      pair = swapFactory.createPair(token0, token1);
+    }
+
+    return UniswapV2Pair(pair);
+  }
 
   function _swapTokensForEth(
     uint256 tokenAmount

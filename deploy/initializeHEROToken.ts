@@ -39,6 +39,7 @@ const func: DeployFunction = async (hre) => {
       TOTAL_SUPPLY,
       EXECUTE_ACCOUNTS,
       knownContracts.getAddress(ContractNames.SwapRouter),
+      knownContracts.getAddress(ContractNames.BUSDToken),
     );
 
     await execute(

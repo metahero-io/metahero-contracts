@@ -1,4 +1,5 @@
 export enum ContractNames {
+  BUSDToken = 'BUSDToken',
   HEROPresale = 'HEROPresale',
   HEROToken = 'HEROToken',
   SwapRouter = 'SwapRouter',

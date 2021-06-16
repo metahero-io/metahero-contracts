@@ -37,7 +37,8 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
     Fees calldata rewardsFees,
     uint256 totalSupply_,
     address[] calldata excluded_,
-    address swapRouter_
+    address swapRouter_,
+    address stableCoin_
   )
     external
     onlyInitializer
@@ -50,7 +51,8 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
     );
 
     _initializeLP(
-      swapRouter_
+      swapRouter_,
+      stableCoin_
     );
   }
 }

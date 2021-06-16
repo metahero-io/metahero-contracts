@@ -26,7 +26,8 @@ contract HEROTokenLPMock is HEROTokenLP {
     Fees calldata rewardsFees,
     uint256 totalSupply_,
     address[] calldata excluded_,
-    address swapRouter_
+    address swapRouter_,
+    address stableCoin_
   )
     external
   {
@@ -38,7 +39,8 @@ contract HEROTokenLPMock is HEROTokenLP {
     );
 
     _initializeLP(
-      swapRouter_
+      swapRouter_,
+      stableCoin_
     );
   }
 }

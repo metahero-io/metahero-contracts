@@ -31,7 +31,9 @@
     "start": "hardhat node",
     "verify:bsc": "hardhat verify-all --network bsc",
     "verify:bscTest": "hardhat verify-all --network bscTest",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "prerelease": "npm run build",
+    "release": "npm publish"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
