@@ -24,7 +24,6 @@ contract HEROTokenLPMock is HEROTokenLP {
   function initialize(
     Fees calldata lpFees,
     Fees calldata rewardsFees,
-    bool presale,
     uint256 totalSupply_,
     address[] calldata excluded_,
     address swapRouter_
@@ -34,7 +33,6 @@ contract HEROTokenLPMock is HEROTokenLP {
     _initializeEconomy(
       lpFees,
       rewardsFees,
-      presale,
       totalSupply_,
       excluded_
     );

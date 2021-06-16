@@ -21,7 +21,6 @@ contract HEROTokenEconomy is ERC20, Controlled {
   struct Settings {
     Fees lpFees;
     Fees rewardsFees;
-    bool presale;
   }
 
   struct Summary {
@@ -31,22 +30,29 @@ contract HEROTokenEconomy is ERC20, Controlled {
     uint256 totalSupply;
   }
 
+  struct ExcludedAccount {
+    bool exists;
+    bool excludeRecipientFromFee;
+  }
+
   // defaults
   uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 9; // 10,000,000,000.000000000
 
   Settings public settings;
   Summary public summary;
+  bool public presaleFinished;
 
-  mapping (address => uint256) internal balances;
-  mapping (address => mapping (address => uint256)) private allowances;
-  mapping (address => bool) private excluded;
+  mapping (address => uint256) internal accountBalances;
+  mapping (address => mapping (address => uint256)) private accountAllowances;
+  mapping (address => ExcludedAccount) private excludedAccounts;
 
   // events
 
   event PresaleFinished();
 
-  event Excluded(
-    address indexed account
+  event AccountExcluded(
+    address indexed account,
+    bool excludeRecipientFromFee
   );
 
   /**
@@ -66,22 +72,26 @@ contract HEROTokenEconomy is ERC20, Controlled {
     onlyController
   {
     require(
-      settings.presale,
+      !presaleFinished,
       "HEROTokenEconomy: presale already finished"
     );
 
-    settings.presale = false;
+    presaleFinished = true;
 
     emit PresaleFinished();
   }
 
-  function exclude(
-    address account
+  function excludeAccount(
+    address account,
+    bool excludeRecipientFromFee
   )
     external
     onlyController
   {
-    _exclude(account);
+    _excludeAccount(
+      account,
+      excludeRecipientFromFee
+    );
   }
 
   function transfer(
@@ -144,17 +154,17 @@ contract HEROTokenEconomy is ERC20, Controlled {
       amount
     );
 
-    uint256 currentAllowance = allowances[sender][msg.sender];
+    uint256 allowance = accountAllowances[sender][msg.sender];
 
     require(
-      currentAllowance >= amount,
+      allowance >= amount,
       "HEROTokenEconomy: amount exceeds allowance"
     );
 
     _approve(
       sender,
       msg.sender,
-      currentAllowance.sub(amount)
+      allowance.sub(amount)
     );
 
     return true;
@@ -180,7 +190,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     override
     returns (uint256)
   {
-    return allowances[owner][spender];
+    return accountAllowances[owner][spender];
   }
 
   function balanceOf(
@@ -191,10 +201,10 @@ contract HEROTokenEconomy is ERC20, Controlled {
     override
     returns (uint256 result)
   {
-    result = balances[account];
+    result = accountBalances[account];
 
     if (
-      !excluded[account] &&
+      !excludedAccounts[account].exists &&
       summary.totalRewards != 0
     ) {
       result = result.add(
@@ -213,16 +223,14 @@ contract HEROTokenEconomy is ERC20, Controlled {
   function _initializeEconomy(
     Fees memory lpFees,
     Fees memory rewardsFees,
-    bool presale,
     uint256 totalSupply_,
-    address[] calldata excluded_
+    address[] calldata excludedAccounts_
   )
     internal
   {
     settings = Settings(
       lpFees,
-      rewardsFees,
-      presale
+      rewardsFees
     );
 
     _mint(
@@ -232,17 +240,18 @@ contract HEROTokenEconomy is ERC20, Controlled {
       : totalSupply_
     );
 
-    _exclude(address(this));
+    _excludeAccount(address(this), false);
 
-    uint256 excludedLen = excluded_.length;
+    uint256 excludedAccountsLen = excludedAccounts_.length;
 
-    for (uint256 index = 0; index < excludedLen; index += 1) {
-      _exclude(excluded_[index]);
+    for (uint256 index = 0; index < excludedAccountsLen; index += 1) {
+      _excludeAccount(excludedAccounts_[index], false);
     }
   }
 
-  function _exclude(
-    address account
+  function _excludeAccount(
+    address account,
+    bool excludeRecipientFromFee
   )
     internal
   {
@@ -251,20 +260,26 @@ contract HEROTokenEconomy is ERC20, Controlled {
       "HEROTokenEconomy: account is the zero address"
     );
 
-    require(
-      !excluded[account],
-      "HEROTokenEconomy: account already excluded"
-    );
+    if (excludedAccounts[account].exists) {
+      require(
+        excludedAccounts[account].excludeRecipientFromFee != excludeRecipientFromFee,
+        "HEROTokenEconomy: account already exists"
+      );
 
-    require(
-      balances[account] == 0,
-      "HEROTokenEconomy: can not exclude holder account"
-    );
+      excludedAccounts[account].excludeRecipientFromFee = excludeRecipientFromFee;
+    } else {
+      require(
+        accountBalances[account] == 0,
+        "HEROTokenEconomy: can not exclude holder account"
+      );
 
-    excluded[account] = true;
+      excludedAccounts[account].exists = true;
+      excludedAccounts[account].excludeRecipientFromFee = excludeRecipientFromFee;
+    }
 
-    emit Excluded(
-      account
+    emit AccountExcluded(
+      account,
+      excludeRecipientFromFee
     );
   }
 
@@ -285,7 +300,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
       "HEROTokenEconomy: spender is the zero address"
     );
 
-    allowances[owner][spender] = amount;
+    accountAllowances[owner][spender] = amount;
 
     emit Approval(
       owner,
@@ -310,12 +325,12 @@ contract HEROTokenEconomy is ERC20, Controlled {
       "HEROTokenEconomy: invalid amount"
     );
 
+    _excludeAccount(account, false);
+
     summary.totalSupply = summary.totalSupply.add(amount);
     summary.totalExcluded = summary.totalExcluded.add(amount);
 
-    _exclude(account);
-
-    balances[account] = balances[account].add(amount);
+    accountBalances[account] = accountBalances[account].add(amount);
 
     emit Transfer(
       address(0),
@@ -341,19 +356,19 @@ contract HEROTokenEconomy is ERC20, Controlled {
     );
 
     require(
-      balances[account] >= amount,
+      accountBalances[account] >= amount,
       "HEROTokenEconomy: amount exceeds balance"
     );
 
     require(
-      excluded[account],
+      excludedAccounts[account].exists,
       "HEROTokenEconomy: can not burn from holder account"
     );
 
     summary.totalSupply = summary.totalSupply.sub(amount);
     summary.totalExcluded = summary.totalExcluded.sub(amount);
 
-    balances[account] = balances[account].sub(amount);
+    accountBalances[account] = accountBalances[account].sub(amount);
 
     emit Transfer(
       account,
@@ -390,36 +405,40 @@ contract HEROTokenEconomy is ERC20, Controlled {
     );
 
     require(
-      excluded[sender] || !settings.presale,
+      excludedAccounts[sender].exists ||
+      presaleFinished,
       "HEROTokenEconomy: locked for presale"
     );
 
     if (
-      !excluded[sender] && !excluded[recipient]
+      !excludedAccounts[sender].exists &&
+      !excludedAccounts[recipient].exists
     ) {
-      _transferBetweenHolders(
+      _transferBetweenHolderAccounts(
         sender,
         recipient,
         amount
       );
     } else if (
-      excluded[sender] && !excluded[recipient]
+      excludedAccounts[sender].exists &&
+      !excludedAccounts[recipient].exists
     ) {
-      _transferFromExcluded(
+      _transferFromExcludedAccount(
         sender,
         recipient,
         amount
       );
     } else if (
-      !excluded[sender] && excluded[recipient]
+      !excludedAccounts[sender].exists &&
+      excludedAccounts[recipient].exists
     ) {
-      _transferToExcluded(
+      _transferToExcludedAccount(
         sender,
         recipient,
         amount
       );
     } else {
-      _transferBetweenExcluded(
+      _transferBetweenExcludedAccounts(
         sender,
         recipient,
         amount
@@ -433,7 +452,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     );
   }
 
-  function _transferBetweenHolders(
+  function _transferBetweenHolderAccounts(
     address sender,
     address recipient,
     uint256 amount
@@ -480,12 +499,12 @@ contract HEROTokenEconomy is ERC20, Controlled {
     }
 
     require(
-      balances[sender] >= senderAmount,
+      accountBalances[sender] >= senderAmount,
       "HEROTokenEconomy: amount exceeds balance"
     );
 
-    balances[sender] = balances[sender].sub(senderAmount);
-    balances[recipient] = balances[recipient].add(recipientAmount);
+    accountBalances[sender] = accountBalances[sender].sub(senderAmount);
+    accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
 
     summary.totalHolding = summary.totalHolding.sub(totalFee);
 
@@ -496,7 +515,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     _updateTotalRewards();
   }
 
-  function _transferFromExcluded(
+  function _transferFromExcludedAccount(
     address sender,
     address recipient,
     uint256 amount
@@ -504,19 +523,24 @@ contract HEROTokenEconomy is ERC20, Controlled {
     internal
   {
     require(
-      balances[sender] >= amount,
+      accountBalances[sender] >= amount,
       "HEROTokenEconomy: amount exceeds balance"
     );
 
-    (
-      uint256 recipientFee,
-      uint256 lpFee
-    ) = _calcTransferSenderFees(amount);
+    uint256 recipientFee;
+    uint256 lpFee;
+
+    if (!excludedAccounts[sender].excludeRecipientFromFee) {
+      (
+        recipientFee,
+        lpFee
+      ) = _calcTransferSenderFees(amount);
+    }
 
     uint256 recipientAmount = amount.sub(recipientFee);
 
-    balances[sender] = balances[sender].sub(amount);
-    balances[recipient] = balances[recipient].add(recipientAmount);
+    accountBalances[sender] = accountBalances[sender].sub(amount);
+    accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
 
     summary.totalExcluded = summary.totalExcluded.sub(amount);
     summary.totalHolding = summary.totalHolding.add(recipientAmount);
@@ -528,7 +552,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     _updateTotalRewards();
   }
 
-  function _transferToExcluded(
+  function _transferToExcludedAccount(
     address sender,
     address recipient,
     uint256 amount
@@ -553,12 +577,12 @@ contract HEROTokenEconomy is ERC20, Controlled {
     }
 
     require(
-      balances[sender] >= senderAmount,
+      accountBalances[sender] >= senderAmount,
       "HEROTokenEconomy: amount exceeds balance"
     );
 
-    balances[sender] = balances[sender].sub(senderAmount);
-    balances[recipient] = balances[recipient].add(amount);
+    accountBalances[sender] = accountBalances[sender].sub(senderAmount);
+    accountBalances[recipient] = accountBalances[recipient].add(amount);
 
     summary.totalExcluded = summary.totalExcluded.add(amount);
     summary.totalHolding = summary.totalHolding.sub(senderAmount);
@@ -570,7 +594,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     _updateTotalRewards();
   }
 
-  function _transferBetweenExcluded(
+  function _transferBetweenExcludedAccounts(
     address sender,
     address recipient,
     uint256 amount
@@ -578,12 +602,12 @@ contract HEROTokenEconomy is ERC20, Controlled {
     internal
   {
     require(
-      balances[sender] >= amount,
+      accountBalances[sender] >= amount,
       "HEROTokenEconomy: amount exceeds balance"
     );
 
-    balances[sender] = balances[sender].sub(amount);
-    balances[recipient] = balances[recipient].add(amount);
+    accountBalances[sender] = accountBalances[sender].sub(amount);
+    accountBalances[recipient] = accountBalances[recipient].add(amount);
   }
 
   function _increaseTotalLP(
@@ -592,7 +616,7 @@ contract HEROTokenEconomy is ERC20, Controlled {
     internal
     virtual
   {
-    balances[address(this)] = balances[address(this)].add(amount);
+    accountBalances[address(this)] = accountBalances[address(this)].add(amount);
     summary.totalExcluded = summary.totalExcluded.add(amount);
   }
 
@@ -616,11 +640,11 @@ contract HEROTokenEconomy is ERC20, Controlled {
     returns (uint256 result)
   {
     if (
-      !excluded[account] &&
+      !excludedAccounts[account].exists &&
       summary.totalRewards != 0
     ) {
       result = summary.totalRewards
-        .mul(balances[account])
+        .mul(accountBalances[account])
         .div(summary.totalHolding);
     }
 

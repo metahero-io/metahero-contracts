@@ -12,7 +12,7 @@ import "./HEROTokenLP.sol";
  */
 contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
   // metadata
-  string private constant TOKEN_NAME = "METAHERO";
+  string private constant TOKEN_NAME = "MetaHERO";
   string private constant TOKEN_SYMBOL = "HERO";
   uint8 private constant TOKEN_DECIMALS = 9; // 0.000000000
 
@@ -35,7 +35,6 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
   function initialize(
     Fees calldata lpFees,
     Fees calldata rewardsFees,
-    bool presale,
     uint256 totalSupply_,
     address[] calldata excluded_,
     address swapRouter_
@@ -46,7 +45,6 @@ contract HEROToken is ERC20Metadata, Initializable, HEROTokenLP {
     _initializeEconomy(
       lpFees,
       rewardsFees,
-      presale,
       totalSupply_,
       excluded_
     );
