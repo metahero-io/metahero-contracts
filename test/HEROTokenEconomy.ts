@@ -14,7 +14,7 @@ interface TransferAccountOptions {
   expectedBalance: BigNumberish;
 }
 
-describe('HEROTokenEconomy', () => {
+describe('HEROTokenEconomy (using mock)', () => {
   const LP_FEE = {
     sender: 4,
     recipient: 4,

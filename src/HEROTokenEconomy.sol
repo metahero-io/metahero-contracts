@@ -594,12 +594,6 @@ contract HEROTokenEconomy is ERC20, Controlled {
   {
     balances[address(this)] = balances[address(this)].add(amount);
     summary.totalExcluded = summary.totalExcluded.add(amount);
-
-    emit Transfer(
-      address(0),
-      address(this),
-      amount
-    );
   }
 
   // private functions
