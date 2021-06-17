@@ -1,4 +1,4 @@
-# MetaHERO contracts
+# Metahero contracts
 
 [![NPM version][npm-image]][npm-url]
 
