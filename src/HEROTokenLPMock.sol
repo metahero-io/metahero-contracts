@@ -26,6 +26,7 @@ contract HEROTokenLPMock is HEROTokenLP {
     Fees calldata rewardsFees,
     uint256 totalSupply_,
     address[] calldata excluded_,
+    uint256 enableBurnLPAtValue,
     address swapRouter_,
     address stableCoin_
   )
@@ -39,6 +40,7 @@ contract HEROTokenLPMock is HEROTokenLP {
     );
 
     _initializeLP(
+      enableBurnLPAtValue,
       swapRouter_,
       stableCoin_
     );

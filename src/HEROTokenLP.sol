@@ -11,6 +11,10 @@ import "./HEROTokenEconomy.sol";
  * @title HERO token liquidity pool module
  */
 contract HEROTokenLP is HEROTokenEconomy {
+  // defaults
+
+  uint256 private constant DEFAULT_ENABLE_BURN_LP_AT_VALUE = 10000000 * 10 ** 18; // 10,000,000.000000000000000000
+
   UniswapV2Factory public swapFactory;
   UniswapV2Router02 public swapRouter;
   UniswapV2Pair public swapPair;
@@ -19,6 +23,18 @@ contract HEROTokenLP is HEROTokenEconomy {
   address private wrappedNative;
   bool private swapLocked;
   uint256 private pendingLPAmount;
+
+  // modifiers
+
+  modifier lockSwap() {
+    if (!swapLocked) {
+      swapLocked = true;
+
+      _;
+
+      swapLocked = false;
+    }
+  }
 
   /**
    * @dev Internal constructor
@@ -43,44 +59,68 @@ contract HEROTokenLP is HEROTokenEconomy {
     uint256 amount
   )
     external
+    onlyController
+    lockSwap
   {
-    uint256 totalLP = accountBalances[address(this)];
-
     require(
-      totalLP != 0,
-      "HEROTokenLP: #1"
+      amount > 1,
+      "HEROTokenLP#1"
     );
 
-    uint256[] memory amounts;
-    address[] memory path = new address[](2);
+    (uint256 tokenAmount, ) = _getLiquidity();
+
+    require(
+      tokenAmount != 0,
+      "HEROTokenLP#2"
+    );
+
+    require(
+      amount <= tokenAmount,
+      "HEROTokenLP#3"
+    );
+
+    address[] memory path = new address[](3);
 
     path[0] = address(this);
     path[1] = wrappedNative;
+    path[2] = stableCoin;
 
-    amounts = swapRouter.getAmountsOut(totalLP, path);
+    uint256[] memory amounts = swapRouter.getAmountsOut(amount, path);
 
-    uint256 totalValue = amounts[1];
+    uint256 tokensValue = amounts[2];
 
     require(
-      totalValue != 0,
-      "HEROTokenLP: #2"
+      tokensValue > settings.enableBurnLPAtValue,
+      "HEROTokenLP#4"
     );
 
-    path[0] = wrappedNative;
-    path[1] = stableCoin;
-
-    amounts = swapRouter.getAmountsOut(totalValue, path);
-
-    totalValue = amounts[1];
+    uint256 amountValue = amount.mul(tokensValue).div(tokenAmount);
+    uint256 maxValue = tokensValue.div(settings.enableBurnLPAtValue);
 
     require(
-      totalValue != 0
+      maxValue >= amountValue,
+      "HEROTokenLP#5"
+    );
+
+    (tokenAmount, ) = _removeLiquidity(
+      swapPair.balanceOf(address(this))
+    );
+
+    _burn(
+      address(this),
+      amount
+    );
+
+    _addLiquidity(
+      tokenAmount.add(amount),
+      address(this).balance
     );
   }
 
   // internal functions
 
   function _initializeLP(
+    uint256 enableBurnLPAtValue,
     address swapRouter_,
     address stableCoin_
   )
@@ -88,13 +128,17 @@ contract HEROTokenLP is HEROTokenEconomy {
   {
     require(
       swapRouter_ != address(0),
-      "HEROTokenLP: #3"
+      "HEROTokenLP#7"
     );
 
     require(
       stableCoin_ != address(0),
-      "HEROTokenLP: #4"
+      "HEROTokenLP#8"
     );
+
+    settings.enableBurnLPAtValue = enableBurnLPAtValue == 0
+      ? DEFAULT_ENABLE_BURN_LP_AT_VALUE
+      : enableBurnLPAtValue;
 
     swapRouter = UniswapV2Router02(swapRouter_);
     swapFactory = UniswapV2Factory(swapRouter.factory());
@@ -122,29 +166,31 @@ contract HEROTokenLP is HEROTokenEconomy {
 
     pendingLPAmount = pendingLPAmount.add(amount);
 
-    if (!swapLocked) {
-      swapLocked = true;
-
-      uint256 half = pendingLPAmount.div(2);
-      uint256 otherHalf = pendingLPAmount.sub(half);
-
-      _swapTokensForEth(half);
-
-      uint256 ethAmount = address(this).balance;
-
-      _addLiquidity(
-        otherHalf,
-        ethAmount
-      );
-
-      pendingLPAmount = 0;
-      swapLocked = false;
-    }
+    _swapTokensAndAddLiquidity();
   }
 
   // private functions
 
-  function _swapTokensForEth(
+  function _swapTokensAndAddLiquidity()
+    private
+    lockSwap
+  {
+    uint256 half = pendingLPAmount.div(2);
+    uint256 otherHalf = pendingLPAmount.sub(half);
+
+    pendingLPAmount = 0;
+
+    _swapTokens(half);
+
+    uint256 nativeAmount = address(this).balance;
+
+    _addLiquidity(
+      otherHalf,
+      nativeAmount
+    );
+  }
+
+  function _swapTokens(
     uint256 tokenAmount
   )
     private
@@ -164,7 +210,7 @@ contract HEROTokenLP is HEROTokenEconomy {
       swapRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
         tokenAmount,
         0,
-          path,
+        path,
         address(this),
         block.timestamp // solhint-disable-line not-rely-on-time
       );
@@ -173,18 +219,18 @@ contract HEROTokenLP is HEROTokenEconomy {
 
   function _addLiquidity(
     uint256 tokenAmount,
-    uint256 ethAmount
+    uint256 nativeAmount
   )
     private
   {
-    if (tokenAmount != 0 && ethAmount != 0) {
+    if (tokenAmount != 0 && nativeAmount != 0) {
       _approve(
         address(this),
         address(swapRouter),
         tokenAmount
       );
 
-      swapRouter.addLiquidityETH{value : ethAmount}(
+      swapRouter.addLiquidityETH{value : nativeAmount}(
         address(this),
         tokenAmount,
         0,
@@ -194,4 +240,52 @@ contract HEROTokenLP is HEROTokenEconomy {
       );
     }
   }
+
+  function _removeLiquidity(
+    uint256 liquidity
+  )
+    private
+    returns (
+      uint256 tokenAmount,
+      uint256 nativeAmount
+    )
+  {
+    swapPair.approve(
+      address(swapRouter),
+      liquidity
+    );
+
+    return swapRouter.removeLiquidityETH(
+      address(this),
+      liquidity,
+      0,
+      0,
+      address(this),
+      block.timestamp // solhint-disable-line not-rely-on-time
+    );
+  }
+
+  // private functions (views)
+
+  function _getLiquidity()
+    private
+    view
+    returns (
+      uint256 tokenAmount,
+      uint256 nativeAmount
+    )
+  {
+    (
+      uint112 reserve0,
+      uint112 reserve1,
+    )= swapPair.getReserves();
+
+    (tokenAmount, nativeAmount) = address(this) < wrappedNative
+      ? (reserve0, reserve1)
+      : (reserve1, reserve0);
+
+    return (tokenAmount, nativeAmount);
+  }
+
+
 }

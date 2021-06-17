@@ -25,6 +25,7 @@ describe('HEROTokenLP (using mock)', () => {
     sender: 0,
     recipient: 0,
   };
+  const ENABLE_BURN_LP_AT_VALUE = BigNumber.from('10');
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
   let deployer: Signer;
@@ -33,6 +34,7 @@ describe('HEROTokenLP (using mock)', () => {
   let wETH: ERC20;
   let swapPair: UniswapV2Pair;
   let swapRouter: UniswapV2Router02;
+  let swapTokenAmount = TOTAL_SUPPLY.div(100);
 
   before(async () => {
     [deployer, ...holders] = await getSigners();
@@ -52,8 +54,9 @@ describe('HEROTokenLP (using mock)', () => {
       REWARDS_FEE,
       TOTAL_SUPPLY,
       [],
+      ENABLE_BURN_LP_AT_VALUE,
       swapRouter.address,
-      knownContracts.getAddress('SwapRouter'),
+      knownContracts.getAddress('BUSDToken'),
     );
 
     wETH = ERC20Factory.connect(
@@ -70,8 +73,7 @@ describe('HEROTokenLP (using mock)', () => {
   });
 
   context('_increaseTotalLP()', () => {
-    const swapEthAmount = BigNumber.from(100000);
-    let swapTokenAmount = TOTAL_SUPPLY.div(1000);
+    const swapEthAmount = BigNumber.from(1000000);
 
     before(async () => {
       await token.approve(swapRouter.address, swapTokenAmount);
@@ -100,10 +102,20 @@ describe('HEROTokenLP (using mock)', () => {
 
       swapTokenAmount = swapTokenAmount.add(lpFee);
 
-      expect(await token.balanceOf(swapPair.address)).to.equal(swapTokenAmount);
+      expect(await token.balanceOf(swapPair.address)).to.equal(
+        swapTokenAmount.sub(await token.balanceOf(token.address)),
+      );
       expect(await wETH.balanceOf(swapPair.address)).to.equal(
         swapEthAmount.sub(await getBalance(token.address)),
       );
+    });
+  });
+
+  context('burnLP()', () => {
+    it('expect to burn LP', async () => {
+      const amount = swapTokenAmount.div(10000);
+
+      await token.burnLP(amount);
     });
   });
 });

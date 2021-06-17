@@ -2,27 +2,14 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "./components/Controlled.sol";
 import "./components/ERC20.sol";
-import "./libs/MathLib.sol";
+import "./HEROTokenCommon.sol";
 
 
 /**
  * @title HERO token economy module
  */
-contract HEROTokenEconomy is Controlled, ERC20 {
-  using MathLib for uint256;
-
-  struct Fees {
-    uint256 sender; // percent
-    uint256 recipient; // percent
-  }
-
-  struct Settings {
-    Fees lpFees;
-    Fees rewardsFees;
-  }
-
+contract HEROTokenEconomy is ERC20, HEROTokenCommon {
   struct Summary {
     uint256 totalExcluded;
     uint256 totalHolding;
@@ -36,9 +23,8 @@ contract HEROTokenEconomy is Controlled, ERC20 {
   }
 
   // defaults
-  uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 9; // 10,000,000,000.000000000
+  uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 18; // 10,000,000,000.000000000000000000
 
-  Settings public settings;
   Summary public summary;
   bool public presaleFinished;
 
@@ -60,7 +46,7 @@ contract HEROTokenEconomy is Controlled, ERC20 {
    */
   constructor ()
     internal
-    Controlled()
+    HEROTokenCommon()
   {
     //
   }
@@ -214,7 +200,6 @@ contract HEROTokenEconomy is Controlled, ERC20 {
       );
     }
 
-
     return result;
   }
 
@@ -228,10 +213,8 @@ contract HEROTokenEconomy is Controlled, ERC20 {
   )
     internal
   {
-    settings = Settings(
-      lpFees,
-      rewardsFees
-    );
+    settings.lpFees = lpFees;
+    settings.rewardsFees = rewardsFees;
 
     _mint(
       msg.sender,
