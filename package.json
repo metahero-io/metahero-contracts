@@ -1,7 +1,7 @@
 {
   "name": "@metahero/contracts",
   "version": "1.0.0-alpha.2",
-  "description": "MetaHERO contracts",
+  "description": "Metahero contracts",
   "keywords": [
     "ERC20",
     "HERO",
@@ -25,13 +25,15 @@
     "deploy:bscTest": "hardhat deploy --network bscTest",
     "format": "prettier --write \"{deploy,extensions,test}/**/*.ts\"",
     "lint": "npm run lint:ts && npm run lint:sol",
-    "lint:sol": "solhint ./src/*.sol ./src/**/*.sol ./src/**/**/*.sol",
+    "lint:sol": "solhint ./src/*.sol ./src/**/*.sol",
     "lint:ts": "eslint \"{deploy,extensions,test}/**/*.ts\"",
     "lint:ts-fix": "npm run lint -- --fix",
     "start": "hardhat node",
     "verify:bsc": "hardhat verify-all --network bsc",
     "verify:bscTest": "hardhat verify-all --network bscTest",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "prerelease": "npm run build",
+    "release": "npm publish"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",

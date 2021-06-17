@@ -9,7 +9,8 @@ const REWARDS_FEE = {
   sender: 1,
   recipient: 1,
 };
-const TOTAL_SUPPLY = 0; // use default (10,000,000,000.000000000)
+const ENABLE_BURN_LP_AT_VALUE = 0; // use default (10,000,000.000000000000000000)
+const TOTAL_SUPPLY = 0; // use default (10,000,000,000.000000000000000000)
 const EXECUTE_ACCOUNTS: string[] = [
   //
 ];
@@ -38,7 +39,9 @@ const func: DeployFunction = async (hre) => {
       REWARDS_FEE,
       TOTAL_SUPPLY,
       EXECUTE_ACCOUNTS,
+      ENABLE_BURN_LP_AT_VALUE,
       knownContracts.getAddress(ContractNames.SwapRouter),
+      knownContracts.getAddress(ContractNames.BUSDToken),
     );
 
     await execute(

@@ -16,12 +16,12 @@ contract Initializable {
   modifier onlyInitializer() {
     require(
       initializer != address(0),
-      "Initializable: already initialized"
+      "Initializable#1"
     );
 
     require(
       msg.sender == initializer,
-      "Initializable: msg.sender is not the initializer"
+      "Initializable#2"
     );
 
     initializer = address(0);

@@ -59,16 +59,16 @@ contract HEROPresale is Controlled, Initializable {
   {
     require(
       block.timestamp < deadline, // solhint-disable-line not-rely-on-time
-      "HEROPresale: can not buy after deadline"
+      "HEROPresale#1"
     );
 
     require(
       whitelist[msg.sender],
-      "HEROPresale: msg.sender not on the whitelist"
+      "HEROPresale#2"
     );
     require(
       msg.value == unitPrice,
-      "HEROPresale: invalid msg.value"
+      "HEROPresale#3"
     );
 
     whitelist[msg.sender] = false;
@@ -100,15 +100,15 @@ contract HEROPresale is Controlled, Initializable {
   {
     require(
       token_ != address(0),
-      "HEROPresale: token is the zero address"
+      "HEROPresale#4"
     );
     require(
       unitPrice_ != 0,
-      "HEROPresale: invalid unit price"
+      "HEROPresale#5"
     );
     require(
       unitTokens_ != 0,
-      "HEROPresale: invalid unit tokens"
+      "HEROPresale#6"
     );
 
     token = HEROToken(token_);
@@ -150,7 +150,7 @@ contract HEROPresale is Controlled, Initializable {
   {
     require(
       block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
-      "HEROPresale: can not destroy before deadline"
+      "HEROPresale#7"
     );
 
     uint256 pendingTokens_ = token.balanceOf(address(this));
@@ -188,10 +188,10 @@ contract HEROPresale is Controlled, Initializable {
 
     uint256 accountsLen = accounts.length;
 
-    for (uint256 index = 0 ; index < accountsLen ; index += 1) {
+    for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "HEROPresale: account is the zero address"
+        "HEROPresale#8"
       );
 
       if (!whitelist[accounts[index]]) {
@@ -208,7 +208,7 @@ contract HEROPresale is Controlled, Initializable {
 
     require(
       pendingAccounts_ != 0,
-      "HEROPresale: empty accounts"
+      "HEROPresale#9"
     );
 
     pendingAccounts = pendingAccounts.add(pendingAccounts_);
@@ -216,7 +216,7 @@ contract HEROPresale is Controlled, Initializable {
 
     require(
       pendingTokens <= token.balanceOf(address(this)),
-      "HEROPresale: pending tokens exceeds balance"
+      "HEROPresale#10"
     );
   }
 }
