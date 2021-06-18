@@ -20,7 +20,7 @@ import {
 } from '@metahero/contracts'; 
 
 console.log(
-  'HEROToken abi:',
+  'HEROToken ABI:',
   getContractAbi(ContractNames.HEROToken),
 );
 

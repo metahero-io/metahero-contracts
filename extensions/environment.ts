@@ -1,10 +1,12 @@
 import { extendEnvironment } from 'hardhat/config';
-import { constants } from 'ethers';
+import { constants, BigNumber } from 'ethers';
 import { ContractNames } from './constants';
+import { getNetworkEnvPrefix } from './utils';
 
 extendEnvironment((hre) => {
   const {
     network: {
+      name,
       config: { chainId },
     },
     config: { knownContractsAddresses },
@@ -24,5 +26,29 @@ extendEnvironment((hre) => {
 
       return result;
     },
+  };
+
+  hre.getNetworkEnv = (envName, defaultValue) => {
+    let result: any = defaultValue;
+
+    const prefix = getNetworkEnvPrefix(name);
+
+    const raw = process.env[`${prefix}_${envName}`];
+
+    if (raw) {
+      switch (typeof defaultValue) {
+        case 'number':
+          result = parseInt(raw, 10) || 0;
+          break;
+
+        case 'object':
+          if (defaultValue instanceof BigNumber) {
+            result = BigNumber.from(raw);
+          }
+          break;
+      }
+    }
+
+    return result;
   };
 });

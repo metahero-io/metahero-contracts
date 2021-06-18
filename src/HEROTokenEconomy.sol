@@ -188,20 +188,29 @@ contract HEROTokenEconomy is ERC20, HEROTokenCommon {
     override
     returns (uint256 result)
   {
-    result = accountBalances[account];
-
-    if (
-      !excludedAccounts[account].exists &&
-      summary.totalRewards != 0
-    ) {
-      result = result.add(
-        summary.totalRewards
-        .mul(result)
-        .div(summary.totalHolding)
-      );
-    }
+    result = accountBalances[account].add(
+      _calcRewards(account)
+    );
 
     return result;
+  }
+
+  function getBalanceSummary(
+    address account
+  )
+    external
+    view
+    returns (
+      uint256 totalBalance,
+      uint256 holdingBalance,
+      uint256 totalRewards
+    )
+  {
+    holdingBalance = accountBalances[account];
+    totalRewards = _calcRewards(account);
+    totalBalance = holdingBalance.add(totalRewards);
+
+    return (totalBalance, holdingBalance, totalRewards);
   }
 
   // internal functions

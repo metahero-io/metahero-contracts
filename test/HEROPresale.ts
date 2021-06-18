@@ -22,7 +22,7 @@ describe('HEROPresale', () => {
   const DEADLINE_IN = 60; // 60 sec
 
   let token: HEROTokenEconomyMock;
-  let whitelist: HEROPresale;
+  let presale: HEROPresale;
   let controller: Signer;
   let external: Signer;
   let accounts: Signer[];
@@ -38,7 +38,7 @@ describe('HEROPresale', () => {
         HEROTokenEconomyMockArtifact,
       )) as HEROTokenEconomyMock;
 
-      whitelist = (await deployContract(
+      presale = (await deployContract(
         controller,
         HEROPresaleArtifact,
       )) as HEROPresale;
@@ -53,17 +53,17 @@ describe('HEROPresale', () => {
         fee,
         0,
         [
-          whitelist.address, //
+          presale.address, //
           ...accounts.map(({ address }) => address),
         ],
       );
 
-      await token.transfer(whitelist.address, TOTAL_TOKENS);
+      await token.transfer(presale.address, TOTAL_TOKENS);
 
       if (initialize) {
         deadline = (await setNextBlockTimestamp()) + DEADLINE_IN;
 
-        await whitelist.initialize(
+        await presale.initialize(
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
           MAX_PURCHASE_PRICE,
@@ -79,7 +79,7 @@ describe('HEROPresale', () => {
 
     context('initialize()', () => {
       it('expect to initialize the whitelist', async () => {
-        const tx = await whitelist.initialize(
+        const tx = await presale.initialize(
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
           MAX_PURCHASE_PRICE,
@@ -87,18 +87,18 @@ describe('HEROPresale', () => {
           accounts.map(({ address }) => address),
         );
 
-        expect(tx).to.emit(whitelist, 'Initialized');
+        expect(tx).to.emit(presale, 'Initialized');
 
         for (const { address } of accounts) {
-          expect(tx).to.emit(whitelist, 'AccountAdded').withArgs(address);
+          expect(tx).to.emit(presale, 'AccountAdded').withArgs(address);
         }
 
-        expect(await token.balanceOf(whitelist.address)).to.equal(TOTAL_TOKENS);
+        expect(await token.balanceOf(presale.address)).to.equal(TOTAL_TOKENS);
       });
 
       it('expect to revert when whitelist is initialized', async () => {
         await expect(
-          whitelist.initialize(
+          presale.initialize(
             token.address,
             TOKENS_AMOUNT_PER_NATIVE,
             MAX_PURCHASE_PRICE,
@@ -115,7 +115,7 @@ describe('HEROPresale', () => {
 
     context('settings()', () => {
       it('expect to return correct settings', async () => {
-        const output = await whitelist.settings();
+        const output = await presale.settings();
 
         expect(output.tokensAmountPerNative).to.equal(TOKENS_AMOUNT_PER_NATIVE);
         expect(output.maxPurchasePrice).to.equal(MAX_PURCHASE_PRICE);
@@ -124,7 +124,7 @@ describe('HEROPresale', () => {
 
     context('summary()', () => {
       it('expect to return correct summary', async () => {
-        const output = await whitelist.summary();
+        const output = await presale.summary();
 
         expect(output.totalAccounts).to.equal(accounts.length);
         expect(output.totalTokens).to.equal(totalTokens);
@@ -133,7 +133,7 @@ describe('HEROPresale', () => {
 
     context('deadline()', () => {
       it('expect to return correct deadline', async () => {
-        const output = await whitelist.deadline();
+        const output = await presale.deadline();
 
         expect(output).to.equal(deadline);
       });
@@ -147,10 +147,10 @@ describe('HEROPresale', () => {
       ];
 
       it('expect to add accounts to whitelist', async () => {
-        const tx = await whitelist.addAccounts(ACCOUNTS);
+        const tx = await presale.addAccounts(ACCOUNTS);
 
         for (const account of ACCOUNTS) {
-          expect(tx).to.emit(whitelist, 'AccountAdded').withArgs(account);
+          expect(tx).to.emit(presale, 'AccountAdded').withArgs(account);
         }
       });
     });
@@ -163,20 +163,20 @@ describe('HEROPresale', () => {
       ];
 
       before(async () => {
-        await whitelist.addAccounts(ACCOUNTS);
+        await presale.addAccounts(ACCOUNTS);
       });
 
       it('expect to remove accounts to whitelist', async () => {
-        const tx = await whitelist.removeAccounts(ACCOUNTS);
+        const tx = await presale.removeAccounts(ACCOUNTS);
 
         for (const account of ACCOUNTS) {
-          expect(tx).to.emit(whitelist, 'AccountRemoved').withArgs(account);
+          expect(tx).to.emit(presale, 'AccountRemoved').withArgs(account);
         }
       });
     });
 
     context('# before deadline', () => {
-      context('buyTokens()', () => {
+      context('buy tokens', () => {
         let account: Signer;
 
         before(() => {
@@ -185,27 +185,34 @@ describe('HEROPresale', () => {
 
         it('expect to revert when sender is not on the whitelist', async () => {
           await expect(
-            whitelist.connect(external).buyTokens(),
+            external.sendTransaction({
+              to: presale.address,
+              value: 1,
+            }),
           ).to.be.revertedWith('HEROPresale#2');
         });
 
         it('expect to revert on invalid msg.value', async () => {
           await expect(
-            whitelist.connect(account).buyTokens(),
+            account.sendTransaction({
+              to: presale.address,
+              value: 0,
+            }),
           ).to.be.revertedWith('HEROPresale#3');
         });
 
         it('expect to buy tokens', async () => {
-          expect(await whitelist.whitelist(account.address)).to.be.true;
+          expect(await presale.whitelist(account.address)).to.be.true;
 
           const tokensPrice = 10;
           const tokensAmount = TOKENS_AMOUNT_PER_NATIVE.mul(tokensPrice);
 
-          const tx = await whitelist.connect(account).buyTokens({
+          const tx = await account.sendTransaction({
+            to: presale.address,
             value: tokensPrice,
           });
 
-          expect(tx).to.emit(whitelist, 'TokensPurchased').withArgs(
+          expect(tx).to.emit(presale, 'TokensPurchased').withArgs(
             account.address, //
             tokensPrice,
             tokensAmount,
@@ -215,7 +222,7 @@ describe('HEROPresale', () => {
             tokensAmount,
           );
 
-          expect(await whitelist.whitelist(account.address)).to.be.false;
+          expect(await presale.whitelist(account.address)).to.be.false;
 
           totalTokens = totalTokens.sub(tokensAmount);
         });
@@ -223,7 +230,7 @@ describe('HEROPresale', () => {
 
       context('finishPresale()', () => {
         it('expect to revert before deadline', async () => {
-          await expect(whitelist.finishPresale()).to.be.revertedWith(
+          await expect(presale.finishPresale()).to.be.revertedWith(
             'HEROPresale#9',
           );
         });
@@ -235,12 +242,15 @@ describe('HEROPresale', () => {
         await setNextBlockTimestamp(deadline + DEADLINE_IN);
       });
 
-      context('buyTokens()', () => {
+      context('buy tokens', () => {
         it('expect to revert before deadline', async () => {
-          const claimer = accounts.pop();
+          const account = accounts.pop();
 
           await expect(
-            whitelist.connect(claimer).buyTokens(),
+            account.sendTransaction({
+              to: presale.address,
+              value: 1,
+            }),
           ).to.be.revertedWith('HEROPresale#1');
         });
       });
@@ -249,27 +259,27 @@ describe('HEROPresale', () => {
         it('expect to finish presale', async () => {
           const summaryBefore = await token.summary();
           const controllerBalance = await getBalance(controller);
-          const whitelistBalance = await getBalance(whitelist);
-          const whitelistTokens = await token.balanceOf(whitelist.address);
+          const presaleBalance = await getBalance(presale);
+          const presaleTokens = await token.balanceOf(presale.address);
 
-          const tx = await whitelist.finishPresale();
+          const tx = await presale.finishPresale();
           const txCost = await calcTxCost(tx);
 
           const summaryAfter = await token.summary();
 
           expect(await summaryAfter.totalSupply).to.equal(
-            summaryBefore.totalSupply.sub(whitelistTokens),
+            summaryBefore.totalSupply.sub(presaleTokens),
           );
 
           expect(await summaryAfter.totalExcluded).to.equal(
-            summaryBefore.totalExcluded.sub(whitelistTokens),
+            summaryBefore.totalExcluded.sub(presaleTokens),
           );
 
-          expect(await token.balanceOf(whitelist.address)).to.equal(0);
+          expect(await token.balanceOf(presale.address)).to.equal(0);
 
-          expect(await getBalance(whitelist)).to.equal(0);
+          expect(await getBalance(presale)).to.equal(0);
           expect(await getBalance(controller)).to.equal(
-            controllerBalance.add(whitelistBalance).sub(txCost),
+            controllerBalance.add(presaleBalance).sub(txCost),
           );
         });
       });

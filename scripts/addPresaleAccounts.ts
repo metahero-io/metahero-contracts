@@ -11,7 +11,7 @@ const { name } = network;
 const { getSigners } = ethers;
 
 const BATCH_SIZE = 100;
-const DATA_FILE_NAME = 'presaleAddresses.csv';
+const DATA_FILE_NAME = 'presaleAccounts.csv';
 
 async function main(): Promise<void> {
   let addresses: string[];

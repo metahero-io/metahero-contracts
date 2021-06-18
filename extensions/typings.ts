@@ -6,6 +6,7 @@ declare module 'hardhat/types/runtime' {
     knownContracts?: {
       getAddress(contractName: string): string;
     };
+    getNetworkEnv?<T>(envName: string, defaultValue: T): T;
   }
 }
 

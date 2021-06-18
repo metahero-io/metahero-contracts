@@ -22,7 +22,6 @@ contract HEROTokenLP is HEROTokenEconomy {
 
   address private wrappedNative;
   bool private swapLocked;
-  uint256 private pendingLPAmount;
 
   // modifiers
 
@@ -164,8 +163,6 @@ contract HEROTokenLP is HEROTokenEconomy {
   {
     HEROTokenEconomy._increaseTotalLP(amount);
 
-    pendingLPAmount = pendingLPAmount.add(amount);
-
     _swapTokensAndAddLiquidity();
   }
 
@@ -175,14 +172,13 @@ contract HEROTokenLP is HEROTokenEconomy {
     private
     lockSwap
   {
-    uint256 half = pendingLPAmount.div(2);
-    uint256 otherHalf = pendingLPAmount.sub(half);
+    uint256 tokensAmount = accountBalances[address(this)];
+    uint256 nativeAmount = address(this).balance;
 
-    pendingLPAmount = 0;
+    uint256 half = tokensAmount.div(2);
+    uint256 otherHalf = tokensAmount.sub(half);
 
     _swapTokens(half);
-
-    uint256 nativeAmount = address(this).balance;
 
     _addLiquidity(
       otherHalf,
