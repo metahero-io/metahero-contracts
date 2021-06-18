@@ -2,12 +2,13 @@ import { BigNumber } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ContractNames } from '../extensions';
 
-const UNIT_PRICE = BigNumber.from(1000);
-const UNIT_TOKENS = BigNumber.from(100);
 const DEADLINE_IN = 0; // use default (14 days)
+const TOKENS_AMOUNT_PER_NATIVE = 0; // use default (200000)
+const MAX_PURCHASE_PRICE = 0; // use default (10.000000000000000000)
 const ACCOUNTS: string[] = [
   //
 ];
+const TOTAL_TOKENS = BigNumber.from('1000000000000000000000000000'); // 1,000,000,000.000000000000000000
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -30,9 +31,7 @@ const func: DeployFunction = async (hre) => {
       ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
     }
 
-    if (ACCOUNTS.length) {
-      const pendingTokens = UNIT_TOKENS.mul(ACCOUNTS.length);
-
+    if (TOTAL_TOKENS.gt(0)) {
       await execute(
         ContractNames.HEROToken,
         {
@@ -41,7 +40,7 @@ const func: DeployFunction = async (hre) => {
         },
         'transfer',
         whitelist,
-        pendingTokens,
+        TOTAL_TOKENS,
       );
     }
 
@@ -53,9 +52,9 @@ const func: DeployFunction = async (hre) => {
       },
       'initialize',
       token,
+      TOKENS_AMOUNT_PER_NATIVE,
+      MAX_PURCHASE_PRICE,
       DEADLINE_IN,
-      UNIT_PRICE,
-      UNIT_TOKENS,
       ACCOUNTS,
     );
   }

@@ -67,7 +67,7 @@ contract HEROTokenLP is HEROTokenEconomy {
       "HEROTokenLP#1"
     );
 
-    (uint256 tokenAmount, ) = _getLiquidity();
+    (uint256 tokenAmount, ) = _getLiquidityReserves();
 
     require(
       tokenAmount != 0,
@@ -128,12 +128,12 @@ contract HEROTokenLP is HEROTokenEconomy {
   {
     require(
       swapRouter_ != address(0),
-      "HEROTokenLP#7"
+      "HEROTokenLP#6"
     );
 
     require(
       stableCoin_ != address(0),
-      "HEROTokenLP#8"
+      "HEROTokenLP#7"
     );
 
     settings.enableBurnLPAtValue = enableBurnLPAtValue == 0
@@ -267,7 +267,7 @@ contract HEROTokenLP is HEROTokenEconomy {
 
   // private functions (views)
 
-  function _getLiquidity()
+  function _getLiquidityReserves()
     private
     view
     returns (

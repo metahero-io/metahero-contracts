@@ -13,20 +13,41 @@ import "./HEROToken.sol";
 contract HEROPresale is Controlled, Initializable {
   using MathLib for uint256;
 
+  struct Settings {
+    uint256 tokensAmountPerNative;
+    uint256 maxPurchasePrice; // max purchase price per whitelisted account
+  }
+
+  struct Summary {
+    uint256 totalAccounts;
+    uint256 totalTokens;
+  }
+
   // defaults
+
   uint256 private constant DEFAULT_DEADLINE_IN = 14 * 24 * 60 * 60; // 14 days
+  uint256 private constant DEFAULT_TOKENS_AMOUNT_PER_NATIVE = 200000;
+  uint256 private constant DEFAULT_MAX_PURCHASE_PRICE = 10 ** 18; // 10.000000000000000000
 
   HEROToken public token;
+  Settings public settings;
+  Summary public summary;
+  uint256 public deadline;
 
   mapping (address => bool) public whitelist;
 
-  uint256 public deadline;
-  uint256 public unitPrice;
-  uint256 public unitTokens;
-  uint256 public pendingAccounts;
-  uint256 public pendingTokens;
-
   // events
+
+  event TokensPurchased(
+    address indexed account,
+    uint256 tokensPrice,
+    uint256 tokensAmount
+  );
+
+  event SettingsUpdated(
+    uint256 tokensAmountPerNative,
+    uint256 maxPurchasePrice
+  );
 
   event DeadlineUpdated(
     uint256 deadline
@@ -36,7 +57,7 @@ contract HEROPresale is Controlled, Initializable {
     address indexed account
   );
 
-  event UnitBought(
+  event AccountRemoved(
     address indexed account
   );
 
@@ -53,7 +74,7 @@ contract HEROPresale is Controlled, Initializable {
 
   // external functions (payable)
 
-  function buyUnit()
+  function buyTokens()
     external
     payable
   {
@@ -66,23 +87,38 @@ contract HEROPresale is Controlled, Initializable {
       whitelist[msg.sender],
       "HEROPresale#2"
     );
+
     require(
-      msg.value == unitPrice,
+      msg.value != 0,
       "HEROPresale#3"
+    );
+
+    require(
+      msg.value <= settings.maxPurchasePrice,
+      "HEROPresale#4"
+    );
+
+    uint256 tokensAmount = msg.value.mul(settings.tokensAmountPerNative);
+
+    require(
+      tokensAmount <= summary.totalTokens,
+      "HEROPresale#5"
     );
 
     whitelist[msg.sender] = false;
 
-    pendingAccounts = pendingAccounts.sub(1);
-    pendingTokens = pendingTokens.sub(unitTokens);
+    summary.totalAccounts = summary.totalAccounts.sub(1);
+    summary.totalTokens = summary.totalTokens.sub(tokensAmount);
 
     token.transfer(
       msg.sender,
-      unitTokens
+      tokensAmount
     );
 
-    emit UnitBought(
-      msg.sender
+    emit TokensPurchased(
+      msg.sender,
+      msg.value,
+      tokensAmount
     );
   }
 
@@ -90,9 +126,9 @@ contract HEROPresale is Controlled, Initializable {
 
   function initialize(
     address payable token_,
-    uint256 deadlineIn_, // in seconds
-    uint256 unitPrice_,
-    uint256 unitTokens_,
+    uint256 tokensAmountPerNative,
+    uint256 maxPurchasePrice,
+    uint256 deadlineIn, // in seconds
     address[] calldata accounts
   )
     external
@@ -100,30 +136,37 @@ contract HEROPresale is Controlled, Initializable {
   {
     require(
       token_ != address(0),
-      "HEROPresale#4"
-    );
-    require(
-      unitPrice_ != 0,
-      "HEROPresale#5"
-    );
-    require(
-      unitTokens_ != 0,
       "HEROPresale#6"
     );
 
     token = HEROToken(token_);
 
-    unitPrice = unitPrice_;
-    unitTokens = unitTokens_;
+    summary.totalTokens = token.balanceOf(address(this));
 
-    _updateDeadline(deadlineIn_ != 0
-      ? deadlineIn_
+    _updateSettings(
+      tokensAmountPerNative == 0
+        ? DEFAULT_TOKENS_AMOUNT_PER_NATIVE
+        : tokensAmountPerNative,
+      maxPurchasePrice == 0
+        ? DEFAULT_MAX_PURCHASE_PRICE
+        : maxPurchasePrice
+    );
+
+    _updateDeadline(deadlineIn != 0
+      ? deadlineIn
       : DEFAULT_DEADLINE_IN
     );
 
     if (accounts.length != 0) {
       _addAccounts(accounts);
     }
+  }
+
+  function syncTotalTokens()
+    external
+    onlyController
+  {
+    summary.totalTokens = token.balanceOf(address(this));
   }
 
   function updateDeadline(
@@ -144,20 +187,54 @@ contract HEROPresale is Controlled, Initializable {
     _addAccounts(accounts);
   }
 
-  function destroy()
+  function removeAccounts(
+    address[] calldata accounts
+  )
+    external
+    onlyController
+  {
+    uint256 totalRemoved;
+    uint256 accountsLen = accounts.length;
+
+    for (uint256 index ; index < accountsLen ; index++) {
+      require(
+        accounts[index] != address(0),
+        "HEROPresale#7"
+      );
+
+      if (whitelist[accounts[index]]) {
+        whitelist[accounts[index]] = false;
+
+        totalRemoved = totalRemoved.add(1);
+
+        emit AccountRemoved(
+          accounts[index]
+        );
+      }
+    }
+
+    require(
+      totalRemoved != 0,
+      "HEROPresale#8"
+    );
+
+    summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
+  }
+
+  function finishPresale()
     external
     onlyController
   {
     require(
       block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
-      "HEROPresale#7"
+      "HEROPresale#9"
     );
 
-    uint256 pendingTokens_ = token.balanceOf(address(this));
+    uint256 totalTokens = token.balanceOf(address(this));
 
-    if (pendingTokens_ != 0) {
+    if (totalTokens != 0) {
       token.burn(
-        pendingTokens_
+        totalTokens
       );
     }
 
@@ -166,12 +243,37 @@ contract HEROPresale is Controlled, Initializable {
 
   // private functions
 
-  function _updateDeadline(
-    uint256 deadlineIn_
+  function _updateSettings(
+    uint256 tokensAmountPerNative,
+    uint256 maxPurchasePrice
   )
     private
   {
-    deadline = block.timestamp.add(deadlineIn_); // solhint-disable-line not-rely-on-time
+    require(
+      tokensAmountPerNative != 0,
+      "HEROPresale#10"
+    );
+
+    require(
+      maxPurchasePrice != 0,
+      "HEROPresale#11"
+    );
+
+    settings.tokensAmountPerNative = tokensAmountPerNative;
+    settings.maxPurchasePrice = maxPurchasePrice;
+
+    emit SettingsUpdated(
+      tokensAmountPerNative,
+      maxPurchasePrice
+    );
+  }
+
+  function _updateDeadline(
+    uint256 deadlineIn
+  )
+    private
+  {
+    deadline = block.timestamp.add(deadlineIn); // solhint-disable-line not-rely-on-time
 
     emit DeadlineUpdated(
       deadline
@@ -183,22 +285,19 @@ contract HEROPresale is Controlled, Initializable {
   )
     private
   {
-    uint256 pendingAccounts_;
-    uint256 pendingTokens_;
-
+    uint256 totalAdded;
     uint256 accountsLen = accounts.length;
 
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "HEROPresale#8"
+        "HEROPresale#12"
       );
 
       if (!whitelist[accounts[index]]) {
         whitelist[accounts[index]] = true;
 
-        pendingAccounts_ = pendingAccounts_.add(1);
-        pendingTokens_ = pendingTokens_.add(unitTokens);
+        totalAdded = totalAdded.add(1);
 
         emit AccountAdded(
           accounts[index]
@@ -207,16 +306,10 @@ contract HEROPresale is Controlled, Initializable {
     }
 
     require(
-      pendingAccounts_ != 0,
-      "HEROPresale#9"
+      totalAdded != 0,
+      "HEROPresale#13"
     );
 
-    pendingAccounts = pendingAccounts.add(pendingAccounts_);
-    pendingTokens = pendingTokens.add(pendingTokens_);
-
-    require(
-      pendingTokens <= token.balanceOf(address(this)),
-      "HEROPresale#10"
-    );
+    summary.totalAccounts = summary.totalAccounts.add(totalAdded);
   }
 }

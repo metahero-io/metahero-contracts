@@ -1,6 +1,6 @@
 {
   "name": "@metahero/contracts",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-beta.1",
   "description": "Metahero contracts",
   "keywords": [
     "ERC20",

@@ -94,21 +94,14 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
           addresses[chainId] = address;
 
           if (address && transactionHash) {
-            if (!contractsMD[contractName]) {
-              contractsMD[contractName] = [];
+            if (!contractsMD[name]) {
+              contractsMD[name] = {};
             }
 
-            contractsMD[contractName].push({
+            contractsMD[name][contractName] = {
               address,
-              network: {
-                name,
-                chainId,
-              },
-              transaction: {
-                hash: transactionHash,
-                url: null,
-              },
-            });
+              transactionHash,
+            };
           }
         }
 
@@ -139,7 +132,7 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
     );
 
     await writeFile(
-      join(cwd, 'DEPLOYMENTS.md'),
+      join(cwd, 'deployments', 'README.md'),
       templates.deploymentsMd(contractsMD),
     );
 

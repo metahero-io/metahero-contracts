@@ -23,6 +23,7 @@ contract HEROTokenEconomy is ERC20, HEROTokenCommon {
   }
 
   // defaults
+
   uint256 private constant DEFAULT_TOTAL_SUPPLY = 10000000000 * 10 ** 18; // 10,000,000,000.000000000000000000
 
   Summary public summary;

@@ -25,12 +25,12 @@ console.log(
 );
 
 console.log(
-  'HEROToken bsc address:', 
+  'HEROToken BSC address:', 
   getContractAddress(ContractNames.HEROToken, '56'),
 );
 
 console.log(
-  'HEROPresale bsc testnet address:', 
+  'HEROPresale BSC testnet address:', 
   getContractAddress(ContractNames.HEROPresale, '97'),
 );
 

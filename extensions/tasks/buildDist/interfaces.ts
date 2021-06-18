@@ -1,13 +1,8 @@
 export interface ContractsMD {
   [key: string]: {
-    address: string;
-    network: {
-      name: string;
-      chainId: string;
+    [key: string]: {
+      address: string;
+      transactionHash: string;
     };
-    transaction: {
-      hash: string;
-      url: string;
-    };
-  }[];
+  };
 }
