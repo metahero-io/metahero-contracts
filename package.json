@@ -1,6 +1,6 @@
 {
   "name": "@metahero/contracts",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Metahero contracts",
   "keywords": [
     "ERC20",
@@ -35,7 +35,9 @@
     "verify:bscTest": "hardhat verify-all --network bscTest",
     "test": "hardhat test",
     "prerelease": "npm run build",
-    "release": "npm publish"
+    "release": "npm publish",
+    "addPresaleAddresses:bsc": "hardhat run --no-compile --network bsc ./scripts/addPresaleAddresses.ts",
+    "addPresaleAddresses:bscTest": "hardhat run --no-compile --network bscTest ./scripts/addPresaleAddresses.ts"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
