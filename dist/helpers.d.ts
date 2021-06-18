@@ -4,5 +4,5 @@ export declare function getContractAbi(contractName: ContractNames): any | null;
 
 export declare function getContractAddress(
   contractName: ContractNames,
-  networkId?: string | number,
+  networkId: string | number,
 ): string | null;
