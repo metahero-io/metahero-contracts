@@ -216,6 +216,8 @@ describe('HEROPresale', () => {
           );
 
           expect(await whitelist.whitelist(account.address)).to.be.false;
+
+          totalTokens = totalTokens.sub(tokensAmount);
         });
       });
 
