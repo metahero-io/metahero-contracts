@@ -1,6 +1,6 @@
-import { NETWORK_CONFIGS } from '../../constants';
+import { NETWORK_CONFIGS } from '../constants';
 
-export function getScanUrl(
+export function getNetworkExplorerUrl(
   network: string,
   item: string,
   type: 'transaction' | 'address',
@@ -21,5 +21,6 @@ export function getScanUrl(
       }
     }
   }
+
   return result;
 }
