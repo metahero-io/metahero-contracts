@@ -72,9 +72,9 @@ contract HEROPresale is Controlled, Initializable {
     //
   }
 
-  // external functions (payable)
+  // external functions
 
-  function buyTokens()
+  receive()
     external
     payable
   {
@@ -121,8 +121,6 @@ contract HEROPresale is Controlled, Initializable {
       tokensAmount
     );
   }
-
-  // external functions
 
   function initialize(
     address payable token_,
