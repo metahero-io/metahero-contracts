@@ -381,13 +381,6 @@ module.exports = {
       },
       {
         "inputs": [],
-        "name": "buyTokens",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
         "name": "controller",
         "outputs": [
           {
@@ -578,10 +571,14 @@ module.exports = {
         ],
         "stateMutability": "view",
         "type": "function"
+      },
+      {
+        "stateMutability": "payable",
+        "type": "receive"
       }
     ],
     "addresses": {
-      "97": "0x6ac0701F5E54d68523BBfB65d97c53936b7E2F2B"
+      "97": "0x36125D0Ef66387faa8287147e6E2FDf60a5CFddC"
     }
   },
   "HEROToken": {
@@ -814,6 +811,35 @@ module.exports = {
         "name": "finishPresale",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalanceSummary",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1147,7 +1173,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x5Be40Fb379D9Ec84dc7Da5ED409Ae0c83FDfcce0"
+      "97": "0x4B67c1A5B2AB1329bBBbD4af60a435d08197b5A7"
     }
   },
   "HEROTokenCommon": {
@@ -1423,6 +1449,35 @@ module.exports = {
         "name": "finishPresale",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalanceSummary",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -1795,6 +1850,35 @@ module.exports = {
         "name": "finishPresale",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalanceSummary",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -2227,6 +2311,35 @@ module.exports = {
         "name": "finishPresale",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalanceSummary",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -2668,6 +2781,35 @@ module.exports = {
         "name": "finishPresale",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalanceSummary",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
