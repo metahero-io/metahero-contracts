@@ -36,7 +36,7 @@ function deploymentsMd(data: ContractsMD): string {
 
     result = `${result}## ${getNetworkTitle(network)}
 
-| contract name | contract address | transaction hash |  
+| contract | deployed at | transaction hash |  
 | --- | --- | --- |`;
 
     for (const [contractName, { address, transactionHash }] of entries) {
