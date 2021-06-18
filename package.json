@@ -36,8 +36,8 @@
     "test": "hardhat test",
     "prerelease": "npm run build",
     "release": "npm publish",
-    "addPresaleAddresses:bsc": "hardhat run --no-compile --network bsc ./scripts/addPresaleAddresses.ts",
-    "addPresaleAddresses:bscTest": "hardhat run --no-compile --network bscTest ./scripts/addPresaleAddresses.ts"
+    "addPresaleAccounts:bsc": "hardhat run --no-compile --network bsc ./scripts/addPresaleAccounts.ts",
+    "addPresaleAccounts:bscTest": "hardhat run --no-compile --network bscTest ./scripts/addPresaleAccounts.ts"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
