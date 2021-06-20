@@ -1,9 +1,11 @@
 import { ethers, waffle, knownContracts } from 'hardhat';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
-import HEROTokenLPMockArtifact from '../artifacts/HEROTokenLPMock.json';
+import { BigNumber, constants } from 'ethers';
+import HEROTokenArtifact from '../artifacts/HEROToken.json';
+import HEROLPManagerUniswapV2Artifact from '../artifacts/HEROLPManagerUniswapV2.json';
 import {
-  HEROTokenLPMock,
+  HEROToken,
+  HEROLPManagerUniswapV2,
   ERC20,
   ERC20__factory as ERC20Factory,
   UniswapV2Pair,
@@ -16,7 +18,7 @@ import { Signer, setNextBlockTimestamp, getBalance } from './common';
 const { deployContract } = waffle;
 const { getSigners } = ethers;
 
-describe('HEROTokenLP (using mock)', () => {
+describe('HEROLPManagerUniswapV2', () => {
   const LP_FEE = {
     sender: 5,
     recipient: 5,
@@ -28,52 +30,64 @@ describe('HEROTokenLP (using mock)', () => {
   const ENABLE_BURN_LP_AT_VALUE = BigNumber.from('10');
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
-  let deployer: Signer;
-  let holders: Signer[];
-  let token: HEROTokenLPMock;
-  let wETH: ERC20;
-  let swapPair: UniswapV2Pair;
+  let owner: Signer;
+  let token: HEROToken;
+  let lpManager: HEROLPManagerUniswapV2;
+  let wrappedNative: ERC20;
   let swapRouter: UniswapV2Router02;
+  let swapTokenPair: UniswapV2Pair;
   let swapTokenAmount = TOTAL_SUPPLY.div(100);
 
   before(async () => {
-    [deployer, ...holders] = await getSigners();
+    [owner] = await getSigners();
 
-    token = (await deployContract(
-      deployer,
-      HEROTokenLPMockArtifact,
-    )) as HEROTokenLPMock;
+    token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
+
+    lpManager = (await deployContract(
+      owner,
+      HEROLPManagerUniswapV2Artifact,
+    )) as HEROLPManagerUniswapV2;
 
     swapRouter = UniswapV2Router02Factory.connect(
-      knownContracts.getAddress('SwapRouter'),
-      deployer,
+      knownContracts.getAddress('PancakeSwapRouter'),
+      owner,
     );
 
     await token.initialize(
       LP_FEE, //
       REWARDS_FEE,
+      lpManager.address,
+      constants.AddressZero,
       TOTAL_SUPPLY,
       [],
+    );
+
+    await lpManager.initialize(
       ENABLE_BURN_LP_AT_VALUE,
-      swapRouter.address,
       knownContracts.getAddress('BUSDToken'),
+      token.address,
+      swapRouter.address,
     );
 
-    wETH = ERC20Factory.connect(
+    wrappedNative = ERC20Factory.connect(
       await swapRouter.WETH(), //
-      deployer,
+      owner,
     );
 
-    swapPair = UniswapV2PairFactory.connect(
-      await token.swapPair(), //
-      deployer,
+    swapTokenPair = UniswapV2PairFactory.connect(
+      await lpManager.uniswapTokenPair(), //
+      owner,
     );
+
+    await token.excludeAccount(swapTokenPair.address, true);
+    await token.excludeAccount(swapRouter.address, true);
 
     await token.finishPresale();
   });
 
-  context('_increaseTotalLP()', () => {
+  context('syncLP()', () => {
     const swapEthAmount = BigNumber.from(1000000);
+    const amount = TOTAL_SUPPLY.div(2000);
 
     before(async () => {
       await token.approve(swapRouter.address, swapTokenAmount);
@@ -85,28 +99,26 @@ describe('HEROTokenLP (using mock)', () => {
         swapTokenAmount,
         0,
         0,
-        token.address,
+        lpManager.address,
         deadline,
         {
           value: swapEthAmount,
         },
       );
+
+      await token.transfer(lpManager.address, amount);
     });
 
     it('expect to increase total lp', async () => {
-      const recipient = holders[0];
-      const amount = TOTAL_SUPPLY.div(2000);
-      const lpFee = amount.mul(LP_FEE.recipient).div(100);
+      await lpManager.syncLP();
 
-      await token.transfer(recipient.address, amount);
+      swapTokenAmount = swapTokenAmount.add(amount);
 
-      swapTokenAmount = swapTokenAmount.add(lpFee);
-
-      expect(await token.balanceOf(swapPair.address)).to.equal(
-        swapTokenAmount.sub(await token.balanceOf(token.address)),
+      expect(await token.balanceOf(swapTokenPair.address)).to.equal(
+        swapTokenAmount.sub(await token.balanceOf(lpManager.address)),
       );
-      expect(await wETH.balanceOf(swapPair.address)).to.equal(
-        swapEthAmount.sub(await getBalance(token.address)),
+      expect(await wrappedNative.balanceOf(swapTokenPair.address)).to.equal(
+        swapEthAmount.sub(await getBalance(lpManager.address)),
       );
     });
   });
@@ -115,7 +127,7 @@ describe('HEROTokenLP (using mock)', () => {
     it('expect to burn LP', async () => {
       const amount = swapTokenAmount.div(10000);
 
-      await token.burnLP(amount);
+      await lpManager.burnLP(amount);
     });
   });
 });

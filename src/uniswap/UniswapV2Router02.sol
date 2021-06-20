@@ -5,7 +5,7 @@ import "./UniswapV2Router01.sol";
 
 
 interface UniswapV2Router02 is UniswapV2Router01 {
-  // external functions (payable)
+  // external functions
 
   function swapExactETHForTokensSupportingFeeOnTransferTokens(
     uint amountOutMin,
@@ -15,8 +15,6 @@ interface UniswapV2Router02 is UniswapV2Router01 {
   )
     external
     payable;
-
-  // external functions
 
   function removeLiquidityETHSupportingFeeOnTransferTokens(
     address token,

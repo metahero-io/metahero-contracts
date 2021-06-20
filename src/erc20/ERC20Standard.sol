@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-interface ERC20 {
+interface ERC20Standard {
   // events
 
   event Approval(
