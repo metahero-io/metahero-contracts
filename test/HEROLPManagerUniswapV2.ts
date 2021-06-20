@@ -31,7 +31,6 @@ describe.only('HEROLPManagerUniswapV2', () => {
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
   let owner: Signer;
-  let holders: Signer[];
   let token: HEROToken;
   let lpManager: HEROLPManagerUniswapV2;
   let wrappedNative: ERC20;
@@ -40,7 +39,7 @@ describe.only('HEROLPManagerUniswapV2', () => {
   let swapTokenAmount = TOTAL_SUPPLY.div(100);
 
   before(async () => {
-    [owner, ...holders] = await getSigners();
+    [owner] = await getSigners();
 
     token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
 
