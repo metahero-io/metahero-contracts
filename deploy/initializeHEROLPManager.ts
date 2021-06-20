@@ -69,7 +69,7 @@ const func: DeployFunction = async (hre) => {
 
 func.tags = [
   'initialize', //
-  ContractNames.HEROLPManagerUniswapV2,
+  ContractNames.HEROLPManager,
 ];
 func.dependencies = [
   'deploy', //

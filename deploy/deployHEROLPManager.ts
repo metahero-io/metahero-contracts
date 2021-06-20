@@ -16,7 +16,7 @@ const func: DeployFunction = async (hre) => {
 
 func.tags = [
   'deploy', //
-  ContractNames.HEROLPManagerUniswapV2,
+  ContractNames.HEROLPManager,
 ];
 
 module.exports = func;
