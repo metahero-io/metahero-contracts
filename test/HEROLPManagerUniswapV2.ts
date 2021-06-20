@@ -13,7 +13,7 @@ import {
   UniswapV2Router02,
   UniswapV2Router02__factory as UniswapV2Router02Factory,
 } from '../typings';
-import { Signer, setNextBlockTimestamp, getBalance } from './common';
+import { Signer, setNextBlockTimestamp, getBalance } from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;

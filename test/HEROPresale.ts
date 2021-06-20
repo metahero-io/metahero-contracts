@@ -10,7 +10,7 @@ import {
   getBalance,
   calcTxCost,
   randomAddress,
-} from './common';
+} from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;

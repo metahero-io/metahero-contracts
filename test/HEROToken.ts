@@ -4,10 +4,20 @@ import { expect } from 'chai';
 import HEROTokenArtifact from '../artifacts/HEROToken.json';
 import HEROLPManagerMockArtifact from '../artifacts/HEROLPManagerMock.json';
 import { HEROToken, HEROLPManagerMock } from '../typings';
-import { Signer } from './common';
+import { Signer } from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
+
+interface BeforeHookOptions {
+  lpFee: {
+    sender: number;
+    recipient: number;
+  };
+  rewardsFee: this['lpFee'];
+  initialize: boolean;
+  finishPresale: boolean;
+}
 
 interface TransferAccountOptions {
   type: 'exclude' | 'holder';
@@ -16,14 +26,6 @@ interface TransferAccountOptions {
 }
 
 describe('HEROToken', () => {
-  const LP_FEE = {
-    sender: 4,
-    recipient: 4,
-  };
-  const REWARDS_FEE = {
-    sender: 1,
-    recipient: 1,
-  };
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
   let owner: Signer;
@@ -33,7 +35,21 @@ describe('HEROToken', () => {
   let token: HEROToken;
   let lpManager: HEROLPManagerMock;
 
-  const createBeforeHook = (initialize = true, finishPresale = true) => {
+  const createBeforeHook = (options: Partial<BeforeHookOptions> = {}) => {
+    const { lpFee, rewardsFee, initialize, finishPresale } = {
+      lpFee: {
+        sender: 0,
+        recipient: 0,
+      },
+      rewardsFee: {
+        sender: 0,
+        recipient: 0,
+      },
+      initialize: false,
+      finishPresale: false,
+      ...options,
+    };
+
     before(async () => {
       let signers = await getSigners();
 
@@ -50,8 +66,8 @@ describe('HEROToken', () => {
 
       if (initialize) {
         await token.initialize(
-          LP_FEE, //
-          REWARDS_FEE,
+          lpFee,
+          rewardsFee,
           lpManager.address,
           controller.address,
           TOTAL_SUPPLY,
@@ -68,7 +84,7 @@ describe('HEROToken', () => {
   };
 
   context('# metadata', () => {
-    createBeforeHook(false, false);
+    createBeforeHook();
 
     it('expect to return correct name', async () => {
       expect(await token.name()).to.equal('Metahero');
@@ -85,7 +101,18 @@ describe('HEROToken', () => {
 
   context('transfer()', () => {
     context('# google spreadsheets scenario', () => {
-      createBeforeHook();
+      createBeforeHook({
+        lpFee: {
+          sender: 4,
+          recipient: 4,
+        },
+        rewardsFee: {
+          sender: 1,
+          recipient: 1,
+        },
+        initialize: true,
+        finishPresale: true,
+      });
 
       const createTestCase = (
         senderOptions: TransferAccountOptions,
