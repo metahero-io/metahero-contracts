@@ -1,9 +1,9 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
-import HEROTokenEconomyMockArtifact from '../artifacts/HEROTokenEconomyMock.json';
+import { BigNumber, constants } from 'ethers';
+import HEROTokenArtifact from '../artifacts/HEROToken.json';
 import HEROPresaleArtifact from '../artifacts/HEROPresale.json';
-import { HEROTokenEconomyMock, HEROPresale } from '../typings';
+import { HEROToken, HEROPresale } from '../typings';
 import {
   Signer,
   setNextBlockTimestamp,
@@ -18,12 +18,13 @@ const { getSigners } = ethers;
 describe('HEROPresale', () => {
   const TOKENS_AMOUNT_PER_NATIVE = BigNumber.from(10);
   const MAX_PURCHASE_PRICE = BigNumber.from(1000);
+  const TOTAL_SUPPLY = BigNumber.from(100000000);
   const TOTAL_TOKENS = BigNumber.from(1000000);
   const DEADLINE_IN = 60; // 60 sec
 
-  let token: HEROTokenEconomyMock;
+  let token: HEROToken;
   let presale: HEROPresale;
-  let controller: Signer;
+  let owner: Signer;
   let external: Signer;
   let accounts: Signer[];
   let totalTokens = TOTAL_TOKENS;
@@ -31,15 +32,12 @@ describe('HEROPresale', () => {
 
   const createBeforeHook = (initialize = true) => {
     before(async () => {
-      [controller, external, ...accounts] = await getSigners();
+      [owner, external, ...accounts] = await getSigners();
 
-      token = (await deployContract(
-        controller,
-        HEROTokenEconomyMockArtifact,
-      )) as HEROTokenEconomyMock;
+      token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
 
       presale = (await deployContract(
-        controller,
+        owner,
         HEROPresaleArtifact,
       )) as HEROPresale;
 
@@ -51,7 +49,9 @@ describe('HEROPresale', () => {
       await token.initialize(
         fee, //
         fee,
-        0,
+        constants.AddressZero,
+        constants.AddressZero,
+        TOTAL_SUPPLY,
         [
           presale.address, //
           ...accounts.map(({ address }) => address),
@@ -258,7 +258,7 @@ describe('HEROPresale', () => {
       context('finishPresale()', async () => {
         it('expect to finish presale', async () => {
           const summaryBefore = await token.summary();
-          const controllerBalance = await getBalance(controller);
+          const ownerBalance = await getBalance(owner);
           const presaleBalance = await getBalance(presale);
           const presaleTokens = await token.balanceOf(presale.address);
 
@@ -278,8 +278,8 @@ describe('HEROPresale', () => {
           expect(await token.balanceOf(presale.address)).to.equal(0);
 
           expect(await getBalance(presale)).to.equal(0);
-          expect(await getBalance(controller)).to.equal(
-            controllerBalance.add(presaleBalance).sub(txCost),
+          expect(await getBalance(owner)).to.equal(
+            ownerBalance.add(presaleBalance).sub(txCost),
           );
         });
       });

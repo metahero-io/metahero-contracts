@@ -1,8 +1,9 @@
 export enum ContractNames {
   BUSDToken = 'BUSDToken',
+  HEROLPManagerUniswapV2 = 'HEROLPManagerUniswapV2',
   HEROPresale = 'HEROPresale',
   HEROToken = 'HEROToken',
-  SwapRouter = 'SwapRouter',
+  PancakeSwapRouter = 'PancakeSwapRouter',
 }
 
 export enum NetworkNames {

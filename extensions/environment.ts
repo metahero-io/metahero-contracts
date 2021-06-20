@@ -37,6 +37,20 @@ extendEnvironment((hre) => {
 
     if (raw) {
       switch (typeof defaultValue) {
+        case 'boolean':
+          switch (raw.toUpperCase()) {
+            case 'Y':
+            case '1':
+              result = true;
+              break;
+
+            case 'N':
+            case '0':
+              result = false;
+              break;
+          }
+          break;
+
         case 'number':
           result = parseInt(raw, 10) || 0;
           break;
