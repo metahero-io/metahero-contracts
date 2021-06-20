@@ -14,19 +14,17 @@ const func: DeployFunction = async (hre) => {
 
   const DEADLINE_IN = getNetworkEnv(
     'PRESALE_DEADLINE_IN',
-    0, // use default (14 days)
+    14, //14 days
   );
   const TOKENS_AMOUNT_PER_NATIVE = getNetworkEnv(
     'PRESALE_TOKENS_AMOUNT_PER_NATIVE',
-    BigNumber.from(0), // use default (200000)
+    BigNumber.from('200000'), // 200000
   );
   const MAX_PURCHASE_PRICE = getNetworkEnv(
     'PRESALE_MAX_PURCHASE_PRICE',
-    BigNumber.from(0), // use default (10.000000000000000000)
+    BigNumber.from('10000000000000000000'), // 10.000000000000000000
   );
-  const ACCOUNTS: string[] = [
-    //
-  ];
+  const ACCOUNTS: string[] = [];
   const TOTAL_TOKENS = getNetworkEnv(
     'PRESALE_TOTAL_TOKENS',
     BigNumber.from('1000000000000000000000000000'), // 1,000,000,000.000000000000000000
@@ -46,6 +44,17 @@ const func: DeployFunction = async (hre) => {
       // for local node only
       ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
     }
+
+    await execute(
+      ContractNames.HEROToken,
+      {
+        from,
+        log: true,
+      },
+      'excludeAccount',
+      whitelist,
+      true,
+    );
 
     if (TOTAL_TOKENS.gt(0)) {
       await execute(
@@ -70,7 +79,7 @@ const func: DeployFunction = async (hre) => {
       token,
       TOKENS_AMOUNT_PER_NATIVE,
       MAX_PURCHASE_PRICE,
-      DEADLINE_IN,
+      DEADLINE_IN * 24 * 60 * 60,
       ACCOUNTS,
     );
   }

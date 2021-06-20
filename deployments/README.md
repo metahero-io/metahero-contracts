@@ -4,6 +4,7 @@
 
 | contract | deployed at | transaction hash |  
 | --- | --- | --- |
-| `HEROPresale` | [0x36125D0Ef66387faa8287147e6E2FDf60a5CFddC](https://testnet.bscscan.com/address/0x36125D0Ef66387faa8287147e6E2FDf60a5CFddC) | [0x8bedd979538a3c5472084d38ffd0b666330a3a7e3b2820193bbdd7fb12f10238](https://testnet.bscscan.com/tx/0x8bedd979538a3c5472084d38ffd0b666330a3a7e3b2820193bbdd7fb12f10238) |
-| `HEROToken` | [0x4B67c1A5B2AB1329bBBbD4af60a435d08197b5A7](https://testnet.bscscan.com/address/0x4B67c1A5B2AB1329bBBbD4af60a435d08197b5A7) | [0x1a0381b627012b5662aecf34d6517e118bb81686c7fc727594e19c7f6dea126d](https://testnet.bscscan.com/tx/0x1a0381b627012b5662aecf34d6517e118bb81686c7fc727594e19c7f6dea126d) |
+| `HEROLPManagerUniswapV2` | [0xFc0d2b5dA3E168f6FD26eeFd26d09F2f8481Fa38](https://testnet.bscscan.com/address/0xFc0d2b5dA3E168f6FD26eeFd26d09F2f8481Fa38) | [0xb967c131d4fbf7048f78fbf5acb9e3e64eca0e91ec6596aeba223060a14edb74](https://testnet.bscscan.com/tx/0xb967c131d4fbf7048f78fbf5acb9e3e64eca0e91ec6596aeba223060a14edb74) |
+| `HEROPresale` | [0x78fd9026b9EdB0d5CDc6A4788CF9128410f97715](https://testnet.bscscan.com/address/0x78fd9026b9EdB0d5CDc6A4788CF9128410f97715) | [0xd57648c079f110daf2342bb63f7379d910a448a2e4322e158b6b4c2f4e25fd43](https://testnet.bscscan.com/tx/0xd57648c079f110daf2342bb63f7379d910a448a2e4322e158b6b4c2f4e25fd43) |
+| `HEROToken` | [0xD34da18a49E2eF5e551A049a801AC271D88b1B19](https://testnet.bscscan.com/address/0xD34da18a49E2eF5e551A049a801AC271D88b1B19) | [0x6b22c9237d2818d7867fb53b08325ae9cfae3123497ceb09484efaa14eb5fc1d](https://testnet.bscscan.com/tx/0x6b22c9237d2818d7867fb53b08325ae9cfae3123497ceb09484efaa14eb5fc1d) |
 
