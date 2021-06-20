@@ -18,7 +18,7 @@ import { Signer, setNextBlockTimestamp, getBalance } from './common';
 const { deployContract } = waffle;
 const { getSigners } = ethers;
 
-describe.only('HEROLPManagerUniswapV2', () => {
+describe('HEROLPManagerUniswapV2', () => {
   const LP_FEE = {
     sender: 5,
     recipient: 5,
