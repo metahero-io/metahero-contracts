@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./components/Controlled.sol";
-import "./components/Initializable.sol";
+import "./access/Owned.sol";
+import "./lifecycle/Initializable.sol";
 import "./libs/MathLib.sol";
 import "./HEROToken.sol";
 
@@ -10,7 +10,7 @@ import "./HEROToken.sol";
 /**
  * @title HERO presale
  */
-contract HEROPresale is Controlled, Initializable {
+contract HEROPresale is Owned, Initializable {
   using MathLib for uint256;
 
   struct Settings {
@@ -22,12 +22,6 @@ contract HEROPresale is Controlled, Initializable {
     uint256 totalAccounts;
     uint256 totalTokens;
   }
-
-  // defaults
-
-  uint256 private constant DEFAULT_DEADLINE_IN = 14 * 24 * 60 * 60; // 14 days
-  uint256 private constant DEFAULT_TOKENS_AMOUNT_PER_NATIVE = 200000;
-  uint256 private constant DEFAULT_MAX_PURCHASE_PRICE = 10 ** 18; // 10.000000000000000000
 
   HEROToken public token;
   Settings public settings;
@@ -66,7 +60,7 @@ contract HEROPresale is Controlled, Initializable {
    */
   constructor ()
     public
-    Controlled()
+    Owned()
     Initializable()
   {
     //
@@ -142,27 +136,32 @@ contract HEROPresale is Controlled, Initializable {
     summary.totalTokens = token.balanceOf(address(this));
 
     _updateSettings(
-      tokensAmountPerNative == 0
-        ? DEFAULT_TOKENS_AMOUNT_PER_NATIVE
-        : tokensAmountPerNative,
-      maxPurchasePrice == 0
-        ? DEFAULT_MAX_PURCHASE_PRICE
-        : maxPurchasePrice
+      tokensAmountPerNative,
+      maxPurchasePrice
     );
 
-    _updateDeadline(deadlineIn != 0
-      ? deadlineIn
-      : DEFAULT_DEADLINE_IN
-    );
+    _updateDeadline(deadlineIn);
 
     if (accounts.length != 0) {
       _addAccounts(accounts);
     }
   }
 
+  function updateSettings(
+    uint256 tokensAmountPerNative,
+    uint256 maxPurchasePrice
+  )
+    external
+    onlyOwner
+  {
+    _updateSettings(
+      tokensAmountPerNative,
+      maxPurchasePrice
+    );
+  }
+
   function syncTotalTokens()
     external
-    onlyController
   {
     summary.totalTokens = token.balanceOf(address(this));
   }
@@ -171,7 +170,7 @@ contract HEROPresale is Controlled, Initializable {
     uint256 deadlineIn_ // in seconds
   )
     external
-    onlyController
+    onlyOwner
   {
     _updateDeadline(deadlineIn_);
   }
@@ -180,7 +179,7 @@ contract HEROPresale is Controlled, Initializable {
     address[] calldata accounts
   )
     external
-    onlyController
+    onlyOwner
   {
     _addAccounts(accounts);
   }
@@ -189,7 +188,7 @@ contract HEROPresale is Controlled, Initializable {
     address[] calldata accounts
   )
     external
-    onlyController
+    onlyOwner
   {
     uint256 totalRemoved;
     uint256 accountsLen = accounts.length;
@@ -221,7 +220,7 @@ contract HEROPresale is Controlled, Initializable {
 
   function finishPresale()
     external
-    onlyController
+    onlyOwner
   {
     require(
       block.timestamp >= deadline, // solhint-disable-line not-rely-on-time

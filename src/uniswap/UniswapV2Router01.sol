@@ -3,7 +3,7 @@
 pragma solidity ^0.6.12;
 
 interface UniswapV2Router01 {
-  // external functions (payable)
+  // external functions
 
   function addLiquidityETH(
     address token,
@@ -26,8 +26,6 @@ interface UniswapV2Router01 {
     external
     payable
     returns (uint[] memory);
-
-  // external functions
 
   function addLiquidity(
     address tokenA,

@@ -2,20 +2,12 @@
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
-interface UniswapV2Pair {
+import "../erc20/ERC20Metadata.sol";
+import "../erc20/ERC20Standard.sol";
+
+
+interface UniswapV2Pair is ERC20Metadata, ERC20Standard {
   // events
-
-  event Approval(
-    address indexed owner,
-    address indexed spender,
-    uint value
-  );
-
-  event Transfer(
-    address indexed from,
-    address indexed to,
-    uint value
-  );
 
   event Mint(
     address indexed sender,
@@ -51,28 +43,6 @@ interface UniswapV2Pair {
     address
   )
     external;
-
-  function approve(
-    address spender,
-    uint value
-  )
-    external
-    returns (bool);
-
-  function transfer(
-    address to,
-    uint value
-  )
-    external
-    returns (bool);
-
-  function transferFrom(
-    address from,
-    address to,
-    uint value
-  )
-    external
-    returns (bool);
 
   function mint(
     address to
@@ -114,26 +84,6 @@ interface UniswapV2Pair {
     external;
 
   // external functions (views)
-
-  function totalSupply()
-    external
-    view
-    returns (uint);
-
-  function balanceOf(
-    address owner
-  )
-    external
-    view
-    returns (uint);
-
-  function allowance(
-    address owner,
-    address spender
-  )
-    external
-    view
-    returns (uint);
 
   function DOMAIN_SEPARATOR()
     external
@@ -183,21 +133,6 @@ interface UniswapV2Pair {
     returns (uint);
 
   // external functions (pure)
-
-  function name()
-    external
-    pure
-    returns (string memory);
-
-  function symbol()
-    external
-    pure
-    returns (string memory);
-
-  function decimals()
-    external
-    pure
-    returns (uint8);
 
   function PERMIT_TYPEHASH()
     external
