@@ -3,7 +3,7 @@ pragma solidity ^0.6.12;
 
 import "./access/Owned.sol";
 import "./lifecycle/Initializable.sol";
-import "./libs/MathLib.sol";
+import "./math/MathLib.sol";
 import "./HEROToken.sol";
 
 

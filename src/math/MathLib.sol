@@ -45,20 +45,18 @@ library MathLib {
   )
     internal
     pure
-    returns (uint256)
+    returns (uint256 result)
   {
-    if (a == 0 || b == 0) {
-      return 0;
+    if (a != 0 && b != 0) {
+      result = a * b;
+
+      require(
+        result / a == b,
+        "MathLib#3"
+      );
     }
 
-    uint256 c = a * b;
-
-    require(
-      c / a == b,
-      "MathLib#3"
-    );
-
-    return c;
+    return result;
   }
 
   function div(
@@ -83,10 +81,8 @@ library MathLib {
   )
     internal
     pure
-    returns (uint256)
+    returns (uint256 result)
   {
-    uint256 result;
-
     if (a != 0 && p != 0) {
       result = div(mul(a, p), 100);
     }

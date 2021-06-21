@@ -6,7 +6,7 @@ import "./access/Controlled.sol";
 import "./access/Owned.sol";
 import "./erc20/ERC20.sol";
 import "./lifecycle/Initializable.sol";
-import "./libs/MathLib.sol";
+import "./math/MathLib.sol";
 import "./HEROLPManager.sol";
 
 

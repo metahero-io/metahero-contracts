@@ -139,19 +139,21 @@ contract HEROLPManagerUniswapV2 is HEROLPManager {
       );
     }
 
-    (tokenAmount, ) = _removeLiquidity(
+    _removeLiquidity(
       uniswapTokenPair.balanceOf(address(this))
     );
 
+    tokenAmount = token.balanceOf(address(this));
+
     require(
-      tokenAmount >= amount,
+      tokenAmount >= amount, // should be at least 1
       "HEROLPManagerUniswapV2#7"
     );
 
     token.burn(amount);
 
     _addLiquidity(
-      token.balanceOf(address(this)),
+      tokenAmount.sub(amount),
       address(this).balance
     );
   }
