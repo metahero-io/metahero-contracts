@@ -46,6 +46,7 @@ const func: DeployFunction = async (hre) => {
       'excludeAccount',
       whitelist,
       true,
+      true,
     );
 
     if (TOTAL_TOKENS.gt(0)) {

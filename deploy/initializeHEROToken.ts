@@ -45,7 +45,10 @@ const func: DeployFunction = async (hre) => {
     'TOKEN_TOTAL_SUPPLY',
     BigNumber.from('10000000000000000000000000000'), // 10,000,000,000.000000000000000000
   );
-  const EXECUTE_ACCOUNTS: string[] = [];
+  const PRESALE_FINISHED = getNetworkEnv(
+    'TOKEN_PRESALE_FINISHED', //
+    false,
+  );
 
   const { from } = await getNamedAccounts();
 
@@ -69,8 +72,19 @@ const func: DeployFunction = async (hre) => {
       lpManager,
       constants.AddressZero, // disable controller
       TOTAL_SUPPLY,
-      EXECUTE_ACCOUNTS,
+      [],
     );
+
+    if (PRESALE_FINISHED) {
+      await execute(
+        ContractNames.HEROToken,
+        {
+          from,
+          log: true,
+        },
+        'finishPresale',
+      );
+    }
   }
 };
 

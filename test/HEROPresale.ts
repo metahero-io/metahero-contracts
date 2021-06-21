@@ -73,10 +73,7 @@ describe('HEROPresale', () => {
         constants.AddressZero,
         constants.AddressZero,
         TOTAL_SUPPLY,
-        [
-          presale.address, //
-          ...accounts.map(({ address }) => address),
-        ],
+        [presale.address, ...accounts.map(({ address }) => address)],
       );
 
       if (transferTokens) {

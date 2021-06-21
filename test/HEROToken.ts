@@ -60,8 +60,8 @@ describe('HEROToken', () => {
 
       [owner, controller, ...signers] = signers;
 
-      excluded = [owner, signers[0]];
-      holders = signers.slice(1);
+      excluded = signers.slice(0, 2);
+      holders = signers.slice(2);
 
       token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
       lpManager = (await deployContract(
@@ -77,8 +77,10 @@ describe('HEROToken', () => {
           lpManager.address,
           controller.address,
           TOTAL_SUPPLY,
-          excluded.slice(1).map(({ address }) => address),
+          excluded.map(({ address }) => address),
         );
+
+        await token.transfer(excluded[0].address, TOTAL_SUPPLY);
 
         await lpManager.initialize(token.address);
 
@@ -245,6 +247,22 @@ describe('HEROToken', () => {
           expectedBalance: '200000000000',
         },
         '50000000000',
+      );
+
+      // additional case for sending all tokens from the holder account
+
+      createTestCase(
+        {
+          type: 'holder',
+          index: 0,
+          expectedBalance: '0',
+        },
+        {
+          type: 'holder',
+          index: 5,
+          expectedBalance: '58469381406',
+        },
+        '61351621933',
       );
     });
   });

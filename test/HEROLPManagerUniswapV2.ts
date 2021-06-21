@@ -57,16 +57,6 @@ describe('HEROLPManagerUniswapV2', () => {
       owner,
     );
 
-    await token.initialize(
-      BURN_FEE,
-      LP_FEE,
-      REWARDS_FEE,
-      lpManager.address,
-      constants.AddressZero,
-      TOTAL_SUPPLY,
-      [],
-    );
-
     await lpManager.initialize(
       ENABLE_BURN_LP_AT_VALUE,
       knownContracts.getAddress('BUSDToken'),
@@ -74,18 +64,25 @@ describe('HEROLPManagerUniswapV2', () => {
       swapRouter.address,
     );
 
-    wrappedNative = ERC20Factory.connect(
-      await swapRouter.WETH(), //
-      owner,
-    );
-
     swapTokenPair = UniswapV2PairFactory.connect(
       await lpManager.uniswapTokenPair(), //
       owner,
     );
 
-    await token.excludeAccount(swapTokenPair.address, true);
-    await token.excludeAccount(swapRouter.address, true);
+    await token.initialize(
+      BURN_FEE,
+      LP_FEE,
+      REWARDS_FEE,
+      lpManager.address,
+      constants.AddressZero,
+      TOTAL_SUPPLY,
+      [swapTokenPair.address, swapRouter.address],
+    );
+
+    wrappedNative = ERC20Factory.connect(
+      await swapRouter.WETH(), //
+      owner,
+    );
 
     await token.finishPresale();
   });
