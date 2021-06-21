@@ -1,0 +1,5 @@
+# Metahero contracts
+
+## License
+
+MIT
