@@ -24,7 +24,6 @@ const func: DeployFunction = async (hre) => {
     'PRESALE_MAX_PURCHASE_PRICE',
     BigNumber.from('10000000000000000000'), // 10.000000000000000000
   );
-  const ACCOUNTS: string[] = [];
   const TOTAL_TOKENS = getNetworkEnv(
     'PRESALE_TOTAL_TOKENS',
     BigNumber.from('1000000000000000000000000000'), // 1,000,000,000.000000000000000000
@@ -37,13 +36,6 @@ const func: DeployFunction = async (hre) => {
   } else {
     const { address: whitelist } = await get(ContractNames.HEROPresale);
     const { address: token } = await get(ContractNames.HEROToken);
-
-    const signers = await getSigners();
-
-    if (signers.length > 1) {
-      // for local node only
-      ACCOUNTS.push(...signers.slice(1).map(({ address }) => address));
-    }
 
     await execute(
       ContractNames.HEROToken,
@@ -80,8 +72,22 @@ const func: DeployFunction = async (hre) => {
       TOKENS_AMOUNT_PER_NATIVE,
       MAX_PURCHASE_PRICE,
       DEADLINE_IN * 24 * 60 * 60,
-      ACCOUNTS,
     );
+
+    const signers = await getSigners();
+
+    // for local node only
+    if (signers.length > 1) {
+      await execute(
+        ContractNames.HEROPresale,
+        {
+          from,
+          log: true,
+        },
+        'addAccounts',
+        signers.slice(1).map(({ address }) => address),
+      );
+    }
   }
 };
 

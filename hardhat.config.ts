@@ -34,6 +34,7 @@ const config: HardhatUserConfig = {
       },
       chainId: NetworkChainIds.Bsc,
       gasPrice: 20 * 1000000000,
+      allowUnlimitedContractSize: true,
     },
     ...createConfigNetworks(),
   },

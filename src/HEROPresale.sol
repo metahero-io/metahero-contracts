@@ -120,8 +120,7 @@ contract HEROPresale is Owned, Initializable {
     address payable token_,
     uint256 tokensAmountPerNative,
     uint256 maxPurchasePrice,
-    uint256 deadlineIn, // in seconds
-    address[] calldata accounts
+    uint256 deadlineIn // in seconds
   )
     external
     onlyInitializer
@@ -141,10 +140,6 @@ contract HEROPresale is Owned, Initializable {
     );
 
     _updateDeadline(deadlineIn);
-
-    if (accounts.length != 0) {
-      _addAccounts(accounts);
-    }
   }
 
   function updateSettings(
@@ -160,12 +155,6 @@ contract HEROPresale is Owned, Initializable {
     );
   }
 
-  function syncTotalTokens()
-    external
-  {
-    summary.totalTokens = token.balanceOf(address(this));
-  }
-
   function updateDeadline(
     uint256 deadlineIn_ // in seconds
   )
@@ -173,6 +162,12 @@ contract HEROPresale is Owned, Initializable {
     onlyOwner
   {
     _updateDeadline(deadlineIn_);
+  }
+
+  function syncTotalTokens()
+    external
+  {
+    summary.totalTokens = token.balanceOf(address(this));
   }
 
   function addAccounts(

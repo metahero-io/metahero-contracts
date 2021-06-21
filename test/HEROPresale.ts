@@ -17,7 +17,7 @@ const { getSigners } = ethers;
 
 describe('HEROPresale', () => {
   const TOKENS_AMOUNT_PER_NATIVE = BigNumber.from(10);
-  const MAX_PURCHASE_PRICE = BigNumber.from(1000);
+  const MAX_PURCHASE_PRICE = BigNumber.from(10000000);
   const TOTAL_SUPPLY = BigNumber.from(100000000);
   const TOTAL_TOKENS = BigNumber.from(1000000);
   const DEADLINE_IN = 60; // 60 sec
@@ -27,10 +27,30 @@ describe('HEROPresale', () => {
   let owner: Signer;
   let external: Signer;
   let accounts: Signer[];
-  let totalTokens = TOTAL_TOKENS;
+  let totalTokens = BigNumber.from(0);
   let deadline: number;
 
-  const createBeforeHook = (initialize = true) => {
+  const createBeforeHook = (
+    options: {
+      initialize?: boolean;
+      transferTokens?: boolean;
+      addAccounts?: boolean;
+      deadlineIn?: number;
+    } = {},
+  ) => {
+    const {
+      initialize, //
+      transferTokens,
+      addAccounts,
+      deadlineIn,
+    } = {
+      initialize: false,
+      transferTokens: false,
+      addAccounts: false,
+      deadlineIn: DEADLINE_IN,
+      ...options,
+    };
+
     before(async () => {
       [owner, external, ...accounts] = await getSigners();
 
@@ -59,7 +79,11 @@ describe('HEROPresale', () => {
         ],
       );
 
-      await token.transfer(presale.address, TOTAL_TOKENS);
+      if (transferTokens) {
+        await token.transfer(presale.address, TOTAL_TOKENS);
+
+        totalTokens = TOTAL_TOKENS;
+      }
 
       if (initialize) {
         deadline = (await setNextBlockTimestamp()) + DEADLINE_IN;
@@ -68,33 +92,55 @@ describe('HEROPresale', () => {
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
           MAX_PURCHASE_PRICE,
-          DEADLINE_IN,
-          accounts.map(({ address }) => address),
+          deadlineIn,
         );
+
+        if (addAccounts) {
+          await presale.addAccounts(accounts.map(({ address }) => address));
+        }
       }
     });
   };
 
   context('# before initialization', () => {
-    createBeforeHook(false);
+    createBeforeHook({
+      initialize: false,
+    });
 
     context('initialize()', () => {
-      it('expect to initialize the whitelist', async () => {
+      it('expect to revert when sender is not the initializer', async () => {
+        await expect(
+          presale
+            .connect(external)
+            .initialize(
+              token.address,
+              TOKENS_AMOUNT_PER_NATIVE,
+              MAX_PURCHASE_PRICE,
+              DEADLINE_IN,
+            ),
+        ).to.be.revertedWith('Initializable#2');
+      });
+
+      it('expect to revert when token is the zero address', async () => {
+        await expect(
+          presale.initialize(
+            constants.AddressZero,
+            TOKENS_AMOUNT_PER_NATIVE,
+            MAX_PURCHASE_PRICE,
+            DEADLINE_IN,
+          ),
+        ).to.be.revertedWith('HEROPresale#6');
+      });
+
+      it('expect to initialize the contract', async () => {
         const tx = await presale.initialize(
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
           MAX_PURCHASE_PRICE,
           DEADLINE_IN,
-          accounts.map(({ address }) => address),
         );
 
         expect(tx).to.emit(presale, 'Initialized');
-
-        for (const { address } of accounts) {
-          expect(tx).to.emit(presale, 'AccountAdded').withArgs(address);
-        }
-
-        expect(await token.balanceOf(presale.address)).to.equal(TOTAL_TOKENS);
       });
 
       it('expect to revert when whitelist is initialized', async () => {
@@ -104,7 +150,6 @@ describe('HEROPresale', () => {
             TOKENS_AMOUNT_PER_NATIVE,
             MAX_PURCHASE_PRICE,
             DEADLINE_IN,
-            accounts.map(({ address }) => address),
           ),
         ).to.be.revertedWith('Initializable#1');
       });
@@ -112,7 +157,17 @@ describe('HEROPresale', () => {
   });
 
   context('# after initialization', () => {
-    createBeforeHook(true);
+    createBeforeHook({
+      initialize: true,
+      transferTokens: true,
+      addAccounts: true,
+    });
+
+    context('token()', () => {
+      it('expect to return correct token', async () => {
+        expect(await presale.token()).to.equal(token.address);
+      });
+    });
 
     context('settings()', () => {
       it('expect to return correct settings', async () => {
@@ -134,43 +189,194 @@ describe('HEROPresale', () => {
 
     context('deadline()', () => {
       it('expect to return correct deadline', async () => {
-        const output = await presale.deadline();
+        expect(await presale.deadline()).to.equal(deadline);
+      });
+    });
 
-        expect(output).to.equal(deadline);
+    context('whitelist()', () => {
+      it('expect to return true when account is on the whitelist', async () => {
+        expect(await presale.whitelist(accounts[0].address)).to.be.true;
+      });
+
+      it('expect to return false when account is not on the whitelist', async () => {
+        expect(await presale.whitelist(randomAddress())).to.be.false;
+      });
+    });
+
+    context('updateSettings()', () => {
+      it('expect to revert when sender is not the owner', async () => {
+        await expect(
+          presale
+            .connect(external)
+            .updateSettings(TOKENS_AMOUNT_PER_NATIVE, MAX_PURCHASE_PRICE),
+        ).to.be.revertedWith('Owned#1');
+      });
+
+      it('expect to revert when tokens amount per native is zero', async () => {
+        await expect(
+          presale.updateSettings(0, MAX_PURCHASE_PRICE),
+        ).to.be.revertedWith('HEROPresale#10');
+      });
+
+      it('expect to revert when max purchase price is zero', async () => {
+        await expect(
+          presale.updateSettings(TOKENS_AMOUNT_PER_NATIVE, 0),
+        ).to.be.revertedWith('HEROPresale#11');
+      });
+
+      it('expect to update settings', async () => {
+        const tx = await presale.updateSettings(
+          TOKENS_AMOUNT_PER_NATIVE,
+          MAX_PURCHASE_PRICE,
+        );
+
+        expect(tx)
+          .to.emit(presale, 'SettingsUpdated')
+          .withArgs(TOKENS_AMOUNT_PER_NATIVE, MAX_PURCHASE_PRICE);
+      });
+    });
+
+    context('updateDeadline()', () => {
+      it('expect to revert when sender is not the owner', async () => {
+        await expect(
+          presale.connect(external).updateDeadline(1),
+        ).to.be.revertedWith('Owned#1');
+      });
+
+      it('expect to update deadline', async () => {
+        deadline = (await setNextBlockTimestamp()) + DEADLINE_IN;
+
+        const tx = await presale.updateDeadline(DEADLINE_IN);
+
+        expect(tx).to.emit(presale, 'DeadlineUpdated').withArgs(deadline);
+      });
+    });
+
+    context('syncTotalTokens()', () => {
+      const newTokens = 1000;
+
+      before(async () => {
+        await token.transfer(presale.address, newTokens);
+        totalTokens = totalTokens.add(newTokens);
+      });
+
+      it('expect to sync total tokens', async () => {
+        await presale.syncTotalTokens();
+
+        expect((await presale.summary()).totalTokens).to.equal(totalTokens);
       });
     });
 
     context('addAccounts()', () => {
-      const ACCOUNTS = [
-        randomAddress(), //
-        randomAddress(),
-        randomAddress(),
-      ];
+      it('expect to revert when sender is not the owner', async () => {
+        await expect(
+          presale.connect(external).addAccounts([randomAddress()]),
+        ).to.be.revertedWith('Owned#1');
+      });
 
-      it('expect to add accounts to whitelist', async () => {
-        const tx = await presale.addAccounts(ACCOUNTS);
+      it('expect to revert when one of the account is zero address', async () => {
+        await expect(
+          presale.addAccounts([randomAddress(), constants.AddressZero]),
+        ).to.be.revertedWith('HEROPresale#12');
+      });
 
-        for (const account of ACCOUNTS) {
+      it('expect to revert when there is no accounts to add', async () => {
+        await expect(presale.addAccounts([])).to.be.revertedWith(
+          'HEROPresale#13',
+        );
+      });
+
+      it('expect to omit existing account', async () => {
+        const { totalAccounts } = await presale.summary();
+        const newAccounts = [
+          randomAddress(), //
+          randomAddress(),
+        ];
+        const existingAccount = accounts[0].address;
+
+        const tx = await presale.addAccounts([...newAccounts, existingAccount]);
+
+        for (const account of newAccounts) {
+          expect(tx).to.emit(presale, 'AccountAdded').withArgs(account);
+        }
+
+        expect((await presale.summary()).totalAccounts).to.equal(
+          totalAccounts.add(newAccounts.length),
+        );
+      });
+
+      it('expect to add accounts to the whitelist', async () => {
+        const newAccounts = [
+          randomAddress(), //
+          randomAddress(),
+          randomAddress(),
+        ];
+
+        const tx = await presale.addAccounts(newAccounts);
+
+        for (const account of newAccounts) {
           expect(tx).to.emit(presale, 'AccountAdded').withArgs(account);
         }
       });
     });
 
     context('removeAccounts()', () => {
-      const ACCOUNTS = [
+      const existingAccounts = [
         randomAddress(), //
+        randomAddress(),
         randomAddress(),
         randomAddress(),
       ];
 
       before(async () => {
-        await presale.addAccounts(ACCOUNTS);
+        await presale.addAccounts(existingAccounts);
       });
 
-      it('expect to remove accounts to whitelist', async () => {
-        const tx = await presale.removeAccounts(ACCOUNTS);
+      it('expect to revert when sender is not the owner', async () => {
+        await expect(
+          presale.connect(external).removeAccounts([randomAddress()]),
+        ).to.be.revertedWith('Owned#1');
+      });
 
-        for (const account of ACCOUNTS) {
+      it('expect to revert when one of the account is zero address', async () => {
+        await expect(
+          presale.removeAccounts([randomAddress(), constants.AddressZero]),
+        ).to.be.revertedWith('HEROPresale#7');
+      });
+
+      it('expect to revert when there is no accounts to remove', async () => {
+        await expect(presale.removeAccounts([])).to.be.revertedWith(
+          'HEROPresale#8',
+        );
+      });
+
+      it('expect to omit not existing account', async () => {
+        const oldAccounts = existingAccounts.slice(0, 2);
+
+        const { totalAccounts } = await presale.summary();
+
+        const randomAccount = randomAddress();
+
+        const tx = await presale.removeAccounts([
+          ...oldAccounts,
+          randomAccount,
+        ]);
+
+        for (const account of oldAccounts) {
+          expect(tx).to.emit(presale, 'AccountRemoved').withArgs(account);
+        }
+
+        expect((await presale.summary()).totalAccounts).to.equal(
+          totalAccounts.sub(oldAccounts.length),
+        );
+      });
+
+      it('expect to remove accounts from the whitelist', async () => {
+        const oldAccounts = existingAccounts.slice(2);
+
+        const tx = await presale.removeAccounts(oldAccounts);
+
+        for (const account of oldAccounts) {
           expect(tx).to.emit(presale, 'AccountRemoved').withArgs(account);
         }
       });
@@ -193,13 +399,31 @@ describe('HEROPresale', () => {
           ).to.be.revertedWith('HEROPresale#2');
         });
 
-        it('expect to revert on invalid msg.value', async () => {
+        it('expect to revert on zero msg.value', async () => {
           await expect(
             account.sendTransaction({
               to: presale.address,
               value: 0,
             }),
           ).to.be.revertedWith('HEROPresale#3');
+        });
+
+        it('expect to revert when msg.value is too high', async () => {
+          await expect(
+            account.sendTransaction({
+              to: presale.address,
+              value: MAX_PURCHASE_PRICE.add(1),
+            }),
+          ).to.be.revertedWith('HEROPresale#4');
+        });
+
+        it('expect to revert when purchased tokens amount is too high', async () => {
+          await expect(
+            account.sendTransaction({
+              to: presale.address,
+              value: MAX_PURCHASE_PRICE,
+            }),
+          ).to.be.revertedWith('HEROPresale#5');
         });
 
         it('expect to buy tokens', async () => {
@@ -282,6 +506,22 @@ describe('HEROPresale', () => {
           expect(await getBalance(owner)).to.equal(
             ownerBalance.add(presaleBalance).sub(txCost),
           );
+        });
+
+        context('# when all tokens are sold', () => {
+          createBeforeHook({
+            initialize: true,
+            transferTokens: false,
+            deadlineIn: 0,
+          });
+
+          it('expect to finish presale', async () => {
+            const totalSupply = await token.totalSupply();
+
+            await presale.finishPresale();
+
+            expect(await token.totalSupply()).to.equal(totalSupply);
+          });
         });
       });
     });
