@@ -593,6 +593,18 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       senderLpFee
     );
 
+    _emitTransfer(
+      recipient,
+      address(0),
+      recipientBurnFee
+    );
+
+    _emitTransfer(
+      recipient,
+      address(lpManager),
+      recipientLpFee
+    );
+
     summary.totalSupply = summary.totalSupply.sub(senderBurnFee).sub(recipientBurnFee);
     summary.totalHolding = summary.totalHolding.sub(totalFee);
 

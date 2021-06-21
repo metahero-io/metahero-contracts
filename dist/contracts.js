@@ -790,7 +790,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0xa2e6D2b1F48c147A22a7A5BAB95bB961866c3288"
+      "97": "0x4FcbEd9Eb0D914915FBbc39241A6bF74EB23C701"
     }
   },
   "HEROPresale": {
@@ -1127,7 +1127,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x44A41ecEe092cEDc43FC228e04cf4d20906EC6A9"
+      "97": "0xed5BE6bFc70aE7ee783222FFA2AD5417BA923ae9"
     }
   },
   "HEROToken": {
@@ -1771,7 +1771,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x9A45227eB8B5F05567c27F8AD583E20fc4DE77C3"
+      "97": "0xde346431fBAFfFf730d4B826c2F9F7D472f37103"
     }
   },
   "Initializable": {
