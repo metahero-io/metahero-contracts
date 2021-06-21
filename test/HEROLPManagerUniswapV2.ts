@@ -19,6 +19,10 @@ const { deployContract } = waffle;
 const { getSigners } = ethers;
 
 describe('HEROLPManagerUniswapV2', () => {
+  const BURN_FEE = {
+    sender: 0,
+    recipient: 0,
+  };
   const LP_FEE = {
     sender: 5,
     recipient: 5,
@@ -54,7 +58,8 @@ describe('HEROLPManagerUniswapV2', () => {
     );
 
     await token.initialize(
-      LP_FEE, //
+      BURN_FEE,
+      LP_FEE,
       REWARDS_FEE,
       lpManager.address,
       constants.AddressZero,

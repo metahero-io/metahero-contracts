@@ -42,10 +42,14 @@ describe('HEROLPManager (using mock)', () => {
           sender: 0,
           recipient: 0,
         },
+        {
+          sender: 0,
+          recipient: 0,
+        },
         lpManager.address,
         constants.AddressZero,
         TOTAL_SUPPLY,
-        [],
+        [lpManager.address],
       );
 
       if (initialize) {

@@ -11,14 +11,24 @@ const func: DeployFunction = async (hre) => {
 
   // settings
 
+  const BURN_FEE = {
+    sender: getNetworkEnv(
+      'TOKEN_SENDER_BURN_FEE', //
+      1,
+    ),
+    recipient: getNetworkEnv(
+      'TOKEN_RECIPIENT_BURN_FEE', //
+      1,
+    ),
+  };
   const LP_FEE = {
     sender: getNetworkEnv(
       'TOKEN_SENDER_LP_FEE', //
-      4,
+      3,
     ),
     recipient: getNetworkEnv(
       'TOKEN_RECIPIENT_LP_FEE', //
-      4,
+      3,
     ),
   };
   const REWARDS_FEE = {
@@ -53,6 +63,7 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'initialize',
+      BURN_FEE,
       LP_FEE,
       REWARDS_FEE,
       lpManager,

@@ -10,11 +10,12 @@ const { deployContract } = waffle;
 const { getSigners } = ethers;
 
 interface BeforeHookOptions {
-  lpFee: {
+  burnFee: {
     sender: number;
     recipient: number;
   };
-  rewardsFee: this['lpFee'];
+  lpFee: this['burnFee'];
+  rewardsFee: this['burnFee'];
   initialize: boolean;
   finishPresale: boolean;
 }
@@ -36,7 +37,11 @@ describe('HEROToken', () => {
   let lpManager: HEROLPManagerMock;
 
   const createBeforeHook = (options: Partial<BeforeHookOptions> = {}) => {
-    const { lpFee, rewardsFee, initialize, finishPresale } = {
+    const { burnFee, lpFee, rewardsFee, initialize, finishPresale } = {
+      burnFee: {
+        sender: 0,
+        recipient: 0,
+      },
       lpFee: {
         sender: 0,
         recipient: 0,
@@ -66,6 +71,7 @@ describe('HEROToken', () => {
 
       if (initialize) {
         await token.initialize(
+          burnFee,
           lpFee,
           rewardsFee,
           lpManager.address,
@@ -102,9 +108,13 @@ describe('HEROToken', () => {
   context('transfer()', () => {
     context('# google spreadsheets scenario', () => {
       createBeforeHook({
+        burnFee: {
+          sender: 1,
+          recipient: 1,
+        },
         lpFee: {
-          sender: 4,
-          recipient: 4,
+          sender: 3,
+          recipient: 3,
         },
         rewardsFee: {
           sender: 1,

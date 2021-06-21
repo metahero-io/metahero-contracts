@@ -49,6 +49,7 @@ describe('HEROPresale', () => {
       await token.initialize(
         fee, //
         fee,
+        fee,
         constants.AddressZero,
         constants.AddressZero,
         TOTAL_SUPPLY,
