@@ -4,7 +4,6 @@ export declare enum ContractNames {
   ERC20Metadata = 'ERC20Metadata',
   ERC20Standard = 'ERC20Standard',
   HEROLPManager = 'HEROLPManager',
-  HEROLPManagerMock = 'HEROLPManagerMock',
   HEROLPManagerUniswapV2 = 'HEROLPManagerUniswapV2',
   HEROPresale = 'HEROPresale',
   HEROToken = 'HEROToken',
@@ -14,4 +13,5 @@ export declare enum ContractNames {
   UniswapV2Pair = 'UniswapV2Pair',
   UniswapV2Router01 = 'UniswapV2Router01',
   UniswapV2Router02 = 'UniswapV2Router02',
+  console = 'console',
 }
