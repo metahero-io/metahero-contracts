@@ -11,14 +11,24 @@ const func: DeployFunction = async (hre) => {
 
   // settings
 
+  const BURN_FEE = {
+    sender: getNetworkEnv(
+      'TOKEN_SENDER_BURN_FEE', //
+      1,
+    ),
+    recipient: getNetworkEnv(
+      'TOKEN_RECIPIENT_BURN_FEE', //
+      1,
+    ),
+  };
   const LP_FEE = {
     sender: getNetworkEnv(
       'TOKEN_SENDER_LP_FEE', //
-      4,
+      3,
     ),
     recipient: getNetworkEnv(
       'TOKEN_RECIPIENT_LP_FEE', //
-      4,
+      3,
     ),
   };
   const REWARDS_FEE = {
@@ -35,7 +45,10 @@ const func: DeployFunction = async (hre) => {
     'TOKEN_TOTAL_SUPPLY',
     BigNumber.from('10000000000000000000000000000'), // 10,000,000,000.000000000000000000
   );
-  const EXECUTE_ACCOUNTS: string[] = [];
+  const PRESALE_FINISHED = getNetworkEnv(
+    'TOKEN_PRESALE_FINISHED', //
+    false,
+  );
 
   const { from } = await getNamedAccounts();
 
@@ -53,13 +66,25 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'initialize',
+      BURN_FEE,
       LP_FEE,
       REWARDS_FEE,
       lpManager,
       constants.AddressZero, // disable controller
       TOTAL_SUPPLY,
-      EXECUTE_ACCOUNTS,
+      [],
     );
+
+    if (PRESALE_FINISHED) {
+      await execute(
+        ContractNames.HEROToken,
+        {
+          from,
+          log: true,
+        },
+        'finishPresale',
+      );
+    }
   }
 };
 

@@ -3,7 +3,7 @@ pragma solidity ^0.6.12;
 
 import "./access/Owned.sol";
 import "./lifecycle/Initializable.sol";
-import "./libs/MathLib.sol";
+import "./math/MathLib.sol";
 import "./HEROToken.sol";
 
 
@@ -15,7 +15,7 @@ abstract contract HEROLPManager is Owned, Initializable {
 
   HEROToken public token;
 
-  bool private swapLocked;
+  bool internal swapLocked;
 
   /**
    * @dev Internal constructor
@@ -56,7 +56,7 @@ abstract contract HEROLPManager is Owned, Initializable {
     onlyOwner
   {
     require(
-      amount > 1,
+      amount != 0,
       "HEROLPManager#1"
     );
 

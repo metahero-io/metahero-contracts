@@ -4,10 +4,21 @@ import { expect } from 'chai';
 import HEROTokenArtifact from '../artifacts/HEROToken.json';
 import HEROLPManagerMockArtifact from '../artifacts/HEROLPManagerMock.json';
 import { HEROToken, HEROLPManagerMock } from '../typings';
-import { Signer } from './common';
+import { Signer } from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
+
+interface BeforeHookOptions {
+  burnFee: {
+    sender: number;
+    recipient: number;
+  };
+  lpFee: this['burnFee'];
+  rewardsFee: this['burnFee'];
+  initialize: boolean;
+  finishPresale: boolean;
+}
 
 interface TransferAccountOptions {
   type: 'exclude' | 'holder';
@@ -16,14 +27,6 @@ interface TransferAccountOptions {
 }
 
 describe('HEROToken', () => {
-  const LP_FEE = {
-    sender: 4,
-    recipient: 4,
-  };
-  const REWARDS_FEE = {
-    sender: 1,
-    recipient: 1,
-  };
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
 
   let owner: Signer;
@@ -33,14 +36,32 @@ describe('HEROToken', () => {
   let token: HEROToken;
   let lpManager: HEROLPManagerMock;
 
-  const createBeforeHook = (initialize = true, finishPresale = true) => {
+  const createBeforeHook = (options: Partial<BeforeHookOptions> = {}) => {
+    const { burnFee, lpFee, rewardsFee, initialize, finishPresale } = {
+      burnFee: {
+        sender: 0,
+        recipient: 0,
+      },
+      lpFee: {
+        sender: 0,
+        recipient: 0,
+      },
+      rewardsFee: {
+        sender: 0,
+        recipient: 0,
+      },
+      initialize: false,
+      finishPresale: false,
+      ...options,
+    };
+
     before(async () => {
       let signers = await getSigners();
 
       [owner, controller, ...signers] = signers;
 
-      excluded = [owner, signers[0]];
-      holders = signers.slice(1);
+      excluded = signers.slice(0, 2);
+      holders = signers.slice(2);
 
       token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
       lpManager = (await deployContract(
@@ -50,13 +71,16 @@ describe('HEROToken', () => {
 
       if (initialize) {
         await token.initialize(
-          LP_FEE, //
-          REWARDS_FEE,
+          burnFee,
+          lpFee,
+          rewardsFee,
           lpManager.address,
           controller.address,
           TOTAL_SUPPLY,
-          excluded.slice(1).map(({ address }) => address),
+          excluded.map(({ address }) => address),
         );
+
+        await token.transfer(excluded[0].address, TOTAL_SUPPLY);
 
         await lpManager.initialize(token.address);
 
@@ -68,7 +92,7 @@ describe('HEROToken', () => {
   };
 
   context('# metadata', () => {
-    createBeforeHook(false, false);
+    createBeforeHook();
 
     it('expect to return correct name', async () => {
       expect(await token.name()).to.equal('Metahero');
@@ -85,7 +109,22 @@ describe('HEROToken', () => {
 
   context('transfer()', () => {
     context('# google spreadsheets scenario', () => {
-      createBeforeHook();
+      createBeforeHook({
+        burnFee: {
+          sender: 1,
+          recipient: 1,
+        },
+        lpFee: {
+          sender: 3,
+          recipient: 3,
+        },
+        rewardsFee: {
+          sender: 1,
+          recipient: 1,
+        },
+        initialize: true,
+        finishPresale: true,
+      });
 
       const createTestCase = (
         senderOptions: TransferAccountOptions,
@@ -208,6 +247,22 @@ describe('HEROToken', () => {
           expectedBalance: '200000000000',
         },
         '50000000000',
+      );
+
+      // additional case for sending all tokens from the holder account
+
+      createTestCase(
+        {
+          type: 'holder',
+          index: 0,
+          expectedBalance: '0',
+        },
+        {
+          type: 'holder',
+          index: 5,
+          expectedBalance: '58469381406',
+        },
+        '61351621933',
       );
     });
   });

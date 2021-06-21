@@ -51,7 +51,8 @@ const func: DeployFunction = async (hre) => {
       },
       'excludeAccount',
       pancakeSwapRouter,
-      true,
+      false,
+      false,
     );
 
     await execute(
@@ -62,7 +63,8 @@ const func: DeployFunction = async (hre) => {
       },
       'excludeAccount',
       pancakeSwapTokenPair,
-      true,
+      false,
+      false,
     );
   }
 };

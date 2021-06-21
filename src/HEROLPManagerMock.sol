@@ -26,9 +26,20 @@ contract HEROLPManagerMock is HEROLPManager {
     address token_
   )
     external
-    onlyInitializer
   {
     _initialize(token_);
+  }
+
+  function lockSwap()
+    external
+  {
+    swapLocked = true;
+  }
+
+  function unlockSwap()
+    external
+  {
+    swapLocked = false;
   }
 
   // internal functions
@@ -50,6 +61,6 @@ contract HEROLPManagerMock is HEROLPManager {
       amount
     );
 
-    totalLP = token.balanceOf(address(this));
+    _syncLP();
   }
 }

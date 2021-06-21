@@ -601,139 +601,6 @@ module.exports = {
       "97": null
     }
   },
-  "HEROLPManagerMock": {
-    "abi": [
-      {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [],
-        "name": "Initialized",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          }
-        ],
-        "name": "OwnerUpdated",
-        "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "name": "burnLP",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "token_",
-            "type": "address"
-          }
-        ],
-        "name": "initialize",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "initialized",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "owner_",
-            "type": "address"
-          }
-        ],
-        "name": "setOwner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "syncLP",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "token",
-        "outputs": [
-          {
-            "internalType": "contract HEROToken",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "totalLP",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "stateMutability": "payable",
-        "type": "receive"
-      }
-    ],
-    "addresses": {
-      "97": null
-    }
-  },
   "HEROLPManagerUniswapV2": {
     "abi": [
       {
@@ -923,7 +790,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x4F6edc69b8A824Cd96d34e5161323AFa9f2444E1"
+      "97": "0xa2e6D2b1F48c147A22a7A5BAB95bB961866c3288"
     }
   },
   "HEROPresale": {
@@ -1089,11 +956,6 @@ module.exports = {
             "internalType": "uint256",
             "name": "deadlineIn",
             "type": "uint256"
-          },
-          {
-            "internalType": "address[]",
-            "name": "accounts",
-            "type": "address[]"
           }
         ],
         "name": "initialize",
@@ -1265,7 +1127,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0xBe4142c211B5c4dc011E3667c106B3dEACa0b5E1"
+      "97": "0x44A41ecEe092cEDc43FC228e04cf4d20906EC6A9"
     }
   },
   "HEROToken": {
@@ -1283,6 +1145,12 @@ module.exports = {
             "internalType": "address",
             "name": "account",
             "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "excludeSenderFromFee",
+            "type": "bool"
           },
           {
             "indexed": false,
@@ -1355,6 +1223,19 @@ module.exports = {
         "anonymous": false,
         "inputs": [],
         "name": "PresaleFinished",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          }
+        ],
+        "name": "TotalRewardsUpdated",
         "type": "event"
       },
       {
@@ -1497,6 +1378,11 @@ module.exports = {
           },
           {
             "internalType": "bool",
+            "name": "excludeSenderFromFee",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
             "name": "excludeRecipientFromFee",
             "type": "bool"
           }
@@ -1544,6 +1430,23 @@ module.exports = {
       },
       {
         "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct HEROToken.Fees",
+            "name": "burnFees",
+            "type": "tuple"
+          },
           {
             "components": [
               {
@@ -1718,6 +1621,23 @@ module.exports = {
               }
             ],
             "internalType": "struct HEROToken.Fees",
+            "name": "burnFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct HEROToken.Fees",
             "name": "lpFees",
             "type": "tuple"
           },
@@ -1851,7 +1771,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x6113dc4A2c742c9531678841Fe2573dF15FAa301"
+      "97": "0x9A45227eB8B5F05567c27F8AD583E20fc4DE77C3"
     }
   },
   "Initializable": {
@@ -4464,6 +4384,12 @@ module.exports = {
         "type": "function"
       }
     ],
+    "addresses": {
+      "97": null
+    }
+  },
+  "console": {
+    "abi": [],
     "addresses": {
       "97": null
     }
