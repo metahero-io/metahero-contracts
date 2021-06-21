@@ -74,43 +74,46 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
     for (const fileName of fileNames) {
       if (fileName.endsWith('.json')) {
         const contractName = fileName.slice(0, -5);
-        const filePath = join(artifactsPath, fileName);
 
-        const addresses: { [key: string]: string } = {};
+        if (!contractName.endsWith('Mock') && !contractName.endsWith('Lib')) {
+          const filePath = join(artifactsPath, fileName);
 
-        for (const network of networks) {
-          const { chainId, path, name } = network;
-          let address: string = null;
-          let transactionHash: string = null;
+          const addresses: { [key: string]: string } = {};
 
-          try {
-            ({ address, transactionHash } = await readJSON(
-              join(path, fileName),
-            ));
-          } catch (err) {
-            address = null;
-          }
+          for (const network of networks) {
+            const { chainId, path, name } = network;
+            let address: string = null;
+            let transactionHash: string = null;
 
-          addresses[chainId] = address;
-
-          if (address && transactionHash) {
-            if (!contractsMD[name]) {
-              contractsMD[name] = {};
+            try {
+              ({ address, transactionHash } = await readJSON(
+                join(path, fileName),
+              ));
+            } catch (err) {
+              address = null;
             }
 
-            contractsMD[name][contractName] = {
-              address,
-              transactionHash,
-            };
+            addresses[chainId] = address;
+
+            if (address && transactionHash) {
+              if (!contractsMD[name]) {
+                contractsMD[name] = {};
+              }
+
+              contractsMD[name][contractName] = {
+                address,
+                transactionHash,
+              };
+            }
           }
+
+          const { abi }: { abi: any } = await readJSON(filePath);
+
+          contracts[contractName] = {
+            abi,
+            addresses,
+          };
         }
-
-        const { abi }: { abi: any } = await readJSON(filePath);
-
-        contracts[contractName] = {
-          abi,
-          addresses,
-        };
       }
     }
 

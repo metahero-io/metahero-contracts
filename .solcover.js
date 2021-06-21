@@ -1,3 +1,3 @@
 module.exports = {
-  istanbulReporter: ['text'],
+  istanbulReporter: ['html', 'text', 'json'],
 };
