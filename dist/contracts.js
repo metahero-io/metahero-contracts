@@ -534,6 +534,25 @@ module.exports = {
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "participant",
+            "type": "address"
+          }
+        ],
+        "name": "canSyncLP",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "initialized",
         "outputs": [
@@ -638,6 +657,25 @@ module.exports = {
         "name": "burnLP",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "participant",
+            "type": "address"
+          }
+        ],
+        "name": "canSyncLP",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -790,7 +828,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x4FcbEd9Eb0D914915FBbc39241A6bF74EB23C701"
+      "97": "0x25FA1836187E3E6f3E6B5fA1e5e83c7a98e8aBa3"
     }
   },
   "HEROPresale": {
@@ -1127,7 +1165,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0xed5BE6bFc70aE7ee783222FFA2AD5417BA923ae9"
+      "97": "0x5C80bCf8D05A62067E6eD0a917F7Bf06F7137E23"
     }
   },
   "HEROToken": {
@@ -1771,7 +1809,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0xde346431fBAFfFf730d4B826c2F9F7D472f37103"
+      "97": "0xdbFed9a593B3C6aCF5943ACfF208769c6D8fE5fF"
     }
   },
   "Initializable": {

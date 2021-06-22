@@ -42,6 +42,19 @@ contract HEROLPManagerMock is HEROLPManager {
     swapLocked = false;
   }
 
+  // external functions (views)
+
+  function canSyncLP(
+    address
+  )
+    external
+    view
+    override
+    returns (bool)
+  {
+    return true;
+  }
+
   // internal functions
 
   function _syncLP()

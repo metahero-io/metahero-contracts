@@ -72,6 +72,19 @@ contract HEROLPManagerUniswapV2 is HEROLPManager {
     ));
   }
 
+  // external functions (views)
+
+  function canSyncLP(
+    address participant
+  )
+    external
+    view
+    override
+    returns (bool)
+  {
+    return participant != address(uniswapTokenPair);
+  }
+
   // internal functions
 
   function _syncLP()
@@ -79,9 +92,8 @@ contract HEROLPManagerUniswapV2 is HEROLPManager {
     override
   {
     uint256 tokensAmount = token.balanceOf(address(this));
-    uint256 nativeAmount = address(this).balance;
 
-    if (tokensAmount != 0 && nativeAmount != 0) {
+    if (tokensAmount != 0) {
       uint256 half = tokensAmount.div(2);
       uint256 otherHalf = tokensAmount.sub(half);
 
@@ -89,7 +101,7 @@ contract HEROLPManagerUniswapV2 is HEROLPManager {
 
       _addLiquidity(
         otherHalf,
-        nativeAmount
+        address(this).balance
       );
     }
   }

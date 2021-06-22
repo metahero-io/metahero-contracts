@@ -72,6 +72,16 @@ abstract contract HEROLPManager is Owned, Initializable {
     swapLocked = false;
   }
 
+  // external functions (views)
+
+  function canSyncLP(
+    address participant
+  )
+    external
+    view
+    virtual
+    returns (bool);
+
   // internal functions
 
   function _initialize(

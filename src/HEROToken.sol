@@ -529,6 +529,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     uint256 recipientLpFee;
 
     uint256 totalFee;
+    uint256 totalLP;
 
     {
       uint256 senderTotalFee;
@@ -547,6 +548,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       ) = _calcTransferRecipientFees(amount);
 
       totalFee = senderTotalFee.add(recipientTotalFee);
+      totalLP = senderLpFee.add(recipientLpFee);
       senderAmount = amount.add(senderTotalFee);
       recipientAmount = amount.sub(recipientTotalFee);
     }
@@ -608,9 +610,11 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     summary.totalSupply = summary.totalSupply.sub(senderBurnFee).sub(recipientBurnFee);
     summary.totalHolding = summary.totalHolding.sub(totalFee);
 
-    _increaseTotalLP(senderLpFee.add(recipientLpFee));
+    _increaseTotalLP(totalLP);
 
     _updateTotalRewards();
+
+    _syncLP(address(0), totalLP);
   }
 
   function _transferFromExcludedAccount(
@@ -667,6 +671,8 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     _increaseTotalLP(recipientLPFee);
 
     _updateTotalRewards();
+
+    _syncLP(sender, recipientLPFee);
   }
 
   function _transferToExcludedAccount(
@@ -733,6 +739,8 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     _increaseTotalLP(senderLpFee);
 
     _updateTotalRewards();
+
+    _syncLP(recipient, senderLpFee);
   }
 
   function _transferBetweenExcludedAccounts(
@@ -782,7 +790,21 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       accountBalances[address(lpManager)] = accountBalances[address(lpManager)].add(amount);
 
       summary.totalExcluded = summary.totalExcluded.add(amount);
+    }
+  }
 
+  function _syncLP(
+    address participant,
+    uint256 amount
+  )
+    private
+  {
+    if (
+      amount != 0 && (
+        participant == address(0) ||
+        lpManager.canSyncLP(participant)
+      )
+    ) {
       lpManager.syncLP();
     }
   }
