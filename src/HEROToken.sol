@@ -123,9 +123,9 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     _initializeController(controller_);
 
-    if (totalSupply_ != 0) {
-      _excludeAccount(msg.sender, true, true);
+    _excludeAccount(msg.sender, true, true);
 
+    if (totalSupply_ != 0) {
       _mint(
         msg.sender,
         totalSupply_
