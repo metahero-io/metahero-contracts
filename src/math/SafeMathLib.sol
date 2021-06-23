@@ -21,7 +21,7 @@ library SafeMathLib {
 
     require(
       c >= a,
-      "MathLib#1"
+      "SafeMathLib#1"
     );
 
     return c;
@@ -37,7 +37,7 @@ library SafeMathLib {
   {
     require(
       b <= a,
-      "MathLib#2"
+      "SafeMathLib#2"
     );
 
     return a - b;
@@ -56,7 +56,7 @@ library SafeMathLib {
 
       require(
         result / a == b,
-        "MathLib#3"
+        "SafeMathLib#3"
       );
     }
 
@@ -73,7 +73,7 @@ library SafeMathLib {
   {
     require(
       b != 0,
-      "MathLib#4"
+      "SafeMathLib#4"
     );
 
     return a / b;
