@@ -1,10 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./ERC20WithMetadata.sol";
+import "./ERC20Standard.sol";
 
 
-abstract contract ERC20 is ERC20WithMetadata {
+/**
+ * @title ERC20 abstract token
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
+ */
+abstract contract ERC20 is ERC20Standard {
   string public override name;
   string public override symbol;
   uint8 public override decimals;

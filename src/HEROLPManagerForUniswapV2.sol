@@ -10,6 +10,8 @@ import "./HEROLPManager.sol";
 
 /**
  * @title HERO liquidity pool manager for Uniswap v2
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract HEROLPManagerForUniswapV2 is HEROLPManager {
   struct Settings {

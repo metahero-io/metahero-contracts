@@ -3,6 +3,8 @@ pragma solidity ^0.6.12;
 
 /**
  * @title Initializable
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Initializable {
   address private initializer;

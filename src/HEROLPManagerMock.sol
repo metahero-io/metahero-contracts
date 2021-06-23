@@ -6,6 +6,8 @@ import "./HEROLPManager.sol";
 
 /**
  * @title HERO liquidity pool manager mock
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract HEROLPManagerMock is HEROLPManager {
   uint256 public syncedBalance;

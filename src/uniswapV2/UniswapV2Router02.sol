@@ -1,9 +1,14 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.6.12;
 
 import "./UniswapV2Router01.sol";
 
 
+/**
+ * @title Uniswap V2 router02 interface
+ *
+ * @notice Based on https://github.com/Uniswap/uniswap-v2-periphery/blob/dda62473e2da448bc9cb8f4514dadda4aeede5f4/contracts/interfaces/IUniswapV2Router02.sol
+ */
 interface UniswapV2Router02 is UniswapV2Router01 {
   // external functions
 

@@ -6,9 +6,13 @@ import "./Initializable.sol";
 
 /**
  * @title Initializable mock
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract InitializableMock is Initializable {
-  uint256 private counter;
+  // events
+
+  event Triggered();
 
   /**
    * @dev Public constructor
@@ -26,6 +30,6 @@ contract InitializableMock is Initializable {
     external
     onlyInitializer
   {
-    counter++;
+    emit Triggered();
   }
 }

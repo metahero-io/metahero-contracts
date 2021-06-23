@@ -1,10 +1,15 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
 import "../erc20/ERC20Standard.sol";
 
 
+/**
+ * @title Uniswap V2 pair interface
+ *
+ * @notice Based on https://github.com/Uniswap/uniswap-v2-core/blob/4dd59067c76dea4a0e8e4bfdda41877a6b16dedc/contracts/interfaces/IUniswapV2Pair.sol
+ */
 interface UniswapV2Pair is ERC20Standard {
   // events
 

@@ -4,15 +4,17 @@ pragma solidity ^0.6.12;
 import "./access/Lockable.sol";
 import "./access/Owned.sol";
 import "./lifecycle/Initializable.sol";
-import "./math/MathLib.sol";
+import "./math/SafeMathLib.sol";
 import "./HEROToken.sol";
 
 
 /**
  * @title HERO abstract liquidity pool manager
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 abstract contract HEROLPManager is Lockable, Owned, Initializable {
-  using MathLib for uint256;
+  using SafeMathLib for uint256;
 
   HEROToken public token;
 

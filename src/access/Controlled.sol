@@ -3,6 +3,8 @@ pragma solidity ^0.6.12;
 
 /**
  * @title Controlled
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Controlled {
   address public controller;

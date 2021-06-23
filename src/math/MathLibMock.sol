@@ -6,55 +6,13 @@ import "./MathLib.sol";
 
 /**
  * @title Math library mock
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract MathLibMock {
   using MathLib for uint256;
 
   // external functions (pure)
-
-  function add(
-    uint256 a,
-    uint256 b
-  )
-    external
-    pure
-    returns (uint256)
-  {
-    return a.add(b);
-  }
-
-  function sub(
-    uint256 a,
-    uint256 b
-  )
-    external
-    pure
-    returns (uint256)
-  {
-    return a.sub(b);
-  }
-
-  function mul(
-    uint256 a,
-    uint256 b
-  )
-    external
-    pure
-    returns (uint256)
-  {
-    return a.mul(b);
-  }
-
-  function div(
-    uint256 a,
-    uint256 b
-  )
-    external
-    pure
-    returns (uint256)
-  {
-    return a.div(b);
-  }
 
   function percent(
     uint256 a,

@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
+/**
+ * @title ERC20 standard interface
+ *
+ * @notice See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
+ */
 interface ERC20Standard {
   // events
 
@@ -61,4 +66,21 @@ interface ERC20Standard {
     external
     view
     returns (uint256);
+
+  // external functions (pure)
+
+  function name()
+    external
+    pure
+    returns (string memory);
+
+  function symbol()
+    external
+    pure
+    returns (string memory);
+
+  function decimals()
+    external
+    pure
+    returns (uint8);
 }

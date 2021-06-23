@@ -3,6 +3,8 @@ pragma solidity ^0.6.12;
 
 /**
  * @title Lockable
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Lockable {
   bool public locked;

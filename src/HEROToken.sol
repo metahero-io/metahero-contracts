@@ -7,14 +7,18 @@ import "./access/Owned.sol";
 import "./erc20/ERC20.sol";
 import "./lifecycle/Initializable.sol";
 import "./math/MathLib.sol";
+import "./math/SafeMathLib.sol";
 import "./HEROLPManager.sol";
 
 
 /**
  * @title HERO token
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract HEROToken is Controlled, Owned, ERC20, Initializable {
   using MathLib for uint256;
+  using SafeMathLib for uint256;
 
   struct Fees {
     uint256 sender; // percent
