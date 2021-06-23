@@ -8,7 +8,10 @@ import "./HEROLPManager.sol";
  * @title HERO liquidity pool manager mock
  */
 contract HEROLPManagerMock is HEROLPManager {
-  uint256 public totalLP;
+  uint256 public syncedBalance;
+
+  bool private shouldSyncLPBefore;
+  bool private shouldSyncLPAfter;
 
   /**
    * @dev Public constructor
@@ -30,29 +33,36 @@ contract HEROLPManagerMock is HEROLPManager {
     _initialize(token_);
   }
 
-  function lockSwap()
+  function setLocked(
+    bool locked_
+  )
     external
   {
-    swapLocked = true;
+    locked = locked_;
   }
 
-  function unlockSwap()
+  function allowSyncLP(
+    bool shouldSyncLPBefore_,
+    bool shouldSyncLPAfter_
+  )
     external
   {
-    swapLocked = false;
+    shouldSyncLPBefore = shouldSyncLPBefore_;
+    shouldSyncLPAfter = shouldSyncLPAfter_;
   }
 
   // external functions (views)
 
   function canSyncLP(
+    address,
     address
   )
     external
     view
     override
-    returns (bool)
+    returns (bool, bool)
   {
-    return true;
+    return (shouldSyncLPBefore, shouldSyncLPAfter);
   }
 
   // internal functions
@@ -61,7 +71,7 @@ contract HEROLPManagerMock is HEROLPManager {
     internal
     override
   {
-    totalLP = token.balanceOf(address(this));
+    syncedBalance = token.balanceOf(address(this));
   }
 
   function _burnLP(

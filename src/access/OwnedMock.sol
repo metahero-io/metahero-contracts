@@ -8,7 +8,9 @@ import "./Owned.sol";
  * @title Owned mock
  */
 contract OwnedMock is Owned {
-  uint256 private counter;
+  // events
+
+  event Triggered();
 
   /**
    * @dev Public constructor
@@ -26,6 +28,6 @@ contract OwnedMock is Owned {
     external
     onlyOwner
   {
-    counter++;
+    emit Triggered();
   }
 }

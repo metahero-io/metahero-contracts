@@ -2,11 +2,10 @@
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
-import "../erc20/ERC20Metadata.sol";
 import "../erc20/ERC20Standard.sol";
 
 
-interface UniswapV2Pair is ERC20Metadata, ERC20Standard {
+interface UniswapV2Pair is ERC20Standard {
   // events
 
   event Mint(

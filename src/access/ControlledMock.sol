@@ -8,7 +8,9 @@ import "./Controlled.sol";
  * @title Controlled mock
  */
 contract ControlledMock is Controlled {
-  uint256 private counter;
+  // events
+
+  event Triggered();
 
   /**
    * @dev Public constructor
@@ -26,7 +28,7 @@ contract ControlledMock is Controlled {
     external
     onlyController
   {
-    counter++;
+    emit Triggered();
   }
 
   function initializeController(

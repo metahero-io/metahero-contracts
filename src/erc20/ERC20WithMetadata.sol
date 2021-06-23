@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-interface ERC20Metadata {
+import "./ERC20Standard.sol";
+
+
+interface ERC20WithMetadata is ERC20Standard {
   // external functions (pure)
 
   function name()

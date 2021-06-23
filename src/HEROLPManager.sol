@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
+import "./access/Lockable.sol";
 import "./access/Owned.sol";
 import "./lifecycle/Initializable.sol";
 import "./math/MathLib.sol";
@@ -10,18 +11,28 @@ import "./HEROToken.sol";
 /**
  * @title HERO abstract liquidity pool manager
  */
-abstract contract HEROLPManager is Owned, Initializable {
+abstract contract HEROLPManager is Lockable, Owned, Initializable {
   using MathLib for uint256;
 
   HEROToken public token;
 
-  bool internal swapLocked;
+  // modifiers
+
+  modifier onlyToken() {
+    require(
+      msg.sender == address(token),
+      "HEROLPManager#1"
+    );
+
+    _;
+  }
 
   /**
    * @dev Internal constructor
    */
   constructor ()
     internal
+    Lockable()
     Owned()
     Initializable()
   {
@@ -30,23 +41,12 @@ abstract contract HEROLPManager is Owned, Initializable {
 
   // external functions
 
-  receive()
-    external
-    payable
-  {
-    //
-  }
-
   function syncLP()
     external
+    onlyToken
+    lock
   {
-    if (!swapLocked) {
-      swapLocked = true;
-
-      _syncLP();
-
-      swapLocked = false;
-    }
+    _syncLP();
   }
 
   function burnLP(
@@ -54,33 +54,29 @@ abstract contract HEROLPManager is Owned, Initializable {
   )
     external
     onlyOwner
+    lockOrThrowError
   {
     require(
       amount != 0,
-      "HEROLPManager#1"
-    );
-
-    require(
-      !swapLocked,
       "HEROLPManager#2"
     );
 
-    swapLocked = true;
-
     _burnLP(amount);
-
-    swapLocked = false;
   }
 
   // external functions (views)
 
   function canSyncLP(
-    address participant
+    address sender,
+    address recipient
   )
     external
     view
     virtual
-    returns (bool);
+    returns (
+      bool shouldSyncLPBefore,
+      bool shouldSyncLPAfter
+    );
 
   // internal functions
 

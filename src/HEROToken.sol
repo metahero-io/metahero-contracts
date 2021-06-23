@@ -462,22 +462,25 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     );
 
     require(
-      sender != recipient,
-      "HEROToken#18"
-    );
-
-    require(
       amount != 0,
-      "HEROToken#19"
+      "HEROToken#18"
     );
 
     require(
       excludedAccounts[sender].exists ||
       presaleFinished,
-      "HEROToken#20"
+      "HEROToken#19"
     );
 
-    if (
+    if (sender == recipient) {
+      _syncLP();
+
+      _emitTransfer(
+        sender,
+        recipient,
+        0
+      );
+    } else if (
       !excludedAccounts[sender].exists &&
       !excludedAccounts[recipient].exists
     ) {
@@ -529,7 +532,6 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     uint256 recipientLpFee;
 
     uint256 totalFee;
-    uint256 totalLP;
 
     {
       uint256 senderTotalFee;
@@ -548,7 +550,6 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       ) = _calcTransferRecipientFees(amount);
 
       totalFee = senderTotalFee.add(recipientTotalFee);
-      totalLP = senderLpFee.add(recipientLpFee);
       senderAmount = amount.add(senderTotalFee);
       recipientAmount = amount.sub(recipientTotalFee);
     }
@@ -571,11 +572,18 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       accountBalances[sender] >= senderAmount,
-      "HEROToken#21"
+      "HEROToken#20"
     );
 
     accountBalances[sender] = accountBalances[sender].sub(senderAmount);
     accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
+
+    summary.totalSupply = summary.totalSupply.sub(senderBurnFee).sub(recipientBurnFee);
+    summary.totalHolding = summary.totalHolding.sub(totalFee);
+
+    _increaseTotalLP(senderLpFee.add(recipientLpFee));
+
+    // emits events
 
     _emitTransfer(
       sender,
@@ -607,14 +615,9 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       recipientLpFee
     );
 
-    summary.totalSupply = summary.totalSupply.sub(senderBurnFee).sub(recipientBurnFee);
-    summary.totalHolding = summary.totalHolding.sub(totalFee);
-
-    _increaseTotalLP(totalLP);
-
     _updateTotalRewards();
 
-    _syncLP(address(0), totalLP);
+    _syncLP();
   }
 
   function _transferFromExcludedAccount(
@@ -626,8 +629,20 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "HEROToken#22"
+      "HEROToken#21"
     );
+
+    (
+      bool shouldSyncLPBefore,
+      bool shouldSyncLPAfter
+    ) = _canSyncLP(
+      sender,
+      address(0)
+    );
+
+    if (shouldSyncLPBefore) {
+      lpManager.syncLP();
+    }
 
     uint256 recipientTotalFee;
     uint256 recipientBurnFee;
@@ -645,6 +660,14 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     accountBalances[sender] = accountBalances[sender].sub(amount);
     accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
+
+    summary.totalSupply = summary.totalSupply.sub(recipientBurnFee);
+    summary.totalExcluded = summary.totalExcluded.sub(amount);
+    summary.totalHolding = summary.totalHolding.add(recipientAmount);
+
+    _increaseTotalLP(recipientLPFee);
+
+    // emits events
 
     _emitTransfer(
       sender,
@@ -664,15 +687,11 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       recipientLPFee
     );
 
-    summary.totalSupply = summary.totalSupply.sub(recipientBurnFee);
-    summary.totalExcluded = summary.totalExcluded.sub(amount);
-    summary.totalHolding = summary.totalHolding.add(recipientAmount);
-
-    _increaseTotalLP(recipientLPFee);
-
     _updateTotalRewards();
 
-    _syncLP(sender, recipientLPFee);
+    if (shouldSyncLPAfter) {
+      lpManager.syncLP();
+    }
   }
 
   function _transferToExcludedAccount(
@@ -682,6 +701,18 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
+    (
+      bool shouldSyncLPBefore,
+      bool shouldSyncLPAfter
+    ) = _canSyncLP(
+      address(0),
+      recipient
+    );
+
+    if (shouldSyncLPBefore) {
+      lpManager.syncLP();
+    }
+
     uint256 senderTotalFee;
     uint256 senderBurnFee;
     uint256 senderLpFee;
@@ -708,11 +739,19 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       accountBalances[sender] >= senderAmount,
-      "HEROToken#23"
+      "HEROToken#22"
     );
 
     accountBalances[sender] = accountBalances[sender].sub(senderAmount);
     accountBalances[recipient] = accountBalances[recipient].add(amount);
+
+    summary.totalSupply = summary.totalSupply.sub(senderBurnFee);
+    summary.totalExcluded = summary.totalExcluded.add(amount);
+    summary.totalHolding = summary.totalHolding.sub(senderAmount);
+
+    _increaseTotalLP(senderLpFee);
+
+    // emits events
 
     _emitTransfer(
       sender,
@@ -732,15 +771,11 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       senderLpFee
     );
 
-    summary.totalSupply = summary.totalSupply.sub(senderBurnFee);
-    summary.totalExcluded = summary.totalExcluded.add(amount);
-    summary.totalHolding = summary.totalHolding.sub(senderAmount);
-
-    _increaseTotalLP(senderLpFee);
-
     _updateTotalRewards();
 
-    _syncLP(recipient, senderLpFee);
+    if (shouldSyncLPAfter) {
+      lpManager.syncLP();
+    }
   }
 
   function _transferBetweenExcludedAccounts(
@@ -752,8 +787,20 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "HEROToken#24"
+      "HEROToken#23"
     );
+
+    (
+      bool shouldSyncLPBefore,
+      bool shouldSyncLPAfter
+    ) = _canSyncLP(
+      address(0),
+      recipient
+    );
+
+    if (shouldSyncLPBefore) {
+      lpManager.syncLP();
+    }
 
     accountBalances[sender] = accountBalances[sender].sub(amount);
     accountBalances[recipient] = accountBalances[recipient].add(amount);
@@ -763,6 +810,10 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       recipient,
       amount
     );
+
+    if (shouldSyncLPAfter) {
+      lpManager.syncLP();
+    }
   }
 
   function _emitTransfer(
@@ -793,18 +844,10 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     }
   }
 
-  function _syncLP(
-    address participant,
-    uint256 amount
-  )
+  function _syncLP()
     private
   {
-    if (
-      amount != 0 && (
-        participant == address(0) ||
-        lpManager.canSyncLP(participant)
-      )
-    ) {
+    if (address(lpManager) != address(0)) {
       lpManager.syncLP();
     }
   }
@@ -826,6 +869,27 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   }
 
   // private functions (views)
+
+  function _canSyncLP(
+    address sender,
+    address recipient
+  )
+    private
+    view
+    returns (
+      bool shouldSyncLPBefore,
+      bool shouldSyncLPAfter
+    )
+  {
+    if (address(lpManager) != address(0)) {
+      (shouldSyncLPBefore, shouldSyncLPAfter) = lpManager.canSyncLP(
+        sender,
+        recipient
+      );
+    }
+
+    return (shouldSyncLPBefore, shouldSyncLPAfter);
+  }
 
   function _calcRewards(
     address account
