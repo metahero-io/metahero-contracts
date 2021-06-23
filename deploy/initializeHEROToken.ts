@@ -56,7 +56,7 @@ const func: DeployFunction = async (hre) => {
     log(`${ContractNames.HEROToken} already initialized`);
   } else {
     const { address: lpManager } = await get(
-      ContractNames.HEROLPManagerUniswapV2,
+      ContractNames.HEROLPManagerForUniswapV2,
     );
 
     await execute(
