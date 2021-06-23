@@ -12,189 +12,189 @@ interface UniswapV2Router01 {
 
   function addLiquidityETH(
     address token,
-    uint amountTokenDesired,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 amountTokenDesired,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
     payable
-    returns (uint, uint, uint);
+    returns (uint256, uint256, uint256);
 
   function swapExactETHForTokens(
-    uint amountOutMin,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
     payable
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function addLiquidity(
     address tokenA,
     address tokenB,
-    uint amountADesired,
-    uint amountBDesired,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 amountADesired,
+    uint256 amountBDesired,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint, uint, uint);
+    returns (uint256, uint256, uint256);
 
   function removeLiquidity(
     address tokenA,
     address tokenB,
-    uint liquidity,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 liquidity,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint, uint);
+    returns (uint256, uint256);
 
   function removeLiquidityETH(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint, uint);
+    returns (uint256, uint256);
 
   function removeLiquidityWithPermit(
     address tokenA,
     address tokenB,
-    uint liquidity,
-    uint amountAMin,
-    uint amountBMin,
+    uint256 liquidity,
+    uint256 amountAMin,
+    uint256 amountBMin,
     address to,
-    uint deadline,
+    uint256 deadline,
     bool approveMax,
     uint8 v,
     bytes32 r,
     bytes32 s
   )
     external
-    returns (uint, uint);
+    returns (uint256, uint256);
 
   function removeLiquidityETHWithPermit(
     address token,
-    uint liquidity,
-    uint amountTokenMin,
-    uint amountETHMin,
+    uint256 liquidity,
+    uint256 amountTokenMin,
+    uint256 amountETHMin,
     address to,
-    uint deadline,
+    uint256 deadline,
     bool approveMax,
     uint8 v,
     bytes32 r,
     bytes32 s
   )
     external
-    returns (uint, uint);
+    returns (uint256, uint256);
 
   function swapExactTokensForTokens(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function swapTokensForExactTokens(
-    uint amountOut,
-    uint amountInMax,
+    uint256 amountOut,
+    uint256 amountInMax,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function swapTokensForExactETH(
-    uint amountOut,
-    uint amountInMax,
+    uint256 amountOut,
+    uint256 amountInMax,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function swapExactTokensForETH(
-    uint amountIn,
-    uint amountOutMin,
+    uint256 amountIn,
+    uint256 amountOutMin,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function swapETHForExactTokens(
-    uint amountOut,
+    uint256 amountOut,
     address[] calldata path,
     address to,
-    uint deadline
+    uint256 deadline
   )
     external
     payable
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   // external functions (views)
 
   function getAmountsOut(
-    uint amountIn,
+    uint256 amountIn,
     address[] calldata path
   )
     external
     view
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   function getAmountsIn(
-    uint amountOut,
+    uint256 amountOut,
     address[] calldata path
   )
     external
     view
-    returns (uint[] memory);
+    returns (uint256[] memory);
 
   // external functions (pure)
 
   function quote(
-    uint amountA,
-    uint reserveA,
-    uint reserveB
+    uint256 amountA,
+    uint256 reserveA,
+    uint256 reserveB
   )
     external
     pure
-    returns (uint);
+    returns (uint256);
 
   function getAmountOut(
-    uint amountIn,
-    uint reserveIn,
-    uint reserveOut
+    uint256 amountIn,
+    uint256 reserveIn,
+    uint256 reserveOut
   )
     external
     pure
-    returns (uint);
+    returns (uint256);
 
   function getAmountIn(
-    uint amountOut,
-    uint reserveIn,
-    uint reserveOut
+    uint256 amountOut,
+    uint256 reserveIn,
+    uint256 reserveOut
   )
     external
     pure
-    returns (uint);
+    returns (uint256);
 
   function factory()
     external

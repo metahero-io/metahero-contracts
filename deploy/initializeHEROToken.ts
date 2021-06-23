@@ -45,6 +45,10 @@ const func: DeployFunction = async (hre) => {
     'TOKEN_TOTAL_SUPPLY',
     BigNumber.from('10000000000000000000000000000'), // 10,000,000,000.000000000000000000
   );
+  const MIN_TOTAL_SUPPLY = getNetworkEnv(
+    'TOKEN_MIN_TOTAL_SUPPLY',
+    BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
+  );
   const PRESALE_FINISHED = getNetworkEnv(
     'TOKEN_PRESALE_FINISHED', //
     false,
@@ -69,6 +73,7 @@ const func: DeployFunction = async (hre) => {
       BURN_FEE,
       LP_FEE,
       REWARDS_FEE,
+      MIN_TOTAL_SUPPLY,
       lpManager,
       constants.AddressZero, // disable controller
       TOTAL_SUPPLY,

@@ -15,23 +15,23 @@ interface UniswapV2Pair is ERC20Standard {
 
   event Mint(
     address indexed sender,
-    uint amount0,
-    uint amount1
+    uint256 amount0,
+    uint256 amount1
   );
 
   event Burn(
     address indexed sender,
-    uint amount0,
-    uint amount1,
+    uint256 amount0,
+    uint256 amount1,
     address indexed to
   );
 
   event Swap(
     address indexed sender,
-    uint amount0In,
-    uint amount1In,
-    uint amount0Out,
-    uint amount1Out,
+    uint256 amount0In,
+    uint256 amount1In,
+    uint256 amount0Out,
+    uint256 amount1Out,
     address indexed to
   );
 
@@ -52,17 +52,17 @@ interface UniswapV2Pair is ERC20Standard {
     address to
   )
     external
-    returns (uint);
+    returns (uint256);
 
   function burn(
     address to
   )
     external
-    returns (uint, uint);
+    returns (uint256, uint256);
 
   function swap(
-    uint amount0Out,
-    uint amount1Out,
+    uint256 amount0Out,
+    uint256 amount1Out,
     address to,
     bytes calldata data
   )
@@ -79,8 +79,8 @@ interface UniswapV2Pair is ERC20Standard {
   function permit(
     address owner,
     address spender,
-    uint value,
-    uint deadline,
+    uint256 value,
+    uint256 deadline,
     uint8 v,
     bytes32 r,
     bytes32 s
@@ -99,7 +99,7 @@ interface UniswapV2Pair is ERC20Standard {
   )
     external
     view
-    returns (uint);
+    returns (uint256);
 
   function factory()
     external
@@ -124,17 +124,17 @@ interface UniswapV2Pair is ERC20Standard {
   function price0CumulativeLast()
     external
     view
-    returns (uint);
+    returns (uint256);
 
   function price1CumulativeLast()
     external
     view
-    returns (uint);
+    returns (uint256);
 
   function kLast()
     external
     view
-    returns (uint);
+    returns (uint256);
 
   // external functions (pure)
 
@@ -146,5 +146,5 @@ interface UniswapV2Pair is ERC20Standard {
   function MINIMUM_LIQUIDITY()
     external
     pure
-    returns (uint);
+    returns (uint256);
 }
