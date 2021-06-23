@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./erc20/WrappedNative.sol";
+import "../common/erc20/WrappedNative.sol";
 import "./uniswapV2/UniswapV2Factory.sol";
 import "./uniswapV2/UniswapV2Pair.sol";
 import "./uniswapV2/UniswapV2Router02.sol";

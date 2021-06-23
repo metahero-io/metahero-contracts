@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./access/Owned.sol";
-import "./lifecycle/Initializable.sol";
-import "./math/SafeMathLib.sol";
-import "./HEROToken.sol";
+import "../common/access/Owned.sol";
+import "../common/lifecycle/Initializable.sol";
+import "../common/math/SafeMathLib.sol";
+import "../token/HEROToken.sol";
 
 
 /**

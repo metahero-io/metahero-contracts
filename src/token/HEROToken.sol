@@ -2,13 +2,13 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "./access/Controlled.sol";
-import "./access/Owned.sol";
-import "./erc20/ERC20.sol";
-import "./lifecycle/Initializable.sol";
-import "./math/MathLib.sol";
-import "./math/SafeMathLib.sol";
-import "./HEROLPManager.sol";
+import "../common/access/Controlled.sol";
+import "../common/access/Owned.sol";
+import "../common/erc20/ERC20.sol";
+import "../common/lifecycle/Initializable.sol";
+import "../common/math/MathLib.sol";
+import "../common/math/SafeMathLib.sol";
+import "../lpManager/HEROLPManager.sol";
 
 
 /**

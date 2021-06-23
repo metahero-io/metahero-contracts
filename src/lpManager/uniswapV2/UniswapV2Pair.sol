@@ -2,7 +2,7 @@
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
-import "../erc20/ERC20Standard.sol";
+import "../../common/erc20/ERC20Standard.sol";
 
 
 /**
