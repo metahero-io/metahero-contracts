@@ -1,10 +1,10 @@
 import { BigNumber, BigNumberish } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
-import HEROTokenArtifact from '../artifacts/HEROToken.json';
-import HEROLPManagerMockArtifact from '../artifacts/HEROLPManagerMock.json';
-import { HEROToken, HEROLPManagerMock } from '../typings';
-import { Signer } from './helpers';
+import HEROTokenArtifact from '../../artifacts/HEROToken.json';
+import HEROLPManagerMockArtifact from '../../artifacts/HEROLPManagerMock.json';
+import { HEROToken, HEROLPManagerMock } from '../../typings';
+import { Signer } from '../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -18,6 +18,7 @@ interface BeforeHookOptions {
   rewardsFee: this['burnFee'];
   initialize: boolean;
   finishPresale: boolean;
+  postBefore: () => Promise<void>;
 }
 
 interface TransferAccountOptions {
@@ -28,6 +29,7 @@ interface TransferAccountOptions {
 
 describe('HEROToken', () => {
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
+  const MIN_TOTAL_SUPPLY = BigNumber.from('100000000000');
 
   let owner: Signer;
   let controller: Signer;
@@ -37,7 +39,14 @@ describe('HEROToken', () => {
   let lpManager: HEROLPManagerMock;
 
   const createBeforeHook = (options: Partial<BeforeHookOptions> = {}) => {
-    const { burnFee, lpFee, rewardsFee, initialize, finishPresale } = {
+    const {
+      burnFee,
+      lpFee,
+      rewardsFee,
+      initialize,
+      finishPresale,
+      postBefore,
+    } = {
       burnFee: {
         sender: 0,
         recipient: 0,
@@ -74,6 +83,7 @@ describe('HEROToken', () => {
           burnFee,
           lpFee,
           rewardsFee,
+          MIN_TOTAL_SUPPLY,
           lpManager.address,
           controller.address,
           TOTAL_SUPPLY,
@@ -87,6 +97,10 @@ describe('HEROToken', () => {
         if (finishPresale) {
           await token.finishPresale();
         }
+      }
+
+      if (postBefore) {
+        await postBefore();
       }
     });
   };
@@ -108,6 +122,67 @@ describe('HEROToken', () => {
   });
 
   context('transfer()', () => {
+    context('_transferFromExcludedAccount()', () => {
+      createBeforeHook({
+        burnFee: {
+          sender: 1,
+          recipient: 1,
+        },
+        lpFee: {
+          sender: 3,
+          recipient: 3,
+        },
+        rewardsFee: {
+          sender: 1,
+          recipient: 1,
+        },
+        initialize: true,
+        finishPresale: true,
+      });
+
+      it('expect to sync lp before transfer', async () => {
+        const amount = 100;
+        const sender = excluded[0];
+        const recipient = holders[1];
+
+        await lpManager.allowSyncLP(true, false);
+
+        const tx = await token
+          .connect(sender)
+          .transfer(recipient.address, amount);
+
+        expect(tx).to.emit(lpManager, 'LPSynced');
+      });
+
+      it('expect to sync lp after transfer', async () => {
+        const amount = 100;
+        const sender = excluded[0];
+        const recipient = holders[2];
+
+        await lpManager.allowSyncLP(false, true);
+
+        const tx = await token
+          .connect(sender)
+          .transfer(recipient.address, amount);
+
+        expect(tx).to.emit(lpManager, 'LPSynced');
+      });
+
+      it('expect not to sync lp', async () => {
+        const amount = 100;
+        const sender = excluded[0];
+        const recipient = holders[3];
+
+        await lpManager.allowSyncLP(false, false);
+
+        const tx = await token
+          .connect(sender)
+          .transfer(recipient.address, amount);
+
+        expect(tx).not.to.emit(lpManager, 'LPSynced');
+      });
+    });
+
     context('# google spreadsheets scenario', () => {
       createBeforeHook({
         burnFee: {

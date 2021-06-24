@@ -1,8 +1,8 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
-import InitializableMockArtifact from '../../artifacts/InitializableMock.json';
-import { InitializableMock } from '../../typings';
-import { Signer } from '../helpers';
+import InitializableMockArtifact from '../../../artifacts/InitializableMock.json';
+import { InitializableMock } from '../../../typings';
+import { Signer } from '../../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;

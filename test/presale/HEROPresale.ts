@@ -1,16 +1,16 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import { BigNumber, constants } from 'ethers';
-import HEROTokenArtifact from '../artifacts/HEROToken.json';
-import HEROPresaleArtifact from '../artifacts/HEROPresale.json';
-import { HEROToken, HEROPresale } from '../typings';
+import HEROTokenArtifact from '../../artifacts/HEROToken.json';
+import HEROPresaleArtifact from '../../artifacts/HEROPresale.json';
+import { HEROToken, HEROPresale } from '../../typings';
 import {
   Signer,
   setNextBlockTimestamp,
   getBalance,
   calcTxCost,
   randomAddress,
-} from './helpers';
+} from '../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -70,6 +70,7 @@ describe('HEROPresale', () => {
         fee, //
         fee,
         fee,
+        0,
         constants.AddressZero,
         constants.AddressZero,
         TOTAL_SUPPLY,

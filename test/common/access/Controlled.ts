@@ -1,9 +1,9 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import { constants } from 'ethers';
-import ControlledMockArtifact from '../../artifacts/ControlledMock.json';
-import { ControlledMock } from '../../typings';
-import { Signer, randomAddress } from '../helpers';
+import ControlledMockArtifact from '../../../artifacts/ControlledMock.json';
+import { ControlledMock } from '../../../typings';
+import { Signer, randomAddress } from '../../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -51,8 +51,10 @@ describe('Controlled (using mock)', () => {
       ).to.be.revertedWith('Controlled#1');
     });
 
-    it('expect to resolve when sender is the controller', async () => {
-      await controlled.connect(controller).triggerOnlyController();
+    it('expect to emit event when sender is the controller', async () => {
+      const tx = await controlled.connect(controller).triggerOnlyController();
+
+      expect(tx).to.emit(controlled, 'Triggered');
     });
   });
 

@@ -477,18 +477,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       "HEROToken#18"
     );
 
-    require(
-      amount != 0,
-      "HEROToken#19"
-    );
-
-    require(
-      excludedAccounts[sender].exists ||
-      presaleFinished,
-      "HEROToken#20"
-    );
-
-    if (sender == recipient) {
+    if (sender == recipient) { // special transfer type
       _syncLP();
 
       _emitTransfer(
@@ -496,39 +485,52 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
         recipient,
         0
       );
-    } else if (
-      !excludedAccounts[sender].exists &&
-      !excludedAccounts[recipient].exists
-    ) {
-      _transferBetweenHolderAccounts(
-        sender,
-        recipient,
-        amount
-      );
-    } else if (
-      excludedAccounts[sender].exists &&
-      !excludedAccounts[recipient].exists
-    ) {
-      _transferFromExcludedAccount(
-        sender,
-        recipient,
-        amount
-      );
-    } else if (
-      !excludedAccounts[sender].exists &&
-      excludedAccounts[recipient].exists
-    ) {
-      _transferToExcludedAccount(
-        sender,
-        recipient,
-        amount
-      );
     } else {
-      _transferBetweenExcludedAccounts(
-        sender,
-        recipient,
-        amount
+      require(
+        excludedAccounts[sender].exists ||
+        presaleFinished,
+        "HEROToken#20"
       );
+
+      require(
+        amount != 0,
+        "HEROToken#19"
+      );
+
+      if (
+        !excludedAccounts[sender].exists &&
+        !excludedAccounts[recipient].exists
+      ) {
+        _transferBetweenHolderAccounts(
+          sender,
+          recipient,
+          amount
+        );
+      } else if (
+        excludedAccounts[sender].exists &&
+        !excludedAccounts[recipient].exists
+      ) {
+        _transferFromExcludedAccount(
+          sender,
+          recipient,
+          amount
+        );
+      } else if (
+        !excludedAccounts[sender].exists &&
+        excludedAccounts[recipient].exists
+      ) {
+        _transferToExcludedAccount(
+          sender,
+          recipient,
+          amount
+        );
+      } else {
+        _transferBetweenExcludedAccounts(
+          sender,
+          recipient,
+          amount
+        );
+      }
     }
   }
 

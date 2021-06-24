@@ -1,9 +1,9 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import { constants } from 'ethers';
-import OwnedMockArtifact from '../../artifacts/OwnedMock.json';
-import { OwnedMock } from '../../typings';
-import { randomAddress, Signer } from '../helpers';
+import OwnedMockArtifact from '../../../artifacts/OwnedMock.json';
+import { OwnedMock } from '../../../typings';
+import { randomAddress, Signer } from '../../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -34,8 +34,10 @@ describe('Owned (using mock)', () => {
       );
     });
 
-    it('expect to resolve when sender is the owner', async () => {
-      await owned.connect(owner).triggerOnlyOwner();
+    it('expect to emit event when sender is the owner', async () => {
+      const tx = await owned.connect(owner).triggerOnlyOwner();
+
+      expect(tx).to.emit(owned, 'Triggered');
     });
   });
 

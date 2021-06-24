@@ -29,6 +29,12 @@ abstract contract HEROLPManager is Lockable, Owned, Initializable {
     _;
   }
 
+  // events
+
+  event LPBurnt(
+    uint256 amount
+  );
+
   /**
    * @dev Internal constructor
    */
@@ -64,6 +70,10 @@ abstract contract HEROLPManager is Lockable, Owned, Initializable {
     );
 
     _burnLP(amount);
+
+    emit LPBurnt(
+      amount
+    );
   }
 
   // external functions (views)

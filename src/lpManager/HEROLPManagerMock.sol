@@ -10,10 +10,14 @@ import "./HEROLPManager.sol";
  * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract HEROLPManagerMock is HEROLPManager {
-  uint256 public syncedBalance;
-
   bool private shouldSyncLPBefore;
   bool private shouldSyncLPAfter;
+
+  // events
+
+  event Triggered();
+
+  event LPSynced();
 
   /**
    * @dev Public constructor
@@ -26,6 +30,13 @@ contract HEROLPManagerMock is HEROLPManager {
   }
 
   // external functions
+
+  function triggerOnlyToken()
+    external
+    onlyToken
+  {
+    emit Triggered();
+  }
 
   function initialize(
     address token_
@@ -73,19 +84,15 @@ contract HEROLPManagerMock is HEROLPManager {
     internal
     override
   {
-    syncedBalance = token.balanceOf(address(this));
+    emit LPSynced();
   }
 
   function _burnLP(
-    uint256 amount
+    uint256
   )
     internal
     override
   {
-    token.burn(
-      amount
-    );
-
-    _syncLP();
+    emit Triggered();
   }
 }

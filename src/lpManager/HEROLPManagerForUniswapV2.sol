@@ -45,7 +45,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
   {
     require(
       msg.value != 0,
-      "HEROLPManagerUniswapV2#1"
+      "HEROLPManagerForUniswapV2#1"
     );
 
     wrappedNative.deposit{value: msg.value}();
@@ -65,7 +65,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
     if (enableBurnLPAtValue != 0) {
       require(
         stableCoin != address(0),
-        "HEROLPManagerUniswapV2#2"
+        "HEROLPManagerForUniswapV2#2"
       );
 
       settings.enableBurnLPAtValue = enableBurnLPAtValue;
@@ -74,7 +74,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
     require(
       uniswapRouter_ != address(0),
-      "HEROLPManagerUniswapV2#3"
+      "HEROLPManagerForUniswapV2#3"
     );
 
     uniswapRouter = UniswapV2Router02(uniswapRouter_);
@@ -123,7 +123,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
   {
     uint256 totalAmount = token.balanceOf(address(this));
 
-    if (totalAmount != 0) {
+    if (totalAmount >= 2) {
       uint256 swapAmount = totalAmount.div(2);
       uint256 liquidityAmount = totalAmount.sub(swapAmount);
 
@@ -144,35 +144,27 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
       require(
         tokenReserve != 0,
-        "HEROLPManagerUniswapV2#4"
+        "HEROLPManagerForUniswapV2#4"
       );
 
       require(
         amount <= tokenReserve,
-        "HEROLPManagerUniswapV2#5"
+        "HEROLPManagerForUniswapV2#5"
       );
 
-      address[] memory path = new address[](3);
-
-      path[0] = address(token);
-      path[1] = address(wrappedNative);
-      path[2] = settings.stableCoin;
-
-      uint256[] memory amounts = uniswapRouter.getAmountsOut(amount, path);
-
-      uint256 tokensValue = amounts[2];
+      uint256 tokenReserveValue = _calcTokensValue(tokenReserve);
 
       require(
-        tokensValue > settings.enableBurnLPAtValue,
-        "HEROLPManagerUniswapV2#6"
+        tokenReserveValue > settings.enableBurnLPAtValue,
+        "HEROLPManagerForUniswapV2#6"
       );
 
-      uint256 amountValue = amount.mul(tokensValue).div(amount);
-      uint256 maxValue = tokensValue.div(settings.enableBurnLPAtValue);
+      uint256 amountValue = _calcTokensValue(amount);
+      uint256 maxAmountValue = tokenReserveValue.sub(settings.enableBurnLPAtValue);
 
       require(
-        maxValue >= amountValue,
-        "HEROLPManagerUniswapV2#7"
+        amountValue <= maxAmountValue,
+        "HEROLPManagerForUniswapV2#7"
       );
     }
 
@@ -182,7 +174,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
     require(
       totalAmount >= amount,
-      "HEROLPManagerUniswapV2#8"
+      "HEROLPManagerForUniswapV2#8"
     );
 
     token.burn(amount);
@@ -192,29 +184,34 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
     );
   }
 
+  // private functions
+
   function _swapTokens(
     uint256 amount
   )
     private
   {
-    if (amount != 0) {
-      token.approve(
-        address(uniswapRouter),
-        amount
-      );
+    token.approve(
+      address(uniswapRouter),
+      amount
+    );
 
-      address[] memory path = new address[](2);
+    address[] memory path = new address[](2);
 
-      path[0] = address(token);
-      path[1] = address(wrappedNative);
+    path[0] = address(token);
+    path[1] = address(wrappedNative);
 
-      uniswapRouter.swapExactTokensForTokens(
-        amount,
-        0,
-        path,
-        address(this),
-        block.timestamp // solhint-disable-line not-rely-on-time
-      );
+    // omit revert
+    try uniswapRouter.swapExactTokensForTokens(
+      amount,
+      0,
+      path,
+      address(this),
+      block.timestamp // solhint-disable-line not-rely-on-time
+    ) {
+      //
+    } catch {
+      //
     }
   }
 
@@ -248,7 +245,8 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
         ? (address(token), address(wrappedNative), tokensAmount, wrappedNativeAmount)
         : (address(wrappedNative), address(token), wrappedNativeAmount, tokensAmount);
 
-      uniswapRouter.addLiquidity(
+      // omit revert
+      try uniswapRouter.addLiquidity(
         tokenA,
         tokenB,
         amountADesired,
@@ -257,7 +255,11 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
         0,
         address(this),
         block.timestamp // solhint-disable-line not-rely-on-time
-      );
+      ) {
+        //
+      } catch {
+        //
+      }
     }
   }
 
@@ -292,6 +294,24 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
   }
 
   // private functions (views)
+
+  function _calcTokensValue(
+    uint256 amount
+  )
+    private
+    view
+    returns (uint256)
+  {
+    address[] memory path = new address[](3);
+
+    path[0] = address(token);
+    path[1] = address(wrappedNative);
+    path[2] = settings.stableCoin;
+
+    uint256[] memory amounts = uniswapRouter.getAmountsOut(amount, path);
+
+    return amounts[2];
+  }
 
   function _getLiquidityReserves()
     private
