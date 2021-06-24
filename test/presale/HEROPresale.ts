@@ -141,7 +141,7 @@ describe('HEROPresale', () => {
         expect(tx).to.emit(presale, 'Initialized');
       });
 
-      it('expect to revert when whitelist is initialized', async () => {
+      it('expect to revert when the contract is initialized', async () => {
         await expect(
           presale.initialize(
             token.address,

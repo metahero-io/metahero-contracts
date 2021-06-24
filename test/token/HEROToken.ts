@@ -1,10 +1,10 @@
-import { BigNumber, BigNumberish } from 'ethers';
+import { BigNumber, BigNumberish, constants } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import HEROTokenArtifact from '../../artifacts/HEROToken.json';
 import HEROLPManagerMockArtifact from '../../artifacts/HEROLPManagerMock.json';
 import { HEROToken, HEROLPManagerMock } from '../../typings';
-import { Signer } from '../helpers';
+import { randomAddress, Signer } from '../helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -14,10 +14,14 @@ interface BeforeHookOptions {
     sender: number;
     recipient: number;
   };
+  controller: string;
+  lpManager: string;
   lpFee: this['burnFee'];
   rewardsFee: this['burnFee'];
   initialize: boolean;
   finishPresale: boolean;
+  minTotalSupply: BigNumberish;
+  totalSupply: BigNumberish;
   postBefore: () => Promise<void>;
 }
 
@@ -30,6 +34,10 @@ interface TransferAccountOptions {
 describe('HEROToken', () => {
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
   const MIN_TOTAL_SUPPLY = BigNumber.from('100000000000');
+  const ZERO_FEE = {
+    sender: 0,
+    recipient: 0,
+  };
 
   let owner: Signer;
   let controller: Signer;
@@ -37,6 +45,15 @@ describe('HEROToken', () => {
   let holders: Signer[];
   let token: HEROToken;
   let lpManager: HEROLPManagerMock;
+
+  before(async () => {
+    let signers = await getSigners();
+
+    [owner, controller, ...signers] = signers;
+
+    excluded = signers.slice(0, 2);
+    holders = signers.slice(2);
+  });
 
   const createBeforeHook = (options: Partial<BeforeHookOptions> = {}) => {
     const {
@@ -46,53 +63,68 @@ describe('HEROToken', () => {
       initialize,
       finishPresale,
       postBefore,
+      controller: controllerAddress,
+      lpManager: lpManagerAddress,
+      totalSupply,
+      minTotalSupply,
     } = {
-      burnFee: {
-        sender: 0,
-        recipient: 0,
-      },
-      lpFee: {
-        sender: 0,
-        recipient: 0,
-      },
-      rewardsFee: {
-        sender: 0,
-        recipient: 0,
-      },
-      initialize: false,
+      burnFee: ZERO_FEE,
+      lpFee: ZERO_FEE,
+      rewardsFee: ZERO_FEE,
+      initialize: true,
       finishPresale: false,
+      totalSupply: TOTAL_SUPPLY,
+      minTotalSupply: MIN_TOTAL_SUPPLY,
       ...options,
     };
 
     before(async () => {
-      let signers = await getSigners();
-
-      [owner, controller, ...signers] = signers;
-
-      excluded = signers.slice(0, 2);
-      holders = signers.slice(2);
-
       token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
-      lpManager = (await deployContract(
-        owner,
-        HEROLPManagerMockArtifact,
-      )) as HEROLPManagerMock;
+      lpManager = null;
+
+      let controllerParam: string;
+      let lpManagerParam: string;
+
+      if (controllerAddress === null) {
+        controllerParam = constants.AddressZero;
+      } else if (controllerAddress) {
+        controllerParam = controllerAddress;
+      } else {
+        controllerParam = controller.address;
+      }
+
+      if (lpManagerAddress === null) {
+        lpManagerParam = constants.AddressZero;
+      } else if (lpManagerAddress) {
+        lpManagerParam = lpManagerAddress;
+      } else {
+        lpManager = (await deployContract(
+          owner,
+          HEROLPManagerMockArtifact,
+        )) as HEROLPManagerMock;
+
+        lpManagerParam = lpManager.address;
+      }
 
       if (initialize) {
         await token.initialize(
           burnFee,
           lpFee,
           rewardsFee,
-          MIN_TOTAL_SUPPLY,
-          lpManager.address,
-          controller.address,
-          TOTAL_SUPPLY,
+          minTotalSupply,
+          lpManagerParam,
+          controllerParam,
+          totalSupply,
           excluded.map(({ address }) => address),
         );
 
-        await token.transfer(excluded[0].address, TOTAL_SUPPLY);
+        if (totalSupply) {
+          await token.transfer(excluded[0].address, totalSupply);
+        }
 
-        await lpManager.initialize(token.address);
+        if (lpManager) {
+          await lpManager.initialize(token.address);
+        }
 
         if (finishPresale) {
           await token.finishPresale();
@@ -106,7 +138,9 @@ describe('HEROToken', () => {
   };
 
   context('# metadata', () => {
-    createBeforeHook();
+    createBeforeHook({
+      initialize: false,
+    });
 
     it('expect to return correct name', async () => {
       expect(await token.name()).to.equal('Metahero');
@@ -118,6 +152,274 @@ describe('HEROToken', () => {
 
     it('expect to return correct decimals', async () => {
       expect(await token.decimals()).to.equal(18);
+    });
+  });
+
+  context('initialize()', () => {
+    createBeforeHook({
+      initialize: false,
+    });
+
+    it('expect to revert when sender is not the initializer', async () => {
+      await expect(
+        token
+          .connect(holders[0])
+          .initialize(
+            ZERO_FEE,
+            ZERO_FEE,
+            ZERO_FEE,
+            0,
+            constants.AddressZero,
+            constants.AddressZero,
+            0,
+            [],
+          ),
+      ).to.be.revertedWith('Initializable#2');
+    });
+
+    it('expect to revert when lp manager is the zero address', async () => {
+      await expect(
+        token.initialize(
+          ZERO_FEE,
+          {
+            sender: 1,
+            recipient: 1,
+          },
+          ZERO_FEE,
+          0,
+          constants.AddressZero,
+          constants.AddressZero,
+          0,
+          [],
+        ),
+      ).to.be.revertedWith('HEROToken#1');
+    });
+
+    it('expect to initialize the contract', async () => {
+      const tx = await token.initialize(
+        ZERO_FEE,
+        ZERO_FEE,
+        ZERO_FEE,
+        0,
+        constants.AddressZero,
+        constants.AddressZero,
+        0,
+        [],
+      );
+
+      expect(tx).to.emit(token, 'Initialized');
+    });
+
+    it('expect to revert when the contract is initialized', async () => {
+      await expect(
+        token.initialize(
+          ZERO_FEE,
+          ZERO_FEE,
+          ZERO_FEE,
+          0,
+          constants.AddressZero,
+          constants.AddressZero,
+          0,
+          [],
+        ),
+      ).to.be.revertedWith('Initializable#1');
+    });
+  });
+
+  context('finishPresale()', () => {
+    createBeforeHook({
+      finishPresale: false,
+    });
+
+    it('expect to revert when sender is not the owner', async () => {
+      await expect(
+        token.connect(holders[0]).finishPresale(),
+      ).to.be.revertedWith('Owned#1');
+    });
+
+    it('expect to finish presale', async () => {
+      const tx = await token.finishPresale();
+
+      expect(tx).to.emit(token, 'PresaleFinished');
+    });
+
+    it('expect to revert when presale is finished', async () => {
+      await expect(token.finishPresale()).to.be.revertedWith('HEROToken#2');
+    });
+  });
+
+  context('excludeAccount()', () => {
+    const account = randomAddress();
+    const holder = randomAddress();
+
+    createBeforeHook({
+      postBefore: async () => {
+        await token.connect(excluded[0]).transfer(holder, 10);
+      },
+    });
+
+    it('expect to revert when sender is not the owner', async () => {
+      await expect(
+        token.connect(holders[0]).excludeAccount(randomAddress(), false, false),
+      ).to.be.revertedWith('Owned#1');
+    });
+
+    it('expect to revert when account is the zero address', async () => {
+      await expect(
+        token.excludeAccount(constants.AddressZero, false, false),
+      ).to.be.revertedWith('HEROToken#4');
+    });
+
+    it('expect to revert when account already exist', async () => {
+      await expect(
+        token.excludeAccount(excluded[1].address, false, false),
+      ).to.be.revertedWith('HEROToken#5');
+    });
+
+    it('expect to revert when account is the holder', async () => {
+      await expect(
+        token.excludeAccount(holder, false, false),
+      ).to.be.revertedWith('HEROToken#6');
+    });
+
+    it('expect to exclude fresh account', async () => {
+      const tx = await token.excludeAccount(account, false, false);
+
+      expect(tx)
+        .to.emit(token, 'AccountExcluded')
+        .withArgs(account, false, false);
+    });
+
+    it('expect to update excluded account', async () => {
+      const account = randomAddress();
+
+      const tx = await token.excludeAccount(account, true, false);
+
+      expect(tx)
+        .to.emit(token, 'AccountExcluded')
+        .withArgs(account, true, false);
+    });
+  });
+
+  context('mint()', () => {
+    createBeforeHook();
+
+    it('expect to revert when sender is not the controller', async () => {
+      await expect(token.mint(randomAddress(), 10)).to.be.revertedWith(
+        'Controlled#1',
+      );
+    });
+
+    it('expect to revert when account is the zero address', async () => {
+      await expect(
+        token.connect(controller).mint(constants.AddressZero, 10),
+      ).to.be.revertedWith('HEROToken#9');
+    });
+
+    it('expect to revert when amount is zero', async () => {
+      await expect(
+        token.connect(controller).mint(excluded[0].address, 0),
+      ).to.be.revertedWith('HEROToken#10');
+    });
+
+    it('expect to revert when account is not excluded', async () => {
+      await expect(
+        token.connect(controller).mint(randomAddress(), 10),
+      ).to.be.revertedWith('HEROToken#11');
+    });
+
+    it('expect to mint tokens', async () => {
+      const account = excluded[0].address;
+      const amount = 100;
+
+      const tx = await token.connect(controller).mint(account, amount);
+
+      expect(tx)
+        .to.emit(token, 'Transfer')
+        .withArgs(constants.AddressZero, account, amount);
+    });
+  });
+
+  context('allowance()', () => {
+    const spender = randomAddress();
+    const allowance = 100;
+
+    createBeforeHook({
+      postBefore: async () => {
+        await token.connect(holders[0]).approve(spender, allowance);
+      },
+    });
+
+    it('expect to return correct allowances', async () => {
+      expect(await token.allowance(randomAddress(), randomAddress())).to.equal(
+        0,
+      );
+      expect(await token.allowance(holders[0].address, spender)).to.equal(
+        allowance,
+      );
+    });
+  });
+
+  context('getBalanceSummary()', () => {
+    const transferAmount = 100000;
+    const recipientFee = 5;
+
+    createBeforeHook({
+      rewardsFee: {
+        sender: 0,
+        recipient: recipientFee,
+      },
+      finishPresale: true,
+      postBefore: async () => {
+        await token
+          .connect(excluded[0])
+          .transfer(holders[1].address, transferAmount);
+      },
+    });
+
+    it('expect to return correct balance summary', async () => {
+      const output = await token.getBalanceSummary(holders[1].address);
+
+      expect(output.totalBalance).to.equal(transferAmount);
+      expect(output.holdingBalance).to.equal(
+        (transferAmount * (100 - recipientFee)) / 100,
+      );
+      expect(output.totalRewards).to.equal(
+        (transferAmount * recipientFee) / 100,
+      );
+    });
+  });
+
+  context('transferFrom()', () => {
+    const allowance = 100;
+    let spender: Signer;
+
+    createBeforeHook({
+      postBefore: async () => {
+        spender = holders[0];
+        await token.connect(excluded[0]).approve(spender.address, allowance);
+      },
+      finishPresale: true,
+    });
+
+    it('expect to revert when amount exceeds allowance', async () => {
+      await expect(
+        token
+          .connect(spender)
+          .transferFrom(excluded[0].address, randomAddress(), allowance + 1),
+      ).to.be.revertedWith('HEROToken#3');
+    });
+
+    it('expect to transfer from', async () => {
+      const recipient = randomAddress();
+
+      await token
+        .connect(spender)
+        .transferFrom(excluded[0].address, recipient, allowance);
+
+      expect(
+        await token.allowance(holders[0].address, spender.address),
+      ).to.equal(0);
     });
   });
 
@@ -136,7 +438,6 @@ describe('HEROToken', () => {
           sender: 1,
           recipient: 1,
         },
-        initialize: true,
         finishPresale: true,
       });
 
