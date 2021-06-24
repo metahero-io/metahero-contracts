@@ -1,6 +1,7 @@
 # Metahero
 
 [![NPM version][npm-image]][npm-url]
+[![License MIT][license-image]][license-url]
 
 ## Token details
 
@@ -54,3 +55,5 @@ MIT
 
 [npm-image]: https://badge.fury.io/js/%40metahero%2Fcontracts.svg
 [npm-url]: https://npmjs.org/package/@metahero/contracts
+[license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license-url]: https://github.com/metahero-token/metahero-contracts/blob/master/LICENSE
