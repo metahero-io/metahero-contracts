@@ -13,20 +13,20 @@ const func: DeployFunction = async (hre) => {
   // settings
 
   const ENABLE_BURN_LP_AT_VALUE = getNetworkEnv(
-    'LP_MANAGER_UNISWAP_V2_ENABLE_BURN_LP_AT_VALUE',
+    'LP_MANAGER_FOR_UNISWAP_V2_ENABLE_BURN_LP_AT_VALUE',
     BigNumber.from('10000000000000000000000000'), // 10,000,000.000000000000000000
   );
 
   const { from } = await getNamedAccounts();
 
-  if (await read(ContractNames.HEROLPManagerUniswapV2, 'initialized')) {
-    log(`${ContractNames.HEROLPManagerUniswapV2} already initialized`);
+  if (await read(ContractNames.HEROLPManagerForUniswapV2, 'initialized')) {
+    log(`${ContractNames.HEROLPManagerForUniswapV2} already initialized`);
   } else {
     const { address: token } = await get(ContractNames.HEROToken);
     const pancakeSwapRouter = knownContracts.getAddress('PancakeSwapRouter');
 
     await execute(
-      ContractNames.HEROLPManagerUniswapV2,
+      ContractNames.HEROLPManagerForUniswapV2,
       {
         from,
         log: true,
@@ -38,9 +38,9 @@ const func: DeployFunction = async (hre) => {
       knownContracts.getAddress('PancakeSwapRouter'),
     );
 
-    const pancakeSwapTokenPair = await read(
-      ContractNames.HEROLPManagerUniswapV2,
-      'uniswapTokenPair',
+    const pancakeSwapPair = await read(
+      ContractNames.HEROLPManagerForUniswapV2,
+      'uniswapPair',
     );
 
     await execute(
@@ -62,7 +62,7 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'excludeAccount',
-      pancakeSwapTokenPair,
+      pancakeSwapPair,
       false,
       false,
     );

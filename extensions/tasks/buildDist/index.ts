@@ -79,6 +79,7 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
           const filePath = join(artifactsPath, fileName);
 
           const addresses: { [key: string]: string } = {};
+          let deployed = false;
 
           for (const network of networks) {
             const { chainId, path, name } = network;
@@ -96,6 +97,8 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
             addresses[chainId] = address;
 
             if (address && transactionHash) {
+              deployed = true;
+
               if (!contractsMD[name]) {
                 contractsMD[name] = {};
               }
@@ -107,12 +110,14 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
             }
           }
 
-          const { abi }: { abi: any } = await readJSON(filePath);
+          if (deployed) {
+            const { abi }: { abi: any } = await readJSON(filePath);
 
-          contracts[contractName] = {
-            abi,
-            addresses,
-          };
+            contracts[contractName] = {
+              abi,
+              addresses,
+            };
+          }
         }
       }
     }

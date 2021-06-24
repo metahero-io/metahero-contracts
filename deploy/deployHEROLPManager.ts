@@ -8,7 +8,7 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy(ContractNames.HEROLPManagerUniswapV2, {
+  await deploy(ContractNames.HEROLPManagerForUniswapV2, {
     from,
     log: true,
   });

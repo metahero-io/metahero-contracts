@@ -10,7 +10,7 @@ import {
 const { name } = network;
 const { getSigners } = ethers;
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 50;
 const DATA_FILE_NAME = 'presaleAccounts.csv';
 
 async function main(): Promise<void> {
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
       })
       .filter((address) => address);
   } catch (err) {
-    //
+    throw new Error(`Invalid "${DATA_FILE_NAME}" input file`);
   }
 
   const { address } = await deployments.get('HEROPresale');
@@ -57,10 +57,12 @@ async function main(): Promise<void> {
       batch.addresses.push(addresses[i]);
 
       if (batch.addresses.length === BATCH_SIZE || i === addresses.length - 1) {
-        console.log(`batch #${batch.index} addresses:`, batch.addresses);
+        console.log(`batch #${batch.index}, addresses:`, batch.addresses);
 
         const tx = await presale.addAccounts(batch.addresses);
         await tx.wait();
+
+        console.log('[COMPLETED] tx:', tx.hash);
 
         batch.index++;
         batch.addresses = [];
