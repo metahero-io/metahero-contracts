@@ -19,6 +19,19 @@ module.exports = {
         "inputs": [
           {
             "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "LPBurnt",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
             "internalType": "address",
             "name": "owner",
             "type": "address"
@@ -232,7 +245,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x7D19edcC581bBa21255Fb5738C04fe3938206294"
+      "97": "0x8545910A97E8703C8bFE74ad1C2A2e03C6e4f178"
     }
   },
   "HEROPresale": {
@@ -569,7 +582,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x44AC28cC3810B91Af2a775531f64bBe7dd3885DD"
+      "97": "0xf5118A6DC19DcD1808E1Ae4794dC7D5d89c3ee91"
     }
   },
   "HEROToken": {
@@ -1223,7 +1236,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x0935c48F8c6e330EcCb690418e7E51D29F935F95"
+      "97": "0xCfE8388956685B14f9139Da7b4dC068E730C0C88"
     }
   }
 };
