@@ -195,7 +195,7 @@ describe('MetaheroToken', () => {
           0,
           [],
         ),
-      ).to.be.revertedWith('MetaheroToken#1');
+      ).to.be.revertedWith('MetaheroToken#3');
     });
 
     it('expect to initialize the contract', async () => {
@@ -247,7 +247,7 @@ describe('MetaheroToken', () => {
     });
 
     it('expect to revert when presale is finished', async () => {
-      await expect(token.finishPresale()).to.be.revertedWith('MetaheroToken#2');
+      await expect(token.finishPresale()).to.be.revertedWith('MetaheroToken#5');
     });
   });
 
@@ -270,19 +270,19 @@ describe('MetaheroToken', () => {
     it('expect to revert when account is the zero address', async () => {
       await expect(
         token.excludeAccount(constants.AddressZero, false, false),
-      ).to.be.revertedWith('MetaheroToken#4');
+      ).to.be.revertedWith('MetaheroToken#7');
     });
 
     it('expect to revert when account already exist', async () => {
       await expect(
         token.excludeAccount(excluded[1].address, false, false),
-      ).to.be.revertedWith('MetaheroToken#5');
+      ).to.be.revertedWith('MetaheroToken#8');
     });
 
     it('expect to revert when account is the holder', async () => {
       await expect(
         token.excludeAccount(holder, false, false),
-      ).to.be.revertedWith('MetaheroToken#6');
+      ).to.be.revertedWith('MetaheroToken#9');
     });
 
     it('expect to exclude fresh account', async () => {
@@ -304,38 +304,43 @@ describe('MetaheroToken', () => {
     });
   });
 
-  context('mint()', () => {
+  context('mintTo()', () => {
     createBeforeHook();
 
     it('expect to revert when sender is not the controller', async () => {
-      await expect(token.mint(randomAddress(), 10)).to.be.revertedWith(
+      await expect(token.mintTo(randomAddress(), 10)).to.be.revertedWith(
         'Controlled#1',
       );
     });
 
     it('expect to revert when account is the zero address', async () => {
       await expect(
-        token.connect(controller).mint(constants.AddressZero, 10),
-      ).to.be.revertedWith('MetaheroToken#9');
+        token.connect(controller).mintTo(constants.AddressZero, 10),
+      ).to.be.revertedWith('MetaheroToken#12');
     });
 
     it('expect to revert when amount is zero', async () => {
       await expect(
-        token.connect(controller).mint(excluded[0].address, 0),
-      ).to.be.revertedWith('MetaheroToken#10');
+        token.connect(controller).mintTo(excluded[0].address, 0),
+      ).to.be.revertedWith('MetaheroToken#13');
     });
 
-    it('expect to revert when account is not excluded', async () => {
-      await expect(
-        token.connect(controller).mint(randomAddress(), 10),
-      ).to.be.revertedWith('MetaheroToken#11');
+    it('expect to mint tokens to holder', async () => {
+      const account = holders[0].address;
+      const amount = 200;
+
+      const tx = await token.connect(controller).mintTo(account, amount);
+
+      expect(tx)
+        .to.emit(token, 'Transfer')
+        .withArgs(constants.AddressZero, account, amount);
     });
 
-    it('expect to mint tokens', async () => {
+    it('expect to mint tokens to excluded', async () => {
       const account = excluded[0].address;
       const amount = 100;
 
-      const tx = await token.connect(controller).mint(account, amount);
+      const tx = await token.connect(controller).mintTo(account, amount);
 
       expect(tx)
         .to.emit(token, 'Transfer')
@@ -410,7 +415,7 @@ describe('MetaheroToken', () => {
         token
           .connect(spender)
           .transferFrom(excluded[0].address, randomAddress(), allowance + 1),
-      ).to.be.revertedWith('MetaheroToken#3');
+      ).to.be.revertedWith('MetaheroToken#6');
     });
 
     it('expect to transfer from', async () => {
