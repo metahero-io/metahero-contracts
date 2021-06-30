@@ -3,8 +3,8 @@ import { readFile } from 'fs-extra';
 import { network, ethers, deployments } from 'hardhat';
 import { utils } from 'ethers';
 import {
-  HEROPresale,
-  HEROPresale__factory as HEROPresaleFactory,
+  MetaheroPresale,
+  MetaheroPresale__factory as MetaheroPresaleFactory,
 } from '../typings';
 
 const { name } = network;
@@ -39,11 +39,11 @@ async function main(): Promise<void> {
     throw new Error(`Invalid "${DATA_FILE_NAME}" input file`);
   }
 
-  const { address } = await deployments.get('HEROPresale');
+  const { address } = await deployments.get('MetaheroPresale');
   const [sender] = await getSigners();
 
   if (sender) {
-    const presale = HEROPresaleFactory.connect(address, sender);
+    const presale = MetaheroPresaleFactory.connect(address, sender);
 
     const batch: {
       index: number;

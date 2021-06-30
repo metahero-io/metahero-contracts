@@ -1,26 +1,26 @@
 import { ethers, waffle, knownContracts } from 'hardhat';
 import { expect } from 'chai';
 import { BigNumberish, constants, utils } from 'ethers';
-import ERC20MockArtifact from '../../artifacts/ERC20Mock.json';
-import HEROTokenArtifact from '../../artifacts/HEROToken.json';
-import HEROLPManagerForUniswapV2Artifact from '../../artifacts/HEROLPManagerForUniswapV2.json';
+import ERC20MockArtifact from '../artifacts/ERC20Mock.json';
+import MetaheroTokenArtifact from '../artifacts/MetaheroToken.json';
+import MetaheroLPMForUniswapV2Artifact from '../artifacts/MetaheroLPMForUniswapV2.json';
 import {
   ERC20Mock,
-  HEROLPManagerForUniswapV2,
-  HEROToken,
-  UniswapV2Pair,
-  UniswapV2Pair__factory as UniswapV2PairFactory,
-  UniswapV2Router02,
-  UniswapV2Router02__factory as UniswapV2Router02Factory,
-  WrappedNative,
-  WrappedNative__factory as WrappedNativeFactory,
-} from '../../typings';
-import { Signer, setNextBlockTimestamp } from '../helpers';
+  MetaheroLPMForUniswapV2,
+  MetaheroToken,
+  IUniswapV2Pair,
+  IUniswapV2Pair__factory as IUniswapV2PairFactory,
+  IUniswapV2Router02,
+  IUniswapV2Router02__factory as IUniswapV2Router02Factory,
+  IWrappedNative,
+  IWrappedNative__factory as IWrappedNativeFactory,
+} from '../typings';
+import { Signer, setNextBlockTimestamp } from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
 
-describe('HEROLPManagerForUniswapV2', () => {
+describe('MetaheroLPMForUniswapV2', () => {
   const BURN_FEE = {
     sender: 1,
     recipient: 1,
@@ -39,22 +39,22 @@ describe('HEROLPManagerForUniswapV2', () => {
   let owner: Signer;
   let holders: Signer[];
   let stableCoin: ERC20Mock;
-  let token: HEROToken;
-  let lpManager: HEROLPManagerForUniswapV2;
-  let wrappedNative: WrappedNative;
-  let swapRouter: UniswapV2Router02;
-  let swapTokenPair: UniswapV2Pair;
+  let token: MetaheroToken;
+  let lpManager: MetaheroLPMForUniswapV2;
+  let wrappedNative: IWrappedNative;
+  let uniswapRouter: IUniswapV2Router02;
+  let uniswapPair: IUniswapV2Pair;
 
   before(async () => {
     [owner, ...holders] = await getSigners();
 
-    swapRouter = await UniswapV2Router02Factory.connect(
-      knownContracts.getAddress('PancakeSwapRouter'),
+    uniswapRouter = await IUniswapV2Router02Factory.connect(
+      knownContracts.getAddress('UniswapV2Router'),
       owner,
     );
 
-    wrappedNative = WrappedNativeFactory.connect(
-      await swapRouter.WETH(), //
+    wrappedNative = IWrappedNativeFactory.connect(
+      await uniswapRouter.WETH(), //
       owner,
     );
 
@@ -62,11 +62,11 @@ describe('HEROLPManagerForUniswapV2', () => {
 
     await stableCoin.setBalance(owner.address, STABLE_COIN_TOTAL_SUPPLY);
 
-    await stableCoin.approve(swapRouter.address, STABLE_COIN_TOTAL_SUPPLY);
+    await stableCoin.approve(uniswapRouter.address, STABLE_COIN_TOTAL_SUPPLY);
 
     const deadline = await setNextBlockTimestamp();
 
-    await swapRouter.addLiquidityETH(
+    await uniswapRouter.addLiquidityETH(
       stableCoin.address,
       STABLE_COIN_TOTAL_SUPPLY,
       0,
@@ -85,11 +85,11 @@ describe('HEROLPManagerForUniswapV2', () => {
   }) => {
     const { tokenLiquidity, nativeLiquidity } = options;
 
-    await token.approve(swapRouter.address, tokenLiquidity);
+    await token.approve(uniswapRouter.address, tokenLiquidity);
 
     const deadline = await setNextBlockTimestamp();
 
-    await swapRouter.addLiquidityETH(
+    await uniswapRouter.addLiquidityETH(
       token.address,
       tokenLiquidity,
       0,
@@ -126,20 +126,23 @@ describe('HEROLPManagerForUniswapV2', () => {
     before(async () => {
       lpManager = (await deployContract(
         owner,
-        HEROLPManagerForUniswapV2Artifact,
-      )) as HEROLPManagerForUniswapV2;
+        MetaheroLPMForUniswapV2Artifact,
+      )) as MetaheroLPMForUniswapV2;
 
-      token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
+      token = (await deployContract(
+        owner,
+        MetaheroTokenArtifact,
+      )) as MetaheroToken;
 
       if (initialize) {
         await lpManager.initialize(
           enableBurnLPAtValue,
           stableCoin.address,
           token.address,
-          swapRouter.address,
+          uniswapRouter.address,
         );
 
-        swapTokenPair = UniswapV2PairFactory.connect(
+        uniswapPair = IUniswapV2PairFactory.connect(
           await lpManager.uniswapPair(), //
           owner,
         );
@@ -152,7 +155,10 @@ describe('HEROLPManagerForUniswapV2', () => {
           lpManager.address,
           constants.AddressZero,
           TOKEN_TOTAL_SUPPLY,
-          [swapTokenPair.address, swapRouter.address],
+          [
+            lpManager.address, //
+            uniswapPair.address,
+          ],
         );
 
         await token.finishPresale();
@@ -180,7 +186,7 @@ describe('HEROLPManagerForUniswapV2', () => {
           to: lpManager.address,
           value: 0,
         }),
-      ).to.be.revertedWith('HEROLPManagerForUniswapV2#1');
+      ).to.be.revertedWith('MetaheroLPMForUniswapV2#1');
     });
 
     it('expect mint wrapped native', async () => {
@@ -209,9 +215,9 @@ describe('HEROLPManagerForUniswapV2', () => {
           1,
           constants.AddressZero,
           token.address,
-          swapRouter.address,
+          uniswapRouter.address,
         ),
-      ).to.be.revertedWith('HEROLPManagerForUniswapV2#2');
+      ).to.be.revertedWith('MetaheroLPMForUniswapV2#2');
     });
 
     it('expect to revert when uniswap router is the zero address', async () => {
@@ -222,7 +228,7 @@ describe('HEROLPManagerForUniswapV2', () => {
           token.address,
           constants.AddressZero,
         ),
-      ).to.be.revertedWith('HEROLPManagerForUniswapV2#3');
+      ).to.be.revertedWith('MetaheroLPMForUniswapV2#3');
     });
 
     it('expect to initialize the contract', async () => {
@@ -230,7 +236,7 @@ describe('HEROLPManagerForUniswapV2', () => {
         0,
         constants.AddressZero,
         token.address,
-        swapRouter.address,
+        uniswapRouter.address,
       );
 
       expect(tx).to.emit(lpManager, 'Initialized');
@@ -242,7 +248,7 @@ describe('HEROLPManagerForUniswapV2', () => {
           0,
           constants.AddressZero,
           token.address,
-          swapRouter.address,
+          uniswapRouter.address,
         ),
       ).to.be.revertedWith('Initializable#1');
     });
@@ -259,11 +265,11 @@ describe('HEROLPManagerForUniswapV2', () => {
 
       await token.transfer(lpManager.address, tokenPending);
 
-      const pairTokenBalance = await token.balanceOf(swapTokenPair.address);
+      const pairTokenBalance = await token.balanceOf(uniswapPair.address);
 
       await token.transfer(owner.address, 0);
 
-      expect(await token.balanceOf(swapTokenPair.address)).to.gt(
+      expect(await token.balanceOf(uniswapPair.address)).to.gt(
         pairTokenBalance,
       );
     });
@@ -279,7 +285,7 @@ describe('HEROLPManagerForUniswapV2', () => {
 
       it('expect to revert when token reserve is too low', async () => {
         await expect(lpManager.burnLP(50000)).to.be.revertedWith(
-          'HEROLPManagerForUniswapV2#4',
+          'MetaheroLPMForUniswapV2#4',
         );
       });
 
@@ -290,13 +296,13 @@ describe('HEROLPManagerForUniswapV2', () => {
         });
 
         await expect(lpManager.burnLP(70000)).to.be.revertedWith(
-          'HEROLPManagerForUniswapV2#5',
+          'MetaheroLPMForUniswapV2#5',
         );
       });
 
       it('expect to revert when token reserve value is too low', async () => {
         await expect(lpManager.burnLP(100)).to.be.revertedWith(
-          'HEROLPManagerForUniswapV2#6',
+          'MetaheroLPMForUniswapV2#6',
         );
       });
 
@@ -307,7 +313,7 @@ describe('HEROLPManagerForUniswapV2', () => {
         });
 
         await expect(lpManager.burnLP(50000)).to.be.revertedWith(
-          'HEROLPManagerForUniswapV2#7',
+          'MetaheroLPMForUniswapV2#7',
         );
       });
 
@@ -325,7 +331,7 @@ describe('HEROLPManagerForUniswapV2', () => {
 
       it('expect to revert when amount is higher than lp balance', async () => {
         await expect(lpManager.burnLP(50000)).to.be.revertedWith(
-          'HEROLPManagerForUniswapV2#8',
+          'MetaheroLPMForUniswapV2#8',
         );
       });
 
@@ -371,11 +377,11 @@ describe('HEROLPManagerForUniswapV2', () => {
     it('expect to transfer from exclude to holder#0', async () => {
       const amount = utils.parseEther('100000');
 
-      const pairTokenBalance = await token.balanceOf(swapTokenPair.address);
+      const pairTokenBalance = await token.balanceOf(uniswapPair.address);
 
       await token.transfer(holders[0].address, amount);
 
-      expect(await token.balanceOf(swapTokenPair.address)).to.equal(
+      expect(await token.balanceOf(uniswapPair.address)).to.equal(
         pairTokenBalance,
       );
     });
@@ -383,7 +389,7 @@ describe('HEROLPManagerForUniswapV2', () => {
     it('expect to transfer from holder#0 to holder#1', async () => {
       const amount = utils.parseEther('4000');
 
-      const pairTokenBalance = await token.balanceOf(swapTokenPair.address);
+      const pairTokenBalance = await token.balanceOf(uniswapPair.address);
 
       await token.connect(holders[0]).approve(holders[1].address, amount);
 
@@ -391,7 +397,7 @@ describe('HEROLPManagerForUniswapV2', () => {
         .connect(holders[1])
         .transferFrom(holders[0].address, holders[1].address, amount);
 
-      expect(await token.balanceOf(swapTokenPair.address)).to.gt(
+      expect(await token.balanceOf(uniswapPair.address)).to.gt(
         pairTokenBalance,
       );
     });
@@ -399,11 +405,11 @@ describe('HEROLPManagerForUniswapV2', () => {
     it('expect to transfer from holder#0 to holder#1', async () => {
       const amount = utils.parseEther('1000');
 
-      const pairTokenBalance = await token.balanceOf(swapTokenPair.address);
+      const pairTokenBalance = await token.balanceOf(uniswapPair.address);
 
       await token.connect(holders[0]).transfer(holders[1].address, amount);
 
-      expect(await token.balanceOf(swapTokenPair.address)).to.gt(
+      expect(await token.balanceOf(uniswapPair.address)).to.gt(
         pairTokenBalance,
       );
     });
@@ -413,13 +419,13 @@ describe('HEROLPManagerForUniswapV2', () => {
       const amount = utils.parseEther('90');
       const minAmount = 1;
 
-      const pairTokenBalance = await token.balanceOf(swapTokenPair.address);
+      const pairTokenBalance = await token.balanceOf(uniswapPair.address);
 
-      await token.connect(holders[1]).approve(swapRouter.address, amount);
+      await token.connect(holders[1]).approve(uniswapRouter.address, amount);
 
       const deadline = await setNextBlockTimestamp();
 
-      await swapRouter
+      await uniswapRouter
         .connect(holders[1])
         .swapExactTokensForETHSupportingFeeOnTransferTokens(
           amount,
@@ -429,7 +435,7 @@ describe('HEROLPManagerForUniswapV2', () => {
           deadline,
         );
 
-      expect(await token.balanceOf(swapTokenPair.address)).to.gt(
+      expect(await token.balanceOf(uniswapPair.address)).to.gt(
         pairTokenBalance,
       );
     });
@@ -441,10 +447,10 @@ describe('HEROLPManagerForUniswapV2', () => {
       const deadline = await setNextBlockTimestamp();
 
       const pairNativeBalance = await wrappedNative.balanceOf(
-        swapTokenPair.address,
+        uniswapPair.address,
       );
 
-      await swapRouter
+      await uniswapRouter
         .connect(holders[1])
         .swapExactETHForTokensSupportingFeeOnTransferTokens(
           minAmount,
@@ -456,7 +462,7 @@ describe('HEROLPManagerForUniswapV2', () => {
           },
         );
 
-      expect(await wrappedNative.balanceOf(swapTokenPair.address)).to.gt(
+      expect(await wrappedNative.balanceOf(uniswapPair.address)).to.gt(
         pairNativeBalance,
       );
     });

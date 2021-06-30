@@ -1,10 +1,10 @@
 import { BigNumber, BigNumberish, constants } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
-import HEROTokenArtifact from '../../artifacts/HEROToken.json';
-import HEROLPManagerMockArtifact from '../../artifacts/HEROLPManagerMock.json';
-import { HEROToken, HEROLPManagerMock } from '../../typings';
-import { randomAddress, Signer } from '../helpers';
+import MetaheroTokenArtifact from '../artifacts/MetaheroToken.json';
+import MetaheroLPMMockArtifact from '../artifacts/MetaheroLPMMock.json';
+import { MetaheroToken, MetaheroLPMMock } from '../typings';
+import { randomAddress, Signer } from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
@@ -15,7 +15,7 @@ interface BeforeHookOptions {
     recipient: number;
   };
   controller: string;
-  lpManager: string;
+  lpm: string;
   lpFee: this['burnFee'];
   rewardsFee: this['burnFee'];
   initialize: boolean;
@@ -31,7 +31,7 @@ interface TransferAccountOptions {
   expectedBalance: BigNumberish;
 }
 
-describe('HEROToken', () => {
+describe('MetaheroToken', () => {
   const TOTAL_SUPPLY = BigNumber.from('10000000000000');
   const MIN_TOTAL_SUPPLY = BigNumber.from('100000000000');
   const ZERO_FEE = {
@@ -43,8 +43,8 @@ describe('HEROToken', () => {
   let controller: Signer;
   let excluded: Signer[];
   let holders: Signer[];
-  let token: HEROToken;
-  let lpManager: HEROLPManagerMock;
+  let token: MetaheroToken;
+  let lpm: MetaheroLPMMock;
 
   before(async () => {
     let signers = await getSigners();
@@ -64,7 +64,7 @@ describe('HEROToken', () => {
       finishPresale,
       postBefore,
       controller: controllerAddress,
-      lpManager: lpManagerAddress,
+      lpm: lpmAddress,
       totalSupply,
       minTotalSupply,
     } = {
@@ -79,11 +79,14 @@ describe('HEROToken', () => {
     };
 
     before(async () => {
-      token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
-      lpManager = null;
+      token = (await deployContract(
+        owner,
+        MetaheroTokenArtifact,
+      )) as MetaheroToken;
+      lpm = null;
 
       let controllerParam: string;
-      let lpManagerParam: string;
+      let lpmParam: string;
 
       if (controllerAddress === null) {
         controllerParam = constants.AddressZero;
@@ -93,17 +96,17 @@ describe('HEROToken', () => {
         controllerParam = controller.address;
       }
 
-      if (lpManagerAddress === null) {
-        lpManagerParam = constants.AddressZero;
-      } else if (lpManagerAddress) {
-        lpManagerParam = lpManagerAddress;
+      if (lpmAddress === null) {
+        lpmParam = constants.AddressZero;
+      } else if (lpmAddress) {
+        lpmParam = lpmAddress;
       } else {
-        lpManager = (await deployContract(
+        lpm = (await deployContract(
           owner,
-          HEROLPManagerMockArtifact,
-        )) as HEROLPManagerMock;
+          MetaheroLPMMockArtifact,
+        )) as MetaheroLPMMock;
 
-        lpManagerParam = lpManager.address;
+        lpmParam = lpm.address;
       }
 
       if (initialize) {
@@ -112,7 +115,7 @@ describe('HEROToken', () => {
           lpFee,
           rewardsFee,
           minTotalSupply,
-          lpManagerParam,
+          lpmParam,
           controllerParam,
           totalSupply,
           excluded.map(({ address }) => address),
@@ -122,8 +125,8 @@ describe('HEROToken', () => {
           await token.transfer(excluded[0].address, totalSupply);
         }
 
-        if (lpManager) {
-          await lpManager.initialize(token.address);
+        if (lpm) {
+          await lpm.initialize(token.address);
         }
 
         if (finishPresale) {
@@ -192,7 +195,7 @@ describe('HEROToken', () => {
           0,
           [],
         ),
-      ).to.be.revertedWith('HEROToken#1');
+      ).to.be.revertedWith('MetaheroToken#1');
     });
 
     it('expect to initialize the contract', async () => {
@@ -244,7 +247,7 @@ describe('HEROToken', () => {
     });
 
     it('expect to revert when presale is finished', async () => {
-      await expect(token.finishPresale()).to.be.revertedWith('HEROToken#2');
+      await expect(token.finishPresale()).to.be.revertedWith('MetaheroToken#2');
     });
   });
 
@@ -267,19 +270,19 @@ describe('HEROToken', () => {
     it('expect to revert when account is the zero address', async () => {
       await expect(
         token.excludeAccount(constants.AddressZero, false, false),
-      ).to.be.revertedWith('HEROToken#4');
+      ).to.be.revertedWith('MetaheroToken#4');
     });
 
     it('expect to revert when account already exist', async () => {
       await expect(
         token.excludeAccount(excluded[1].address, false, false),
-      ).to.be.revertedWith('HEROToken#5');
+      ).to.be.revertedWith('MetaheroToken#5');
     });
 
     it('expect to revert when account is the holder', async () => {
       await expect(
         token.excludeAccount(holder, false, false),
-      ).to.be.revertedWith('HEROToken#6');
+      ).to.be.revertedWith('MetaheroToken#6');
     });
 
     it('expect to exclude fresh account', async () => {
@@ -313,19 +316,19 @@ describe('HEROToken', () => {
     it('expect to revert when account is the zero address', async () => {
       await expect(
         token.connect(controller).mint(constants.AddressZero, 10),
-      ).to.be.revertedWith('HEROToken#9');
+      ).to.be.revertedWith('MetaheroToken#9');
     });
 
     it('expect to revert when amount is zero', async () => {
       await expect(
         token.connect(controller).mint(excluded[0].address, 0),
-      ).to.be.revertedWith('HEROToken#10');
+      ).to.be.revertedWith('MetaheroToken#10');
     });
 
     it('expect to revert when account is not excluded', async () => {
       await expect(
         token.connect(controller).mint(randomAddress(), 10),
-      ).to.be.revertedWith('HEROToken#11');
+      ).to.be.revertedWith('MetaheroToken#11');
     });
 
     it('expect to mint tokens', async () => {
@@ -407,7 +410,7 @@ describe('HEROToken', () => {
         token
           .connect(spender)
           .transferFrom(excluded[0].address, randomAddress(), allowance + 1),
-      ).to.be.revertedWith('HEROToken#3');
+      ).to.be.revertedWith('MetaheroToken#3');
     });
 
     it('expect to transfer from', async () => {
@@ -446,13 +449,13 @@ describe('HEROToken', () => {
         const sender = excluded[0];
         const recipient = holders[1];
 
-        await lpManager.allowSyncLP(true, false);
+        await lpm.allowSyncLP(true, false);
 
         const tx = await token
           .connect(sender)
           .transfer(recipient.address, amount);
 
-        expect(tx).to.emit(lpManager, 'LPSynced');
+        expect(tx).to.emit(lpm, 'LPSynced');
       });
 
       it('expect to sync lp after transfer', async () => {
@@ -460,13 +463,13 @@ describe('HEROToken', () => {
         const sender = excluded[0];
         const recipient = holders[2];
 
-        await lpManager.allowSyncLP(false, true);
+        await lpm.allowSyncLP(false, true);
 
         const tx = await token
           .connect(sender)
           .transfer(recipient.address, amount);
 
-        expect(tx).to.emit(lpManager, 'LPSynced');
+        expect(tx).to.emit(lpm, 'LPSynced');
       });
 
       it('expect not to sync lp', async () => {
@@ -474,13 +477,13 @@ describe('HEROToken', () => {
         const sender = excluded[0];
         const recipient = holders[3];
 
-        await lpManager.allowSyncLP(false, false);
+        await lpm.allowSyncLP(false, false);
 
         const tx = await token
           .connect(sender)
           .transfer(recipient.address, amount);
 
-        expect(tx).not.to.emit(lpManager, 'LPSynced');
+        expect(tx).not.to.emit(lpm, 'LPSynced');
       });
     });
 

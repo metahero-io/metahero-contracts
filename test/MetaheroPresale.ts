@@ -1,29 +1,29 @@
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import { BigNumber, constants } from 'ethers';
-import HEROTokenArtifact from '../../artifacts/HEROToken.json';
-import HEROPresaleArtifact from '../../artifacts/HEROPresale.json';
-import { HEROToken, HEROPresale } from '../../typings';
+import MetaheroTokenArtifact from '../artifacts/MetaheroToken.json';
+import MetaheroPresaleArtifact from '../artifacts/MetaheroPresale.json';
+import { MetaheroToken, MetaheroPresale } from '../typings';
 import {
   Signer,
   setNextBlockTimestamp,
   getBalance,
   calcTxCost,
   randomAddress,
-} from '../helpers';
+} from './helpers';
 
 const { deployContract } = waffle;
 const { getSigners } = ethers;
 
-describe('HEROPresale', () => {
+describe('MetaheroPresale', () => {
   const TOKENS_AMOUNT_PER_NATIVE = BigNumber.from(10);
   const MAX_PURCHASE_PRICE = BigNumber.from(10000000);
   const TOTAL_SUPPLY = BigNumber.from(100000000);
   const TOTAL_TOKENS = BigNumber.from(1000000);
   const DEADLINE_IN = 60; // 60 sec
 
-  let token: HEROToken;
-  let presale: HEROPresale;
+  let token: MetaheroToken;
+  let presale: MetaheroPresale;
   let owner: Signer;
   let external: Signer;
   let accounts: Signer[];
@@ -54,12 +54,15 @@ describe('HEROPresale', () => {
     before(async () => {
       [owner, external, ...accounts] = await getSigners();
 
-      token = (await deployContract(owner, HEROTokenArtifact)) as HEROToken;
+      token = (await deployContract(
+        owner,
+        MetaheroTokenArtifact,
+      )) as MetaheroToken;
 
       presale = (await deployContract(
         owner,
-        HEROPresaleArtifact,
-      )) as HEROPresale;
+        MetaheroPresaleArtifact,
+      )) as MetaheroPresale;
 
       const fee = {
         sender: 0,
@@ -127,7 +130,7 @@ describe('HEROPresale', () => {
             MAX_PURCHASE_PRICE,
             DEADLINE_IN,
           ),
-        ).to.be.revertedWith('HEROPresale#6');
+        ).to.be.revertedWith('MetaheroPresale#6');
       });
 
       it('expect to initialize the contract', async () => {
@@ -213,13 +216,13 @@ describe('HEROPresale', () => {
       it('expect to revert when tokens amount per native is zero', async () => {
         await expect(
           presale.updateSettings(0, MAX_PURCHASE_PRICE),
-        ).to.be.revertedWith('HEROPresale#10');
+        ).to.be.revertedWith('MetaheroPresale#10');
       });
 
       it('expect to revert when max purchase price is zero', async () => {
         await expect(
           presale.updateSettings(TOKENS_AMOUNT_PER_NATIVE, 0),
-        ).to.be.revertedWith('HEROPresale#11');
+        ).to.be.revertedWith('MetaheroPresale#11');
       });
 
       it('expect to update settings', async () => {
@@ -275,12 +278,12 @@ describe('HEROPresale', () => {
       it('expect to revert when one of the account is zero address', async () => {
         await expect(
           presale.addAccounts([randomAddress(), constants.AddressZero]),
-        ).to.be.revertedWith('HEROPresale#12');
+        ).to.be.revertedWith('MetaheroPresale#12');
       });
 
       it('expect to revert when there is no accounts to add', async () => {
         await expect(presale.addAccounts([])).to.be.revertedWith(
-          'HEROPresale#13',
+          'MetaheroPresale#13',
         );
       });
 
@@ -339,12 +342,12 @@ describe('HEROPresale', () => {
       it('expect to revert when one of the account is zero address', async () => {
         await expect(
           presale.removeAccounts([randomAddress(), constants.AddressZero]),
-        ).to.be.revertedWith('HEROPresale#7');
+        ).to.be.revertedWith('MetaheroPresale#7');
       });
 
       it('expect to revert when there is no accounts to remove', async () => {
         await expect(presale.removeAccounts([])).to.be.revertedWith(
-          'HEROPresale#8',
+          'MetaheroPresale#8',
         );
       });
 
@@ -394,7 +397,7 @@ describe('HEROPresale', () => {
               to: presale.address,
               value: 1,
             }),
-          ).to.be.revertedWith('HEROPresale#2');
+          ).to.be.revertedWith('MetaheroPresale#2');
         });
 
         it('expect to revert on zero msg.value', async () => {
@@ -403,7 +406,7 @@ describe('HEROPresale', () => {
               to: presale.address,
               value: 0,
             }),
-          ).to.be.revertedWith('HEROPresale#3');
+          ).to.be.revertedWith('MetaheroPresale#3');
         });
 
         it('expect to revert when msg.value is too high', async () => {
@@ -412,7 +415,7 @@ describe('HEROPresale', () => {
               to: presale.address,
               value: MAX_PURCHASE_PRICE.add(1),
             }),
-          ).to.be.revertedWith('HEROPresale#4');
+          ).to.be.revertedWith('MetaheroPresale#4');
         });
 
         it('expect to revert when purchased tokens amount is too high', async () => {
@@ -421,7 +424,7 @@ describe('HEROPresale', () => {
               to: presale.address,
               value: MAX_PURCHASE_PRICE,
             }),
-          ).to.be.revertedWith('HEROPresale#5');
+          ).to.be.revertedWith('MetaheroPresale#5');
         });
 
         it('expect to buy tokens', async () => {
@@ -454,7 +457,7 @@ describe('HEROPresale', () => {
       context('finishPresale()', () => {
         it('expect to revert before deadline', async () => {
           await expect(presale.finishPresale()).to.be.revertedWith(
-            'HEROPresale#9',
+            'MetaheroPresale#9',
           );
         });
       });
@@ -474,7 +477,7 @@ describe('HEROPresale', () => {
               to: presale.address,
               value: 1,
             }),
-          ).to.be.revertedWith('HEROPresale#1');
+          ).to.be.revertedWith('MetaheroPresale#1');
         });
       });
 
