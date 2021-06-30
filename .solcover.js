@@ -5,7 +5,7 @@ module.exports = {
     'json',
   ],
   skipFiles: [
-    'common/erc20/ERC20Mock.sol', //
-    'lpManager/uniswapV2',
+    'core/erc20/ERC20Mock.sol', //
+    'uniswapV2',
   ],
 };

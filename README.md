@@ -21,20 +21,19 @@ import {
 } from '@metahero/contracts'; 
 
 console.log(
-  'HEROToken ABI:',
-  getContractAbi(ContractNames.HEROToken),
+  'MetaheroToken ABI:',
+  getContractAbi(ContractNames.MetaheroToken),
 );
 
 console.log(
-  'HEROToken BSC address:', 
-  getContractAddress(ContractNames.HEROToken, '56'),
+  'MetaheroToken BSC address:', 
+  getContractAddress(ContractNames.MetaheroToken, '56'), // chainId: 56
 );
 
 console.log(
-  'HEROPresale BSC testnet address:', 
-  getContractAddress(ContractNames.HEROPresale, '97'),
+  'MetaheroPresale BSC testnet address:', 
+  getContractAddress(ContractNames.MetaheroPresale, 97), // chainId: 97
 );
-
 ```
 
 ## License
