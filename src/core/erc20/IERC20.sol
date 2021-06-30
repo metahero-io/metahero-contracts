@@ -2,11 +2,11 @@
 pragma solidity ^0.6.12;
 
 /**
- * @title ERC20 standard interface
+ * @title ERC20 token interface
  *
  * @notice See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
  */
-interface ERC20Standard {
+interface IERC20 {
   // events
 
   event Approval(

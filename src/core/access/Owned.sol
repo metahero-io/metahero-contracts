@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 /**
  * @title Owned
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
 contract Owned {
   address public owner;

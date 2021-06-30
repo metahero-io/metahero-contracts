@@ -7,7 +7,7 @@ import "./Initializable.sol";
 /**
  * @title Initializable mock
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
 contract InitializableMock is Initializable {
   // events

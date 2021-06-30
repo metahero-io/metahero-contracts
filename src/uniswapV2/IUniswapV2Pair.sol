@@ -2,7 +2,7 @@
 /* solhint-disable func-name-mixedcase */
 pragma solidity ^0.6.12;
 
-import "../../common/erc20/ERC20Standard.sol";
+import "../core/erc20/IERC20.sol";
 
 
 /**
@@ -10,7 +10,7 @@ import "../../common/erc20/ERC20Standard.sol";
  *
  * @notice Based on https://github.com/Uniswap/uniswap-v2-core/blob/4dd59067c76dea4a0e8e4bfdda41877a6b16dedc/contracts/interfaces/IUniswapV2Pair.sol
  */
-interface UniswapV2Pair is ERC20Standard {
+interface IUniswapV2Pair is IERC20 {
   // events
 
   event Mint(

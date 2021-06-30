@@ -7,7 +7,7 @@ pragma solidity ^0.6.12;
  *
  * @notice Based on https://github.com/Uniswap/uniswap-v2-periphery/blob/dda62473e2da448bc9cb8f4514dadda4aeede5f4/contracts/interfaces/IUniswapV2Router01.sol
  */
-interface UniswapV2Router01 {
+interface IUniswapV2Router01 {
   // external functions
 
   function addLiquidityETH(

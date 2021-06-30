@@ -2,21 +2,21 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
-import "../common/access/Controlled.sol";
-import "../common/access/Owned.sol";
-import "../common/erc20/ERC20.sol";
-import "../common/lifecycle/Initializable.sol";
-import "../common/math/MathLib.sol";
-import "../common/math/SafeMathLib.sol";
-import "../lpManager/HEROLPManager.sol";
+import "./core/access/Controlled.sol";
+import "./core/access/Owned.sol";
+import "./core/erc20/ERC20.sol";
+import "./core/lifecycle/Initializable.sol";
+import "./core/math/MathLib.sol";
+import "./core/math/SafeMathLib.sol";
+import "./MetaheroLPM.sol";
 
 
 /**
- * @title HERO token
+ * @title Metahero token
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
-contract HEROToken is Controlled, Owned, ERC20, Initializable {
+contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   using MathLib for uint256;
   using SafeMathLib for uint256;
 
@@ -51,7 +51,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   string private constant TOKEN_SYMBOL = "HERO";
   uint8 private constant TOKEN_DECIMALS = 18; // 0.000000000000000000
 
-  HEROLPManager public lpManager;
+  MetaheroLPM public lpm;
   Settings public settings;
   Summary public summary;
   bool public presaleFinished;
@@ -94,7 +94,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     Fees memory lpFees,
     Fees memory rewardsFees,
     uint256 minTotalSupply,
-    address payable lpManager_,
+    address payable lpm_,
     address controller_,
     uint256 totalSupply_,
     address[] calldata excludedAccounts_
@@ -112,13 +112,11 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       lpFees.recipient != 0
     ) {
       require(
-        lpManager_ != address(0),
-        "HEROToken#1"
+        lpm_ != address(0),
+        "MetaheroToken#1"
       );
 
-      lpManager = HEROLPManager(lpManager_);
-
-      _excludeAccount(lpManager_, false, false);
+      lpm = MetaheroLPM(lpm_);
     }
 
     _initializeController(controller_);
@@ -145,7 +143,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       !presaleFinished,
-      "HEROToken#2"
+      "MetaheroToken#2"
     );
 
     presaleFinished = true;
@@ -245,7 +243,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       allowance >= amount,
-      "HEROToken#3"
+      "MetaheroToken#3"
     );
 
     _approve(
@@ -324,14 +322,14 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       account != address(0),
-      "HEROToken#4"
+      "MetaheroToken#4"
     );
 
     if (excludedAccounts[account].exists) {
       require(
         excludedAccounts[account].excludeSenderFromFee != excludeSenderFromFee ||
         excludedAccounts[account].excludeRecipientFromFee != excludeRecipientFromFee,
-        "HEROToken#5"
+        "MetaheroToken#5"
       );
 
       excludedAccounts[account].excludeSenderFromFee = excludeSenderFromFee;
@@ -339,7 +337,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     } else {
       require(
         accountBalances[account] == 0,
-        "HEROToken#6"
+        "MetaheroToken#6"
       );
 
       excludedAccounts[account].exists = true;
@@ -363,12 +361,12 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       owner != address(0),
-      "HEROToken#7"
+      "MetaheroToken#7"
     );
 
     require(
       spender != address(0),
-      "HEROToken#8"
+      "MetaheroToken#8"
     );
 
     accountAllowances[owner][spender] = amount;
@@ -388,17 +386,17 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       account != address(0),
-      "HEROToken#9"
+      "MetaheroToken#9"
     );
 
     require(
       amount != 0,
-      "HEROToken#10"
+      "MetaheroToken#10"
     );
 
     require(
       excludedAccounts[account].exists,
-      "HEROToken#11"
+      "MetaheroToken#11"
     );
 
     summary.totalSupply = summary.totalSupply.add(amount);
@@ -421,22 +419,22 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       account != address(0),
-      "HEROToken#12"
+      "MetaheroToken#12"
     );
 
     require(
       amount != 0,
-      "HEROToken#13"
+      "MetaheroToken#13"
     );
 
     require(
       accountBalances[account] >= amount,
-      "HEROToken#14"
+      "MetaheroToken#14"
     );
 
     require(
       excludedAccounts[account].exists,
-      "HEROToken#15"
+      "MetaheroToken#15"
     );
 
     uint256 totalSupply_ = summary.totalSupply.sub(amount);
@@ -444,7 +442,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     if (settings.minTotalSupply != 0) {
       require(
         totalSupply_ >= settings.minTotalSupply,
-        "HEROToken#16"
+        "MetaheroToken#16"
       );
     }
 
@@ -469,12 +467,12 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       sender != address(0),
-      "HEROToken#17"
+      "MetaheroToken#17"
     );
 
     require(
       recipient != address(0),
-      "HEROToken#18"
+      "MetaheroToken#18"
     );
 
     if (sender == recipient) { // special transfer type
@@ -489,12 +487,12 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       require(
         excludedAccounts[sender].exists ||
         presaleFinished,
-        "HEROToken#20"
+        "MetaheroToken#20"
       );
 
       require(
         amount != 0,
-        "HEROToken#19"
+        "MetaheroToken#19"
       );
 
       if (
@@ -603,7 +601,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       accountBalances[sender] >= senderAmount,
-      "HEROToken#21"
+      "MetaheroToken#21"
     );
 
     accountBalances[sender] = accountBalances[sender].sub(senderAmount);
@@ -630,7 +628,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     _emitTransfer(
       sender,
-      address(lpManager),
+      address(lpm),
       senderLpFee
     );
 
@@ -642,7 +640,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     _emitTransfer(
       recipient,
-      address(lpManager),
+      address(lpm),
       recipientLpFee
     );
 
@@ -660,7 +658,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "HEROToken#22"
+      "MetaheroToken#22"
     );
 
     (
@@ -672,7 +670,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     );
 
     if (shouldSyncLPBefore) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
 
     uint256 recipientTotalFee;
@@ -722,14 +720,14 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     _emitTransfer(
       recipient,
-      address(lpManager),
+      address(lpm),
       recipientLPFee
     );
 
     _updateTotalRewards();
 
     if (shouldSyncLPAfter) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
   }
 
@@ -749,7 +747,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     );
 
     if (shouldSyncLPBefore) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
 
     uint256 senderTotalFee;
@@ -786,7 +784,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       accountBalances[sender] >= senderAmount,
-      "HEROToken#23"
+      "MetaheroToken#23"
     );
 
     accountBalances[sender] = accountBalances[sender].sub(senderAmount);
@@ -814,14 +812,14 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
 
     _emitTransfer(
       sender,
-      address(lpManager),
+      address(lpm),
       senderLpFee
     );
 
     _updateTotalRewards();
 
     if (shouldSyncLPAfter) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
   }
 
@@ -834,7 +832,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "HEROToken#24"
+      "MetaheroToken#24"
     );
 
     (
@@ -846,7 +844,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     );
 
     if (shouldSyncLPBefore) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
 
     accountBalances[sender] = accountBalances[sender].sub(amount);
@@ -859,7 +857,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     );
 
     if (shouldSyncLPAfter) {
-      lpManager.syncLP();
+      lpm.syncLP();
     }
   }
 
@@ -885,7 +883,7 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
     private
   {
     if (amount != 0) {
-      accountBalances[address(lpManager)] = accountBalances[address(lpManager)].add(amount);
+      accountBalances[address(lpm)] = accountBalances[address(lpm)].add(amount);
 
       summary.totalExcluded = summary.totalExcluded.add(amount);
     }
@@ -894,8 +892,8 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
   function _syncLP()
     private
   {
-    if (address(lpManager) != address(0)) {
-      lpManager.syncLP();
+    if (address(lpm) != address(0)) {
+      lpm.syncLP();
     }
   }
 
@@ -951,8 +949,8 @@ contract HEROToken is Controlled, Owned, ERC20, Initializable {
       bool shouldSyncLPAfter
     )
   {
-    if (address(lpManager) != address(0)) {
-      (shouldSyncLPBefore, shouldSyncLPAfter) = lpManager.canSyncLP(
+    if (address(lpm) != address(0)) {
+      (shouldSyncLPBefore, shouldSyncLPAfter) = lpm.canSyncLP(
         sender,
         recipient
       );

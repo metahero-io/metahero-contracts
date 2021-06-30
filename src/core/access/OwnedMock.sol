@@ -7,7 +7,7 @@ import "./Owned.sol";
 /**
  * @title Owned mock
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
 contract OwnedMock is Owned {
   // events

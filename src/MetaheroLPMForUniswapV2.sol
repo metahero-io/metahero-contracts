@@ -1,30 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "../common/erc20/WrappedNative.sol";
-import "./uniswapV2/UniswapV2Factory.sol";
-import "./uniswapV2/UniswapV2Pair.sol";
-import "./uniswapV2/UniswapV2Router02.sol";
-import "./HEROLPManager.sol";
+import "./core/erc20/IWrappedNative.sol";
+import "./uniswapV2/IUniswapV2Factory.sol";
+import "./uniswapV2/IUniswapV2Pair.sol";
+import "./uniswapV2/IUniswapV2Router02.sol";
+import "./MetaheroLPM.sol";
 
 
 /**
- * @title HERO liquidity pool manager for Uniswap v2
+ * @title Metahero liquidity pool manager for Uniswap v2
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
-contract HEROLPManagerForUniswapV2 is HEROLPManager {
+contract MetaheroLPMForUniswapV2 is MetaheroLPM {
   struct Settings {
     uint256 enableBurnLPAtValue;
     address stableCoin;
   }
 
   Settings public settings;
-  UniswapV2Factory public uniswapFactory;
-  UniswapV2Pair public uniswapPair;
-  UniswapV2Router02 public uniswapRouter;
+  IUniswapV2Factory public uniswapFactory;
+  IUniswapV2Pair public uniswapPair;
+  IUniswapV2Router02 public uniswapRouter;
 
-  WrappedNative private wrappedNative;
+  IWrappedNative private wrappedNative;
   bool private correctPairOrder;
 
   /**
@@ -32,7 +32,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
    */
   constructor ()
     public
-    HEROLPManager()
+    MetaheroLPM()
   {
     //
   }
@@ -45,7 +45,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
   {
     require(
       msg.value != 0,
-      "HEROLPManagerForUniswapV2#1"
+      "MetaheroLPMForUniswapV2#1"
     );
 
     wrappedNative.deposit{value: msg.value}();
@@ -65,7 +65,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
     if (enableBurnLPAtValue != 0) {
       require(
         stableCoin != address(0),
-        "HEROLPManagerForUniswapV2#2"
+        "MetaheroLPMForUniswapV2#2"
       );
 
       settings.enableBurnLPAtValue = enableBurnLPAtValue;
@@ -74,15 +74,15 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
     require(
       uniswapRouter_ != address(0),
-      "HEROLPManagerForUniswapV2#3"
+      "MetaheroLPMForUniswapV2#3"
     );
 
-    uniswapRouter = UniswapV2Router02(uniswapRouter_);
-    uniswapFactory = UniswapV2Factory(uniswapRouter.factory());
+    uniswapRouter = IUniswapV2Router02(uniswapRouter_);
+    uniswapFactory = IUniswapV2Factory(uniswapRouter.factory());
 
-    wrappedNative = WrappedNative(uniswapRouter.WETH());
+    wrappedNative = IWrappedNative(uniswapRouter.WETH());
 
-    uniswapPair = UniswapV2Pair(uniswapFactory.createPair(
+    uniswapPair = IUniswapV2Pair(uniswapFactory.createPair(
       address(token),
       address(wrappedNative)
     ));
@@ -144,19 +144,19 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
       require(
         tokenReserve != 0,
-        "HEROLPManagerForUniswapV2#4"
+        "MetaheroLPMForUniswapV2#4"
       );
 
       require(
         amount <= tokenReserve,
-        "HEROLPManagerForUniswapV2#5"
+        "MetaheroLPMForUniswapV2#5"
       );
 
       uint256 tokenReserveValue = _calcTokensValue(tokenReserve);
 
       require(
         tokenReserveValue > settings.enableBurnLPAtValue,
-        "HEROLPManagerForUniswapV2#6"
+        "MetaheroLPMForUniswapV2#6"
       );
 
       uint256 amountValue = _calcTokensValue(amount);
@@ -164,7 +164,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
       require(
         amountValue <= maxAmountValue,
-        "HEROLPManagerForUniswapV2#7"
+        "MetaheroLPMForUniswapV2#7"
       );
     }
 
@@ -174,7 +174,7 @@ contract HEROLPManagerForUniswapV2 is HEROLPManager {
 
     require(
       totalAmount >= amount,
-      "HEROLPManagerForUniswapV2#8"
+      "MetaheroLPMForUniswapV2#8"
     );
 
     token.burn(amount);

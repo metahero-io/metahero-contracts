@@ -7,7 +7,7 @@ import "./SafeMathLib.sol";
 /**
  * @title Safe math library mock
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
 contract SafeMathLibMock {
   using SafeMathLib for uint256;

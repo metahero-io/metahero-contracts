@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "../common/access/Owned.sol";
-import "../common/lifecycle/Initializable.sol";
-import "../common/math/SafeMathLib.sol";
-import "../token/HEROToken.sol";
+import "./core/access/Owned.sol";
+import "./core/lifecycle/Initializable.sol";
+import "./core/math/SafeMathLib.sol";
+import "./MetaheroToken.sol";
 
 
 /**
- * @title HERO presale
+ * @title Metahero presale
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
-contract HEROPresale is Owned, Initializable {
+contract MetaheroPresale is Owned, Initializable {
   using SafeMathLib for uint256;
 
   struct Settings {
@@ -25,7 +25,7 @@ contract HEROPresale is Owned, Initializable {
     uint256 totalTokens;
   }
 
-  HEROToken public token;
+  MetaheroToken public token;
   Settings public settings;
   Summary public summary;
   uint256 public deadline;
@@ -76,29 +76,29 @@ contract HEROPresale is Owned, Initializable {
   {
     require(
       block.timestamp < deadline, // solhint-disable-line not-rely-on-time
-      "HEROPresale#1"
+      "MetaheroPresale#1"
     );
 
     require(
       whitelist[msg.sender],
-      "HEROPresale#2"
+      "MetaheroPresale#2"
     );
 
     require(
       msg.value != 0,
-      "HEROPresale#3"
+      "MetaheroPresale#3"
     );
 
     require(
       msg.value <= settings.maxPurchasePrice,
-      "HEROPresale#4"
+      "MetaheroPresale#4"
     );
 
     uint256 tokensAmount = msg.value.mul(settings.tokensAmountPerNative);
 
     require(
       tokensAmount <= summary.totalTokens,
-      "HEROPresale#5"
+      "MetaheroPresale#5"
     );
 
     whitelist[msg.sender] = false;
@@ -129,10 +129,10 @@ contract HEROPresale is Owned, Initializable {
   {
     require(
       token_ != address(0),
-      "HEROPresale#6"
+      "MetaheroPresale#6"
     );
 
-    token = HEROToken(token_);
+    token = MetaheroToken(token_);
 
     summary.totalTokens = token.balanceOf(address(this));
 
@@ -193,7 +193,7 @@ contract HEROPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "HEROPresale#7"
+        "MetaheroPresale#7"
       );
 
       if (whitelist[accounts[index]]) {
@@ -209,7 +209,7 @@ contract HEROPresale is Owned, Initializable {
 
     require(
       totalRemoved != 0,
-      "HEROPresale#8"
+      "MetaheroPresale#8"
     );
 
     summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
@@ -221,7 +221,7 @@ contract HEROPresale is Owned, Initializable {
   {
     require(
       block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
-      "HEROPresale#9"
+      "MetaheroPresale#9"
     );
 
     uint256 totalTokens = token.balanceOf(address(this));
@@ -245,12 +245,12 @@ contract HEROPresale is Owned, Initializable {
   {
     require(
       tokensAmountPerNative != 0,
-      "HEROPresale#10"
+      "MetaheroPresale#10"
     );
 
     require(
       maxPurchasePrice != 0,
-      "HEROPresale#11"
+      "MetaheroPresale#11"
     );
 
     settings.tokensAmountPerNative = tokensAmountPerNative;
@@ -285,7 +285,7 @@ contract HEROPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "HEROPresale#12"
+        "MetaheroPresale#12"
       );
 
       if (!whitelist[accounts[index]]) {
@@ -301,7 +301,7 @@ contract HEROPresale is Owned, Initializable {
 
     require(
       totalAdded != 0,
-      "HEROPresale#13"
+      "MetaheroPresale#13"
     );
 
     summary.totalAccounts = summary.totalAccounts.add(totalAdded);

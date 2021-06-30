@@ -6,7 +6,7 @@ pragma solidity ^0.6.12;
  *
  * @notice Based on https://github.com/Uniswap/uniswap-v2-core/blob/4dd59067c76dea4a0e8e4bfdda41877a6b16dedc/contracts/interfaces/IUniswapV2Factory.sol
  */
-interface UniswapV2Factory {
+interface IUniswapV2Factory {
   // events
 
   event PairCreated(

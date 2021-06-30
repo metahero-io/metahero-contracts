@@ -1,29 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "../common/access/Lockable.sol";
-import "../common/access/Owned.sol";
-import "../common/lifecycle/Initializable.sol";
-import "../common/math/SafeMathLib.sol";
-import "../token/HEROToken.sol";
+import "./core/access/Lockable.sol";
+import "./core/access/Owned.sol";
+import "./core/lifecycle/Initializable.sol";
+import "./core/math/SafeMathLib.sol";
+import "./MetaheroToken.sol";
 
 
 /**
- * @title HERO abstract liquidity pool manager
+ * @title Metahero abstract liquidity pool manager
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
-abstract contract HEROLPManager is Lockable, Owned, Initializable {
+abstract contract MetaheroLPM is Lockable, Owned, Initializable {
   using SafeMathLib for uint256;
 
-  HEROToken public token;
+  MetaheroToken public token;
 
   // modifiers
 
   modifier onlyToken() {
     require(
       msg.sender == address(token),
-      "HEROLPManager#1"
+      "MetaheroLPM#1"
     );
 
     _;
@@ -66,7 +66,7 @@ abstract contract HEROLPManager is Lockable, Owned, Initializable {
   {
     require(
       amount != 0,
-      "HEROLPManager#2"
+      "MetaheroLPM#2"
     );
 
     _burnLP(amount);
@@ -99,10 +99,10 @@ abstract contract HEROLPManager is Lockable, Owned, Initializable {
   {
     require(
       token_ != address(0),
-      "HEROLPManager#3"
+      "MetaheroLPM#3"
     );
 
-    token = HEROToken(token_);
+    token = MetaheroToken(token_);
   }
 
   function _syncLP()

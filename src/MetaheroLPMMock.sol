@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "./HEROLPManager.sol";
+import "./MetaheroLPM.sol";
 
 
 /**
- * @title HERO liquidity pool manager mock
+ * @title Metahero liquidity pool manager mock
  *
- * @author Stanisław Głogowski <stan@metahero.io>
+ * @author Stanisław Głogowski <stan@metaMetahero.io>
  */
-contract HEROLPManagerMock is HEROLPManager {
+contract MetaheroLPMMock is MetaheroLPM {
   bool private shouldSyncLPBefore;
   bool private shouldSyncLPAfter;
 
@@ -24,7 +24,7 @@ contract HEROLPManagerMock is HEROLPManager {
    */
   constructor ()
     public
-    HEROLPManager()
+    MetaheroLPM()
   {
     //
   }
