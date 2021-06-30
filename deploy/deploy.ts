@@ -8,15 +8,22 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy(ContractNames.HEROLPManagerForUniswapV2, {
+  await deploy(ContractNames.MetaheroLPMForUniswapV2, {
+    from,
+    log: true,
+  });
+
+  await deploy(ContractNames.MetaheroPresale, {
+    from,
+    log: true,
+  });
+
+  await deploy(ContractNames.MetaheroToken, {
     from,
     log: true,
   });
 };
 
-func.tags = [
-  'deploy', //
-  ContractNames.HEROLPManager,
-];
+func.tags = ['deploy'];
 
 module.exports = func;

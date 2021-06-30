@@ -1,10 +1,10 @@
 export enum ContractNames {
-  BUSDToken = 'BUSDToken',
-  HEROLPManager = 'HEROLPManager',
-  HEROLPManagerForUniswapV2 = 'HEROLPManagerForUniswapV2',
-  HEROPresale = 'HEROPresale',
-  HEROToken = 'HEROToken',
-  PancakeSwapRouter = 'PancakeSwapRouter',
+  MetaheroLPM = 'MetaheroLPM',
+  MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
+  MetaheroPresale = 'MetaheroPresale',
+  MetaheroToken = 'MetaheroToken',
+  StableCoin = 'StableCoin',
+  UniswapV2Router = 'UniswapV2Router',
 }
 
 export enum NetworkNames {
