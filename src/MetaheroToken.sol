@@ -8,6 +8,7 @@ import "./core/erc20/ERC20.sol";
 import "./core/lifecycle/Initializable.sol";
 import "./core/math/MathLib.sol";
 import "./core/math/SafeMathLib.sol";
+import "./IMetaheroDAO.sol";
 import "./MetaheroLPM.sol";
 
 
@@ -51,6 +52,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   string private constant TOKEN_SYMBOL = "HERO";
   uint8 private constant TOKEN_DECIMALS = 18; // 0.000000000000000000
 
+  IMetaheroDAO public dao;
   MetaheroLPM public lpm;
   Settings public settings;
   Summary public summary;
@@ -61,6 +63,16 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   mapping (address => ExcludedAccount) private excludedAccounts;
 
   // events
+
+  event DAOUpdated(
+    address dao
+  );
+
+  event FeesUpdated(
+    Fees burnFees,
+    Fees lpFees,
+    Fees rewardsFees
+  );
 
   event PresaleFinished();
 
@@ -73,6 +85,26 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   event TotalRewardsUpdated(
     uint256 totalRewards
   );
+
+  // modifiers
+
+  modifier onlyDAO() {
+    require(
+      msg.sender == address(dao),
+      "MetaheroToken#1"
+    );
+
+    _;
+  }
+
+  modifier onlyExcludedAccount() {
+    require(
+      excludedAccounts[msg.sender].exists,
+      "MetaheroToken#2"
+    );
+
+    _;
+  }
 
   /**
    * @dev Public constructor
@@ -113,7 +145,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     ) {
       require(
         lpm_ != address(0),
-        "MetaheroToken#1"
+        "MetaheroToken#3"
       );
 
       lpm = MetaheroLPM(lpm_);
@@ -137,13 +169,46 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     }
   }
 
+  function setDAO(
+    address dao_
+  )
+    external
+    onlyOwner
+  {
+    require(
+      dao_ != address(0),
+      "MetaheroToken#4"
+    );
+
+    dao = IMetaheroDAO(dao_);
+
+    emit DAOUpdated(
+      dao_
+    );
+  }
+
+  function updateFees(
+    Fees memory burnFees,
+    Fees memory lpFees,
+    Fees memory rewardsFees
+  )
+    external
+    onlyDAO
+  {
+    emit FeesUpdated(
+      burnFees,
+      lpFees,
+      rewardsFees
+    );
+  }
+
   function finishPresale()
     external
     onlyOwner
   {
     require(
       !presaleFinished,
-      "MetaheroToken#2"
+      "MetaheroToken#5"
     );
 
     presaleFinished = true;
@@ -183,15 +248,15 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     return true;
   }
 
-  function mint(
-    address account,
+  function mintTo(
+    address recipient,
     uint256 amount
   )
     external
     onlyController
   {
     _mint(
-      account,
+      recipient,
       amount
     );
   }
@@ -200,9 +265,23 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     uint256 amount
   )
     external
+    onlyExcludedAccount
   {
     _burn(
       msg.sender,
+      amount
+    );
+  }
+
+  function burnFrom(
+    address sender,
+    uint256 amount
+  )
+    external
+    onlyController
+  {
+    _burn(
+      sender,
       amount
     );
   }
@@ -243,7 +322,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       allowance >= amount,
-      "MetaheroToken#3"
+      "MetaheroToken#6"
     );
 
     _approve(
@@ -322,14 +401,14 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       account != address(0),
-      "MetaheroToken#4"
+      "MetaheroToken#7"
     );
 
     if (excludedAccounts[account].exists) {
       require(
         excludedAccounts[account].excludeSenderFromFee != excludeSenderFromFee ||
         excludedAccounts[account].excludeRecipientFromFee != excludeRecipientFromFee,
-        "MetaheroToken#5"
+        "MetaheroToken#8"
       );
 
       excludedAccounts[account].excludeSenderFromFee = excludeSenderFromFee;
@@ -337,7 +416,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     } else {
       require(
         accountBalances[account] == 0,
-        "MetaheroToken#6"
+        "MetaheroToken#9"
       );
 
       excludedAccounts[account].exists = true;
@@ -361,12 +440,12 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       owner != address(0),
-      "MetaheroToken#7"
+      "MetaheroToken#10"
     );
 
     require(
       spender != address(0),
-      "MetaheroToken#8"
+      "MetaheroToken#11"
     );
 
     accountAllowances[owner][spender] = amount;
@@ -379,46 +458,13 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   }
 
   function _mint(
-    address account,
+    address recipient,
     uint256 amount
   )
     private
   {
     require(
-      account != address(0),
-      "MetaheroToken#9"
-    );
-
-    require(
-      amount != 0,
-      "MetaheroToken#10"
-    );
-
-    require(
-      excludedAccounts[account].exists,
-      "MetaheroToken#11"
-    );
-
-    summary.totalSupply = summary.totalSupply.add(amount);
-    summary.totalExcluded = summary.totalExcluded.add(amount);
-
-    accountBalances[account] = accountBalances[account].add(amount);
-
-    _emitTransfer(
-      address(0),
-      account,
-      amount
-    );
-  }
-
-  function _burn(
-    address account,
-    uint256 amount
-  )
-    private
-  {
-    require(
-      account != address(0),
+      recipient != address(0),
       "MetaheroToken#12"
     );
 
@@ -427,14 +473,46 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
       "MetaheroToken#13"
     );
 
+    summary.totalSupply = summary.totalSupply.add(amount);
+
+    if (excludedAccounts[recipient].exists) {
+      summary.totalExcluded = summary.totalExcluded.add(amount);
+
+      accountBalances[recipient] = accountBalances[recipient].add(amount);
+    } else {
+      _updateHoldingBalance(
+        recipient,
+        accountBalances[recipient].add(amount),
+        summary.totalHolding.add(amount)
+      );
+    }
+
+    _emitTransfer(
+      address(0),
+      recipient,
+      amount
+    );
+  }
+
+  function _burn(
+    address sender,
+    uint256 amount
+  )
+    private
+  {
     require(
-      accountBalances[account] >= amount,
+      sender != address(0),
       "MetaheroToken#14"
     );
 
     require(
-      excludedAccounts[account].exists,
+      amount != 0,
       "MetaheroToken#15"
+    );
+
+    require(
+      accountBalances[sender] >= amount,
+      "MetaheroToken#16"
     );
 
     uint256 totalSupply_ = summary.totalSupply.sub(amount);
@@ -442,17 +520,26 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     if (settings.minTotalSupply != 0) {
       require(
         totalSupply_ >= settings.minTotalSupply,
-        "MetaheroToken#16"
+        "MetaheroToken#17"
       );
     }
 
-    accountBalances[account] = accountBalances[account].sub(amount);
-
     summary.totalSupply = totalSupply_;
-    summary.totalExcluded = summary.totalExcluded.sub(amount);
+
+    if (excludedAccounts[sender].exists) {
+      summary.totalExcluded = summary.totalExcluded.sub(amount);
+
+      accountBalances[sender] = accountBalances[sender].sub(amount);
+    } else {
+      _updateHoldingBalance(
+        sender,
+        accountBalances[sender].sub(amount),
+        summary.totalHolding.sub(amount)
+      );
+    }
 
     _emitTransfer(
-      account,
+      sender,
       address(0),
       amount
     );
@@ -467,12 +554,12 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       sender != address(0),
-      "MetaheroToken#17"
+      "MetaheroToken#18"
     );
 
     require(
       recipient != address(0),
-      "MetaheroToken#18"
+      "MetaheroToken#19"
     );
 
     if (sender == recipient) { // special transfer type
@@ -492,7 +579,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
       require(
         amount != 0,
-        "MetaheroToken#19"
+        "MetaheroToken#21"
       );
 
       if (
@@ -547,106 +634,119 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     uint256 recipientBurnFee;
     uint256 recipientLpFee;
 
-    uint256 totalSupply_ = summary.totalSupply;
     uint256 totalFee;
 
     {
-      uint256 senderTotalFee;
-      uint256 recipientTotalFee;
+      uint256 totalSupply_ = summary.totalSupply;
 
-      (
-        senderTotalFee,
-        senderBurnFee,
-        senderLpFee
-      ) = _calcTransferSenderFees(amount);
+      {
+        uint256 senderTotalFee;
+        uint256 recipientTotalFee;
 
-      (
-        totalSupply_,
-        senderTotalFee,
-        senderBurnFee
-      ) = _matchTotalSupplyWithFees(totalSupply_, senderTotalFee, senderBurnFee);
+        (
+          senderTotalFee,
+          senderBurnFee,
+          senderLpFee
+        ) = _calcTransferSenderFees(amount);
 
-      (
-        recipientTotalFee,
-        recipientBurnFee,
-        recipientLpFee
-      ) = _calcTransferRecipientFees(amount);
+        (
+          totalSupply_,
+          senderTotalFee,
+          senderBurnFee
+        ) = _matchTotalSupplyWithFees(totalSupply_, senderTotalFee, senderBurnFee);
 
-      (
-        totalSupply_,
-        recipientTotalFee,
-        recipientBurnFee
-      ) = _matchTotalSupplyWithFees(totalSupply_, recipientTotalFee, recipientBurnFee);
+        (
+          recipientTotalFee,
+          recipientBurnFee,
+          recipientLpFee
+        ) = _calcTransferRecipientFees(amount);
 
-      totalFee = senderTotalFee.add(recipientTotalFee);
-      senderAmount = amount.add(senderTotalFee);
-      recipientAmount = amount.sub(recipientTotalFee);
+        (
+          totalSupply_,
+          recipientTotalFee,
+          recipientBurnFee
+        ) = _matchTotalSupplyWithFees(totalSupply_, recipientTotalFee, recipientBurnFee);
+
+        totalFee = senderTotalFee.add(recipientTotalFee);
+        senderAmount = amount.add(senderTotalFee);
+        recipientAmount = amount.sub(recipientTotalFee);
+      }
+
+      if (summary.totalRewards != 0) {
+        uint256 totalHoldingWithRewards = summary.totalHolding.add(
+          summary.totalRewards
+        );
+
+        senderAmount = senderAmount.mul(summary.totalHolding).div(
+          totalHoldingWithRewards
+        );
+        recipientAmount = recipientAmount.mul(summary.totalHolding).div(
+          totalHoldingWithRewards
+        );
+        totalFee = totalFee.mul(summary.totalHolding).div(
+          totalHoldingWithRewards
+        );
+      }
+
+      require(
+        accountBalances[sender] >= senderAmount,
+        "MetaheroToken#22"
+      );
+
+      summary.totalSupply = totalSupply_;
+
+      // reduce local vars
+      senderAmount = accountBalances[sender].sub(senderAmount);
+      recipientAmount = accountBalances[recipient].add(recipientAmount);
+
+      _updateHoldingBalances(
+        sender,
+        senderAmount,
+        recipient,
+        recipientAmount,
+        summary.totalHolding.sub(totalFee)
+      );
+
+      _increaseTotalLP(senderLpFee.add(recipientLpFee));
     }
-
-    if (summary.totalRewards != 0) {
-      uint256 totalHoldingWithRewards = summary.totalHolding.add(
-        summary.totalRewards
-      );
-
-      senderAmount = senderAmount.mul(summary.totalHolding).div(
-        totalHoldingWithRewards
-      );
-      recipientAmount = recipientAmount.mul(summary.totalHolding).div(
-        totalHoldingWithRewards
-      );
-      totalFee = totalFee.mul(summary.totalHolding).div(
-        totalHoldingWithRewards
-      );
-    }
-
-    require(
-      accountBalances[sender] >= senderAmount,
-      "MetaheroToken#21"
-    );
-
-    accountBalances[sender] = accountBalances[sender].sub(senderAmount);
-    accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
-
-    summary.totalSupply = totalSupply_;
-    summary.totalHolding = summary.totalHolding.sub(totalFee);
-
-    _increaseTotalLP(senderLpFee.add(recipientLpFee));
 
     // emits events
 
-    _emitTransfer(
-      sender,
-      recipient,
-      amount
-    );
+    {
+      _emitTransfer(
+        sender,
+        recipient,
+        amount
+      );
 
-    _emitTransfer(
-      sender,
-      address(0),
-      senderBurnFee
-    );
+      _emitTransfer(
+        sender,
+        address(0),
+        senderBurnFee
+      );
 
-    _emitTransfer(
-      sender,
-      address(lpm),
-      senderLpFee
-    );
+      _emitTransfer(
+        sender,
+        address(lpm),
+        senderLpFee
+      );
 
-    _emitTransfer(
-      recipient,
-      address(0),
-      recipientBurnFee
-    );
+      _emitTransfer(
+        recipient,
+        address(0),
+        recipientBurnFee
+      );
 
-    _emitTransfer(
-      recipient,
-      address(lpm),
-      recipientLpFee
-    );
+      _emitTransfer(
+        recipient,
+        address(lpm),
+        recipientLpFee
+      );
 
-    _updateTotalRewards();
+      _updateTotalRewards();
 
-    _syncLP();
+      _syncLP();
+    }
   }
 
   function _transferFromExcludedAccount(
@@ -658,7 +758,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "MetaheroToken#22"
+      "MetaheroToken#23"
     );
 
     (
@@ -695,12 +795,16 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     uint256 recipientAmount = amount.sub(recipientTotalFee);
 
-    accountBalances[sender] = accountBalances[sender].sub(amount);
-    accountBalances[recipient] = accountBalances[recipient].add(recipientAmount);
-
     summary.totalSupply = totalSupply_;
     summary.totalExcluded = summary.totalExcluded.sub(amount);
-    summary.totalHolding = summary.totalHolding.add(recipientAmount);
+
+    accountBalances[sender] = accountBalances[sender].sub(amount);
+
+    _updateHoldingBalance(
+      recipient,
+      accountBalances[recipient].add(recipientAmount),
+      summary.totalHolding.add(recipientAmount)
+    );
 
     _increaseTotalLP(recipientLPFee);
 
@@ -784,15 +888,19 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     require(
       accountBalances[sender] >= senderAmount,
-      "MetaheroToken#23"
+      "MetaheroToken#24"
     );
-
-    accountBalances[sender] = accountBalances[sender].sub(senderAmount);
-    accountBalances[recipient] = accountBalances[recipient].add(amount);
 
     summary.totalSupply = totalSupply_;
     summary.totalExcluded = summary.totalExcluded.add(amount);
-    summary.totalHolding = summary.totalHolding.sub(senderAmount);
+
+    accountBalances[recipient] = accountBalances[recipient].add(amount);
+
+    _updateHoldingBalance(
+      sender,
+      accountBalances[sender].sub(senderAmount),
+      summary.totalHolding.sub(senderAmount)
+    );
 
     _increaseTotalLP(senderLpFee);
 
@@ -832,7 +940,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       accountBalances[sender] >= amount,
-      "MetaheroToken#24"
+      "MetaheroToken#25"
     );
 
     (
@@ -859,6 +967,71 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     if (shouldSyncLPAfter) {
       lpm.syncLP();
     }
+  }
+
+  function _updateHoldingBalance(
+    address holder,
+    uint256 holderBalance,
+    uint256 totalHolding
+  )
+    private
+  {
+    bool syncDAO;
+
+    if (accountBalances[holder] != holderBalance) {
+      accountBalances[holder] = holderBalance;
+      syncDAO = true;
+    }
+
+    if (summary.totalHolding != totalHolding) {
+      summary.totalHolding = totalHolding;
+      syncDAO = true;
+    }
+
+    if (syncDAO && address(dao) != address(0)) {
+      dao.syncMember(
+        holder,
+        holderBalance,
+        totalHolding
+      );
+    }
+  }
+
+  function _updateHoldingBalances(
+    address holderA,
+    uint256 holderABalance,
+    address holderB,
+    uint256 holderBBalance,
+    uint256 totalHolding
+  )
+    private
+  {
+//    bool syncDAO;
+
+    if (accountBalances[holderA] != holderABalance) {
+      accountBalances[holderA] = holderABalance;
+//      syncDAO = true;
+    }
+
+    if (accountBalances[holderB] != holderBBalance) {
+      accountBalances[holderB] = holderBBalance;
+//      syncDAO = true;
+    }
+
+    if (summary.totalHolding != totalHolding) {
+      summary.totalHolding = totalHolding;
+//      syncDAO = true;
+    }
+
+//    if (syncDAO && address(dao) != address(0)) {
+//      dao.syncMembers(
+//        holderA,
+//        holderABalance,
+//        holderB,
+//        holderBBalance,
+//        totalHolding
+//      );
+//    }
   }
 
   function _emitTransfer(
@@ -937,6 +1110,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     return (totalSupply_, totalFee, burnFee);
   }
+
 
   function _canSyncLP(
     address sender,
