@@ -28,25 +28,17 @@ contract MetaheroPresale is Owned, Initializable {
   MetaheroToken public token;
   Settings public settings;
   Summary public summary;
-  uint256 public deadline;
+  bool public started;
 
   mapping (address => bool) public whitelist;
 
   // events
+  event Started();
 
   event TokensPurchased(
     address indexed account,
     uint256 tokensPrice,
     uint256 tokensAmount
-  );
-
-  event SettingsUpdated(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  );
-
-  event DeadlineUpdated(
-    uint256 deadline
   );
 
   event AccountAdded(
@@ -75,7 +67,7 @@ contract MetaheroPresale is Owned, Initializable {
     payable
   {
     require(
-      block.timestamp < deadline, // solhint-disable-line not-rely-on-time
+     started,
       "MetaheroPresale#1"
     );
 
@@ -121,8 +113,7 @@ contract MetaheroPresale is Owned, Initializable {
   function initialize(
     address payable token_,
     uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice,
-    uint256 deadlineIn // in seconds
+    uint256 maxPurchasePrice
   )
     external
     onlyInitializer
@@ -132,38 +123,35 @@ contract MetaheroPresale is Owned, Initializable {
       "MetaheroPresale#6"
     );
 
+    require(
+      tokensAmountPerNative != 0,
+      "MetaheroPresale#7"
+    );
+
+    require(
+      maxPurchasePrice != 0,
+      "MetaheroPresale#8"
+    );
+
     token = MetaheroToken(token_);
+    settings.tokensAmountPerNative = tokensAmountPerNative;
+    settings.maxPurchasePrice = maxPurchasePrice;
 
     summary.totalTokens = token.balanceOf(address(this));
-
-    _updateSettings(
-      tokensAmountPerNative,
-      maxPurchasePrice
-    );
-
-    _updateDeadline(deadlineIn);
   }
 
-  function updateSettings(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  )
+  function start()
     external
     onlyOwner
   {
-    _updateSettings(
-      tokensAmountPerNative,
-      maxPurchasePrice
+    require(
+      !started,
+      "MetaheroPresale#9"
     );
-  }
 
-  function updateDeadline(
-    uint256 deadlineIn_ // in seconds
-  )
-    external
-    onlyOwner
-  {
-    _updateDeadline(deadlineIn_);
+    started = true;
+
+    emit Started();
   }
 
   function syncTotalTokens()
@@ -193,7 +181,7 @@ contract MetaheroPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "MetaheroPresale#7"
+        "MetaheroPresale#10"
       );
 
       if (whitelist[accounts[index]]) {
@@ -209,21 +197,16 @@ contract MetaheroPresale is Owned, Initializable {
 
     require(
       totalRemoved != 0,
-      "MetaheroPresale#8"
+      "MetaheroPresale#11"
     );
 
     summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
   }
 
-  function finishPresale()
+  function finish()
     external
     onlyOwner
   {
-    require(
-      block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
-      "MetaheroPresale#9"
-    );
-
     uint256 totalTokens = token.balanceOf(address(this));
 
     if (totalTokens != 0) {
@@ -236,43 +219,6 @@ contract MetaheroPresale is Owned, Initializable {
   }
 
   // private functions
-
-  function _updateSettings(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  )
-    private
-  {
-    require(
-      tokensAmountPerNative != 0,
-      "MetaheroPresale#10"
-    );
-
-    require(
-      maxPurchasePrice != 0,
-      "MetaheroPresale#11"
-    );
-
-    settings.tokensAmountPerNative = tokensAmountPerNative;
-    settings.maxPurchasePrice = maxPurchasePrice;
-
-    emit SettingsUpdated(
-      tokensAmountPerNative,
-      maxPurchasePrice
-    );
-  }
-
-  function _updateDeadline(
-    uint256 deadlineIn
-  )
-    private
-  {
-    deadline = block.timestamp.add(deadlineIn); // solhint-disable-line not-rely-on-time
-
-    emit DeadlineUpdated(
-      deadline
-    );
-  }
 
   function _addAccounts(
     address[] memory accounts
