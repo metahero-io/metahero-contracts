@@ -43,6 +43,16 @@ contract Owned {
     external
     onlyOwner
   {
+    _setOwner(owner_);
+  }
+
+  // internal functions
+
+  function _setOwner(
+    address owner_
+  )
+    internal
+  {
     require(
       owner_ != address(0),
       "Owned#2"
