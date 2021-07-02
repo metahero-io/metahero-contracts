@@ -15,7 +15,10 @@ import {
   getNetworkProviderUrl,
 } from './extensions';
 
-const { HARDHAT_MNEMONIC } = process.env;
+const {
+  HARDHAT_MNEMONIC, //
+  HARDHAT_DISABLE_FORKING,
+} = process.env;
 
 const config: HardhatUserConfig = {
   namedAccounts: {
@@ -23,9 +26,6 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      forking: {
-        url: getNetworkProviderUrl(NetworkNames.Bsc),
-      },
       accounts: {
         mnemonic:
           HARDHAT_MNEMONIC ||
@@ -84,5 +84,11 @@ const config: HardhatUserConfig = {
     timeout: 50000, // 50 sec
   },
 };
+
+if (!HARDHAT_DISABLE_FORKING) {
+  config.networks.hardhat.forking = {
+    url: getNetworkProviderUrl(NetworkNames.Bsc),
+  };
+}
 
 module.exports = config;
