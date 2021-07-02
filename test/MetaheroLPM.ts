@@ -31,7 +31,7 @@ describe('MetaheroLPM (using mock)', () => {
     });
   };
 
-  context('_initialize()', () => {
+  context('initialize()', () => {
     createBeforeHook(false);
 
     it('expect to revert on zero token', async () => {
