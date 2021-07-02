@@ -9,7 +9,7 @@ const { deployContract } = waffle;
 const { getSigners } = ethers;
 
 describe('MetaheroToken', () => {
-  describe('# before initialized', () => {
+  describe('# before initialization', () => {
     const ZERO_FEE = {
       sender: 0,
       recipient: 0,
