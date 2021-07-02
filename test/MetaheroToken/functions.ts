@@ -2,7 +2,7 @@ import { BigNumber, BigNumberish, constants } from 'ethers';
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import MetaheroTokenArtifact from '../../artifacts/MetaheroToken.json';
-import { MetaheroToken, MetaheroLPMMock } from '../../typings';
+import { MetaheroToken } from '../../typings';
 import { randomAddress, Signer } from '../helpers';
 
 const { deployContract } = waffle;
@@ -34,7 +34,6 @@ describe('MetaheroToken', () => {
   let excluded: Signer;
   let holder: Signer;
   let token: MetaheroToken;
-  let lpm: MetaheroLPMMock;
 
   before(async () => {
     const signers = await getSigners();
@@ -65,7 +64,6 @@ describe('MetaheroToken', () => {
         owner,
         MetaheroTokenArtifact,
       )) as MetaheroToken;
-      lpm = null;
 
       let controllerParam: string;
 
