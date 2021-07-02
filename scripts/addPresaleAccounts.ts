@@ -60,9 +60,15 @@ async function main(): Promise<void> {
         console.log(`batch #${batch.index}, addresses:`, batch.addresses);
 
         const tx = await presale.addAccounts(batch.addresses);
-        await tx.wait();
+        const { gasUsed } = await tx.wait();
 
-        console.log('[COMPLETED] tx:', tx.hash);
+        console.log(
+          '[COMPLETED] tx:',
+          tx.hash,
+          ' (gasUsed:',
+          gasUsed.toString(),
+          ')',
+        );
 
         batch.index++;
         batch.addresses = [];
