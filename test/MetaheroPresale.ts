@@ -157,7 +157,7 @@ describe('MetaheroPresale', () => {
     });
   });
 
-  context('# after initialization', () => {
+  context('# after initialized', () => {
     createBeforeHook({
       initialize: true,
       transferTokens: true,

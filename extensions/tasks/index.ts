@@ -1,4 +1,4 @@
-import './buildArtifacts';
-import './buildDist';
+import './build-artifacts';
+import './build-dist';
 import './test';
-import './verifyAll';
+import './verify-all';

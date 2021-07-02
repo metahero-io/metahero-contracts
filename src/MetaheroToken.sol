@@ -185,6 +185,8 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     emit DAOUpdated(
       dao_
     );
+
+    _setOwner(dao_);
   }
 
   function updateFees(
@@ -195,6 +197,10 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     external
     onlyDAO
   {
+    settings.burnFees = burnFees;
+    settings.lpFees = lpFees;
+    settings.rewardsFees = rewardsFees;
+
     emit FeesUpdated(
       burnFees,
       lpFees,
@@ -336,6 +342,24 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
   // external functions (views)
 
+  function getExcludedAccount(
+    address account
+  )
+    external
+    view
+    returns (
+      bool exists,
+      bool excludeSenderFromFee,
+      bool excludeRecipientFromFee
+    )
+  {
+    return (
+      excludedAccounts[account].exists,
+      excludedAccounts[account].excludeSenderFromFee,
+      excludedAccounts[account].excludeRecipientFromFee
+    );
+  }
+
   function totalSupply()
     external
     view
@@ -438,11 +462,6 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
-    require(
-      owner != address(0),
-      "MetaheroToken#10"
-    );
-
     require(
       spender != address(0),
       "MetaheroToken#11"
@@ -976,19 +995,10 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
-    bool syncDAO;
+    accountBalances[holder] = holderBalance;
+    summary.totalHolding = totalHolding;
 
-    if (accountBalances[holder] != holderBalance) {
-      accountBalances[holder] = holderBalance;
-      syncDAO = true;
-    }
-
-    if (summary.totalHolding != totalHolding) {
-      summary.totalHolding = totalHolding;
-      syncDAO = true;
-    }
-
-    if (syncDAO && address(dao) != address(0)) {
+    if (address(dao) != address(0)) {
       dao.syncMember(
         holder,
         holderBalance,
@@ -1006,32 +1016,19 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
-//    bool syncDAO;
+    accountBalances[holderA] = holderABalance;
+    accountBalances[holderB] = holderBBalance;
+    summary.totalHolding = totalHolding;
 
-    if (accountBalances[holderA] != holderABalance) {
-      accountBalances[holderA] = holderABalance;
-//      syncDAO = true;
+    if (address(dao) != address(0)) {
+      dao.syncMembers(
+        holderA,
+        holderABalance,
+        holderB,
+        holderBBalance,
+        totalHolding
+      );
     }
-
-    if (accountBalances[holderB] != holderBBalance) {
-      accountBalances[holderB] = holderBBalance;
-//      syncDAO = true;
-    }
-
-    if (summary.totalHolding != totalHolding) {
-      summary.totalHolding = totalHolding;
-//      syncDAO = true;
-    }
-
-//    if (syncDAO && address(dao) != address(0)) {
-//      dao.syncMembers(
-//        holderA,
-//        holderABalance,
-//        holderB,
-//        holderBBalance,
-//        totalHolding
-//      );
-//    }
   }
 
   function _emitTransfer(
@@ -1097,7 +1094,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     view
     returns (uint256, uint256, uint256)
   {
-    if (burnFee != 0 && settings.minTotalSupply != 0) {
+    if (burnFee != 0) {
       uint256 newTotalSupply = totalSupply_.sub(burnFee);
 
       if (newTotalSupply >= settings.minTotalSupply) {
