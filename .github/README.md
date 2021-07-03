@@ -5,11 +5,17 @@
 
 ## Token details
 
-* _Standard_ - [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)
-* _Name_ - `Metahero`
-* _Symbol_ - `HERO`
-* _Decimals_ - `18`
-* _Emission_ - `10,000,000,000 tokens`
+* _[ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)  standard_: 
+  * _Name_ - `Metahero`
+  * _Symbol_ - `HERO`
+  * _Decimals_ - `18`
+* _Total supply_:
+  * _Initial_ - `10,000,000,000 HERO` (configurable)
+  * _Minimal_ - `100,000,000 HERO` (configurable)
+* _Transaction fees (from each participant holder account)_:
+    * liquidity pool fee - `3%` (configurable) 
+    * burn fee - `1%` (configurable)
+    * rewards fee - `1%` (configurable)
 
 ## [Deployments](../deployments/README.md)
 
@@ -38,15 +44,15 @@ via `env` variables:
 ```bash
 $ # npm run <network script alias>:deploy
 $ # example:
-$ npm run bsc:deploy
+$ npm run bsc:deploy  # starts contracts deployment to BSC
 ```
 
 ### Testing
 
 ```bash
-$ npm run test                  # run tests
-$ npm run test -- --report-gas  # run tests with gas report
-$ npm run coverage              # run coverage
+$ npm run test                  # runs tests
+$ npm run test -- --report-gas  # runs tests with gas report
+$ npm run coverage              # runs coverage
 ```
 
 ## License
