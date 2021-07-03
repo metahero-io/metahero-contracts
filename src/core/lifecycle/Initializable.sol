@@ -9,10 +9,6 @@ pragma solidity ^0.6.12;
 contract Initializable {
   address private initializer;
 
-  // events
-
-  event Initialized();
-
   // modifiers
 
   modifier onlyInitializer() {
@@ -29,8 +25,6 @@ contract Initializable {
     initializer = address(0);
 
     _;
-
-    emit Initialized();
   }
 
   /**

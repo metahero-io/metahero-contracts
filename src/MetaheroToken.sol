@@ -64,6 +64,15 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
   // events
 
+  event Initialized(
+    Fees burnFees,
+    Fees lpFees,
+    Fees rewardsFees,
+    uint256 minTotalSupply,
+    address lpm,
+    address controller
+  );
+
   event DAOUpdated(
     address dao
   );
@@ -153,6 +162,15 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     _initializeController(controller_);
 
+    emit Initialized(
+      burnFees,
+      lpFees,
+      rewardsFees,
+      minTotalSupply,
+      lpm_,
+      controller_
+    );
+
     _excludeAccount(msg.sender, true, true);
 
     if (totalSupply_ != 0) {
@@ -208,7 +226,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     );
   }
 
-  function finishPresale()
+  function setPresaleAsFinished()
     external
     onlyOwner
   {

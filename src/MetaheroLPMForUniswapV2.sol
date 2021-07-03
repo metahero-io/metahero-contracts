@@ -27,6 +27,16 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
   IWrappedNative private wrappedNative;
   bool private correctPairOrder;
 
+  // events
+
+  event Initialized(
+    uint256 enableBurnLPAtValue,
+    address stableCoin,
+    address token,
+    address uniswapRouter,
+    address uniswapPair
+  );
+
   /**
    * @dev Public constructor
    */
@@ -88,6 +98,14 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     ));
 
     correctPairOrder = address(token) < address(wrappedNative);
+
+    emit Initialized(
+      enableBurnLPAtValue,
+      stableCoin,
+      token_,
+      uniswapRouter_,
+      address(uniswapPair)
+    );
   }
 
   // external functions (views)

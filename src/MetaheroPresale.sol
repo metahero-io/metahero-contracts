@@ -33,7 +33,14 @@ contract MetaheroPresale is Owned, Initializable {
   mapping (address => bool) public whitelist;
 
   // events
-  event Started();
+
+  event Initialized(
+    address token,
+    uint256 tokensAmountPerNative,
+    uint256 maxPurchasePrice
+  );
+
+  event PresaleStarted();
 
   event TokensPurchased(
     address indexed account,
@@ -138,9 +145,15 @@ contract MetaheroPresale is Owned, Initializable {
     settings.maxPurchasePrice = maxPurchasePrice;
 
     summary.totalTokens = token.balanceOf(address(this));
+
+    emit Initialized(
+      token_,
+      tokensAmountPerNative,
+      maxPurchasePrice
+    );
   }
 
-  function start()
+  function startPresale()
     external
     onlyOwner
   {
@@ -151,7 +164,7 @@ contract MetaheroPresale is Owned, Initializable {
 
     started = true;
 
-    emit Started();
+    emit PresaleStarted();
   }
 
   function syncTotalTokens()
@@ -203,7 +216,7 @@ contract MetaheroPresale is Owned, Initializable {
     summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
   }
 
-  function finish()
+  function finishPresale()
     external
     onlyOwner
   {
