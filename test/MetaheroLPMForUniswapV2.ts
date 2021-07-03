@@ -208,6 +208,23 @@ onlyWhileForking(() => {
       });
     });
 
+    context('deposit()', () => {
+      createBeforeHook();
+
+      it('expect mint wrapped native', async () => {
+        const value = 100;
+        const balanceBefore = await wrappedNative.balanceOf(lpManager.address);
+
+        await lpManager.connect(owner).deposit({
+          value,
+        });
+
+        expect(await wrappedNative.balanceOf(lpManager.address)).to.equal(
+          balanceBefore.add(value),
+        );
+      });
+    });
+
     context('initialize()', () => {
       createBeforeHook({
         initialize: false,

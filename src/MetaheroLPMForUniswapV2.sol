@@ -53,12 +53,14 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     external
     payable
   {
-    require(
-      msg.value != 0,
-      "MetaheroLPMForUniswapV2#1"
-    );
+    _deposit(msg.value);
+  }
 
-    wrappedNative.deposit{value: msg.value}();
+  function deposit()
+    external
+    payable
+  {
+    _deposit(msg.value);
   }
 
   function initialize(
@@ -203,6 +205,18 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
   }
 
   // private functions
+  function _deposit(
+    uint256 amount
+  )
+    private
+  {
+    require(
+      amount != 0,
+      "MetaheroLPMForUniswapV2#1"
+    );
+
+    wrappedNative.deposit{value: amount}();
+  }
 
   function _swapTokens(
     uint256 amount
