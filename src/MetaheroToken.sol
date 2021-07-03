@@ -1062,6 +1062,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     uint256 senderAmount = amount.add(senderTotalFee);
 
+    // append total rewards
     if (summary.totalRewards != 0) {
       uint256 totalHoldingWithRewards = summary.totalHolding.add(
         summary.totalRewards
