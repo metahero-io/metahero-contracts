@@ -12,7 +12,7 @@
 * Total supply:
   * Initial - `10,000,000,000 HERO` _(configurable)_
   * Minimal - `100,000,000 HERO` _(configurable)_
-* Transaction fees _(from each holder participant)_:
+* Transaction fees _(from each holder participant balance)_:
   * Liquidity pool fee - `3%` _(configurable)_ 
   * Burn fee - `1%` _(configurable)_
   * Rewards fee - `1%` _(configurable)_
