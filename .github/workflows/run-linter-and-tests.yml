@@ -7,8 +7,6 @@ on:
     paths:
       - '**.ts'
       - '**.sol'
-      - '**.yml'
-      - '**.json'
 jobs:
   start:
     runs-on: ubuntu-latest

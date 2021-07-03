@@ -1,4 +1,4 @@
-name: run linter and tests
+name: run coverage
 on:
   push:
     branches:
@@ -7,8 +7,6 @@ on:
     paths:
       - '**.ts'
       - '**.sol'
-      - '**.yml'
-      - '**.json'
 jobs:
   start:
     runs-on: ubuntu-latest
