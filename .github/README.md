@@ -5,7 +5,7 @@
 
 ## Token details
 
-* [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)  standard: 
+* [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md) Standard: 
   * Name - `Metahero`
   * Symbol - `HERO`
   * Decimals - `18`
