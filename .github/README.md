@@ -12,10 +12,10 @@
 * _Total Supply_:
   * _Initial_ - `10,000,000,000 HERO` (configurable)
   * _Minimal_ - `100,000,000 HERO` (configurable)
-* _Transaction Fees (from each holder participant)_:
-  * Liquidity pool fee - `3%` (configurable) 
-  * Burn fee - `1%` (configurable)
-  * Rewards fee - `1%` (configurable)
+* _Transaction Fees_ (from each holder participant):
+  * _Liquidity pool_ fee - `3%` (configurable) 
+  * _Burn fee_ - `1%` (configurable)
+  * _Rewards fee_ - `1%` (configurable)
 
 ## [Deployments](../deployments/README.md)
 
