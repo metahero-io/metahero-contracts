@@ -9,13 +9,13 @@
   * _Name_ - `Metahero`
   * _Symbol_ - `HERO`
   * _Decimals_ - `18`
-* _Total supply_:
+* _Total Supply_:
   * _Initial_ - `10,000,000,000 HERO` (configurable)
   * _Minimal_ - `100,000,000 HERO` (configurable)
-* _Transaction fees (from each participant holder account)_:
-    * liquidity pool fee - `3%` (configurable) 
-    * burn fee - `1%` (configurable)
-    * rewards fee - `1%` (configurable)
+* _Transaction Fees (from each holder participant)_:
+    * Liquidity pool fee - `3%` (configurable) 
+    * Burn fee - `1%` (configurable)
+    * Rewards fee - `1%` (configurable)
 
 ## [Deployments](../deployments/README.md)
 
