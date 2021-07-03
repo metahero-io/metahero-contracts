@@ -55,30 +55,30 @@ describe('MetaheroToken', () => {
       });
 
       it('expect to return true when presale is finished', async () => {
-        await token.finishPresale();
+        await token.setPresaleAsFinished();
 
         expect(await token.presaleFinished()).to.be.true;
       });
     });
 
-    context('finishPresale()', () => {
+    context('setPresaleAsFinished()', () => {
       createBeforeHook();
 
       it('expect to revert when sender is not the owner', async () => {
         const signer = signers.pop();
-        await expect(token.connect(signer).finishPresale()).to.be.revertedWith(
-          'Owned#1',
-        );
+        await expect(
+          token.connect(signer).setPresaleAsFinished(),
+        ).to.be.revertedWith('Owned#1');
       });
 
       it('expect to finish the presale', async () => {
-        const tx = await token.finishPresale();
+        const tx = await token.setPresaleAsFinished();
 
         expect(tx).to.emit(token, 'PresaleFinished');
       });
 
       it('expect to revert when presale is finished', async () => {
-        await expect(token.finishPresale()).to.be.revertedWith(
+        await expect(token.setPresaleAsFinished()).to.be.revertedWith(
           'MetaheroToken#5',
         );
       });
@@ -94,7 +94,7 @@ describe('MetaheroToken', () => {
       });
 
       it('expect to transfer from holder account when presale is finished', async () => {
-        await token.finishPresale();
+        await token.setPresaleAsFinished();
         const recipient = randomAddress();
         const tx = await token
           .connect(holder)

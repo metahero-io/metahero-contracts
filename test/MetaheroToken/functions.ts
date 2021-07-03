@@ -86,7 +86,7 @@ describe('MetaheroToken', () => {
         [excluded.address],
       );
 
-      await token.finishPresale();
+      await token.setPresaleAsFinished();
 
       if (totalSupply && transferToExclude) {
         await token.transfer(excluded.address, totalSupply);
@@ -427,7 +427,7 @@ describe('MetaheroToken', () => {
       });
     });
 
-    context('# match total supply with fees()', () => {
+    context('# match total supply with fees', () => {
       createBeforeHook({
         burnFee: {
           sender: 0,

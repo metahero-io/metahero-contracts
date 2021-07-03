@@ -70,7 +70,7 @@ context('MetaheroToken', () => {
 
       await lpm.initialize(token.address);
 
-      await token.finishPresale();
+      await token.setPresaleAsFinished();
     });
 
     const createTestCase = (
