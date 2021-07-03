@@ -11,6 +11,7 @@ const { getSigners } = ethers;
 
 describe('MetaheroPresale', () => {
   const TOKENS_AMOUNT_PER_NATIVE = BigNumber.from(10);
+  const MIN_PURCHASE_PRICE = BigNumber.from(2);
   const MAX_PURCHASE_PRICE = BigNumber.from(10000000);
   const TOTAL_SUPPLY = BigNumber.from(100000000);
   const TOTAL_TOKENS = BigNumber.from(1000000);
@@ -79,6 +80,7 @@ describe('MetaheroPresale', () => {
         await presale.initialize(
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
+          MIN_PURCHASE_PRICE,
           MAX_PURCHASE_PRICE,
         );
 
@@ -102,6 +104,7 @@ describe('MetaheroPresale', () => {
             .initialize(
               token.address,
               TOKENS_AMOUNT_PER_NATIVE,
+              MIN_PURCHASE_PRICE,
               MAX_PURCHASE_PRICE,
             ),
         ).to.be.revertedWith('Initializable#2');
@@ -112,27 +115,45 @@ describe('MetaheroPresale', () => {
           presale.initialize(
             constants.AddressZero,
             TOKENS_AMOUNT_PER_NATIVE,
+            MIN_PURCHASE_PRICE,
             MAX_PURCHASE_PRICE,
           ),
-        ).to.be.revertedWith('MetaheroPresale#6');
+        ).to.be.revertedWith('MetaheroPresale#7');
       });
 
       it('expect to revert when tokens amount per native is zero', async () => {
         await expect(
-          presale.initialize(token.address, 0, MAX_PURCHASE_PRICE),
-        ).to.be.revertedWith('MetaheroPresale#7');
+          presale.initialize(
+            token.address,
+            0,
+            MIN_PURCHASE_PRICE,
+            MAX_PURCHASE_PRICE,
+          ),
+        ).to.be.revertedWith('MetaheroPresale#8');
+      });
+
+      it('expect to revert when max purchase price lower than min purchase price', async () => {
+        await expect(
+          presale.initialize(
+            token.address,
+            TOKENS_AMOUNT_PER_NATIVE,
+            MIN_PURCHASE_PRICE,
+            0,
+          ),
+        ).to.be.revertedWith('MetaheroPresale#9');
       });
 
       it('expect to revert when max purchase price is zero', async () => {
         await expect(
-          presale.initialize(token.address, TOKENS_AMOUNT_PER_NATIVE, 0),
-        ).to.be.revertedWith('MetaheroPresale#8');
+          presale.initialize(token.address, TOKENS_AMOUNT_PER_NATIVE, 0, 0),
+        ).to.be.revertedWith('MetaheroPresale#10');
       });
 
       it('expect to initialize the contract', async () => {
         const tx = await presale.initialize(
           token.address,
           TOKENS_AMOUNT_PER_NATIVE,
+          MIN_PURCHASE_PRICE,
           MAX_PURCHASE_PRICE,
         );
 
@@ -144,6 +165,7 @@ describe('MetaheroPresale', () => {
           presale.initialize(
             token.address,
             TOKENS_AMOUNT_PER_NATIVE,
+            MIN_PURCHASE_PRICE,
             MAX_PURCHASE_PRICE,
           ),
         ).to.be.revertedWith('Initializable#1');
@@ -223,12 +245,12 @@ describe('MetaheroPresale', () => {
       it('expect to revert when one of the account is zero address', async () => {
         await expect(
           presale.addAccounts([randomAddress(), constants.AddressZero]),
-        ).to.be.revertedWith('MetaheroPresale#12');
+        ).to.be.revertedWith('MetaheroPresale#14');
       });
 
       it('expect to revert when there is no accounts to add', async () => {
         await expect(presale.addAccounts([])).to.be.revertedWith(
-          'MetaheroPresale#13',
+          'MetaheroPresale#15',
         );
       });
 
@@ -287,12 +309,12 @@ describe('MetaheroPresale', () => {
       it('expect to revert when one of the account is zero address', async () => {
         await expect(
           presale.removeAccounts([randomAddress(), constants.AddressZero]),
-        ).to.be.revertedWith('MetaheroPresale#10');
+        ).to.be.revertedWith('MetaheroPresale#12');
       });
 
       it('expect to revert when there is no accounts to remove', async () => {
         await expect(presale.removeAccounts([])).to.be.revertedWith(
-          'MetaheroPresale#11',
+          'MetaheroPresale#13',
         );
       });
 
@@ -359,7 +381,7 @@ describe('MetaheroPresale', () => {
       context('startPresale()', () => {
         it('expect to revert when presale has been started', async () => {
           await expect(presale.startPresale()).to.be.revertedWith(
-            'MetaheroPresale#9',
+            'MetaheroPresale#11',
           );
         });
       });
@@ -395,6 +417,15 @@ describe('MetaheroPresale', () => {
               to: presale.address,
               value: MAX_PURCHASE_PRICE.add(1),
             }),
+          ).to.be.revertedWith('MetaheroPresale#5');
+        });
+
+        it('expect to revert when msg.value is too low', async () => {
+          await expect(
+            account.sendTransaction({
+              to: presale.address,
+              value: MIN_PURCHASE_PRICE.sub(1),
+            }),
           ).to.be.revertedWith('MetaheroPresale#4');
         });
 
@@ -404,7 +435,7 @@ describe('MetaheroPresale', () => {
               to: presale.address,
               value: MAX_PURCHASE_PRICE,
             }),
-          ).to.be.revertedWith('MetaheroPresale#5');
+          ).to.be.revertedWith('MetaheroPresale#6');
         });
 
         it('expect to buy tokens', async () => {

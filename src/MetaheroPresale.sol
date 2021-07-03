@@ -17,6 +17,7 @@ contract MetaheroPresale is Owned, Initializable {
 
   struct Settings {
     uint256 tokensAmountPerNative;
+    uint256 minPurchasePrice; // min purchase price per whitelisted account
     uint256 maxPurchasePrice; // max purchase price per whitelisted account
   }
 
@@ -37,6 +38,7 @@ contract MetaheroPresale is Owned, Initializable {
   event Initialized(
     address token,
     uint256 tokensAmountPerNative,
+    uint256 minPurchasePrice,
     uint256 maxPurchasePrice
   );
 
@@ -89,15 +91,20 @@ contract MetaheroPresale is Owned, Initializable {
     );
 
     require(
-      msg.value <= settings.maxPurchasePrice,
+      msg.value >= settings.minPurchasePrice,
       "MetaheroPresale#4"
+    );
+
+    require(
+      msg.value <= settings.maxPurchasePrice,
+      "MetaheroPresale#5"
     );
 
     uint256 tokensAmount = msg.value.mul(settings.tokensAmountPerNative);
 
     require(
       tokensAmount <= summary.totalTokens,
-      "MetaheroPresale#5"
+      "MetaheroPresale#6"
     );
 
     whitelist[msg.sender] = false;
@@ -120,6 +127,7 @@ contract MetaheroPresale is Owned, Initializable {
   function initialize(
     address payable token_,
     uint256 tokensAmountPerNative,
+    uint256 minPurchasePrice,
     uint256 maxPurchasePrice
   )
     external
@@ -127,21 +135,28 @@ contract MetaheroPresale is Owned, Initializable {
   {
     require(
       token_ != address(0),
-      "MetaheroPresale#6"
-    );
-
-    require(
-      tokensAmountPerNative != 0,
       "MetaheroPresale#7"
     );
 
     require(
-      maxPurchasePrice != 0,
+      tokensAmountPerNative != 0,
       "MetaheroPresale#8"
     );
 
+    require(
+      minPurchasePrice <= maxPurchasePrice,
+      "MetaheroPresale#9"
+    );
+
+    require(
+      maxPurchasePrice != 0,
+      "MetaheroPresale#10"
+    );
+
     token = MetaheroToken(token_);
+
     settings.tokensAmountPerNative = tokensAmountPerNative;
+    settings.minPurchasePrice = minPurchasePrice;
     settings.maxPurchasePrice = maxPurchasePrice;
 
     summary.totalTokens = token.balanceOf(address(this));
@@ -149,6 +164,7 @@ contract MetaheroPresale is Owned, Initializable {
     emit Initialized(
       token_,
       tokensAmountPerNative,
+      minPurchasePrice,
       maxPurchasePrice
     );
   }
@@ -159,7 +175,7 @@ contract MetaheroPresale is Owned, Initializable {
   {
     require(
       !started,
-      "MetaheroPresale#9"
+      "MetaheroPresale#11"
     );
 
     started = true;
@@ -194,7 +210,7 @@ contract MetaheroPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "MetaheroPresale#10"
+        "MetaheroPresale#12"
       );
 
       if (whitelist[accounts[index]]) {
@@ -210,7 +226,7 @@ contract MetaheroPresale is Owned, Initializable {
 
     require(
       totalRemoved != 0,
-      "MetaheroPresale#11"
+      "MetaheroPresale#13"
     );
 
     summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
@@ -244,7 +260,7 @@ contract MetaheroPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "MetaheroPresale#12"
+        "MetaheroPresale#14"
       );
 
       if (!whitelist[accounts[index]]) {
@@ -260,7 +276,7 @@ contract MetaheroPresale is Owned, Initializable {
 
     require(
       totalAdded != 0,
-      "MetaheroPresale#13"
+      "MetaheroPresale#15"
     );
 
     summary.totalAccounts = summary.totalAccounts.add(totalAdded);

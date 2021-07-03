@@ -67,6 +67,10 @@ const func: DeployFunction = async (hre) => {
     'PRESALE_TOKENS_AMOUNT_PER_NATIVE',
     BigNumber.from('200000'), // 200000
   );
+  const PRESALE_MIN_PURCHASE_PRICE = getNetworkEnv(
+    'PRESALE_MIN_PURCHASE_PRICE',
+    BigNumber.from('100000000000000000'), // 0.100000000000000000
+  );
   const PRESALE_MAX_PURCHASE_PRICE = getNetworkEnv(
     'PRESALE_MAX_PURCHASE_PRICE',
     BigNumber.from('10000000000000000000'), // 10.000000000000000000
@@ -176,6 +180,7 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       token,
       PRESALE_TOKENS_AMOUNT_PER_NATIVE,
+      PRESALE_MIN_PURCHASE_PRICE,
       PRESALE_MAX_PURCHASE_PRICE,
     );
 
