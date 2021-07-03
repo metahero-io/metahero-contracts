@@ -17,6 +17,11 @@ export enum NetworkChainIds {
   BscTest = 97,
 }
 
+export const NETWORK_CHAIN_ID_NAMES: { [key: number]: string } = {
+  [NetworkChainIds.Bsc]: NetworkNames.Bsc,
+  [NetworkChainIds.BscTest]: NetworkNames.BscTest,
+};
+
 export const NETWORK_CONFIGS: {
   [key: string]: {
     title: string;

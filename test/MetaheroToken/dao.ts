@@ -42,7 +42,7 @@ describe('MetaheroToken', () => {
           [],
         );
 
-        await token.finishPresale();
+        await token.setPresaleAsFinished();
 
         if (useDAOMock) {
           dao = (await deployContract(

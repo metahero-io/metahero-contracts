@@ -11,7 +11,7 @@
 * _Decimals_ - `18`
 * _Emission_ - `10,000,000,000 tokens`
 
-## [Deployments](https://github.com/metahero-token/metahero-contracts/tree/master/deployments)
+## [Deployments](../deployments/README.md)
 
 ## Development
 
@@ -33,20 +33,20 @@ via `env` variables:
 | `<network config prefix>_PROVIDER_GAS` | optional |
 | `<network config prefix>_PROVIDER_GAS_PRICE` | optional |
 
+### Deployment
+
+```bash
+$ # npm run <network script alias>:deploy
+$ # example:
+$ npm run bsc:deploy
+```
+
 ### Testing
 
 ```bash
 $ npm run test                  # run tests
 $ npm run test -- --report-gas  # run tests with gas report
 $ npm run coverage              # run coverage
-```
-
-### Deployment
-
-```bash
-$ # npm run deploy:<network script alias>
-$ # example:
-$ npm run deploy:bsc
 ```
 
 ## License

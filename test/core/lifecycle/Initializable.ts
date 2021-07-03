@@ -50,7 +50,7 @@ describe('Initializable (using mock)', () => {
       ).to.be.revertedWith('Initializable#2');
     });
 
-    it('expect to resolve when sender is the initializer', async () => {
+    it('expect to initialize the contract', async () => {
       await initializable.triggerOnlyInitializer();
     });
 

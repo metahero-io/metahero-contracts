@@ -165,7 +165,7 @@ onlyWhileForking(() => {
             ],
           );
 
-          await token.finishPresale();
+          await token.setPresaleAsFinished();
 
           if (nativeLiquidity && tokenLiquidity) {
             await addLiquidity({

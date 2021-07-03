@@ -36,6 +36,17 @@ const config: HardhatUserConfig = {
       gasPrice: 20 * 1000000000,
       allowUnlimitedContractSize: true,
     },
+    localhost: {
+      accounts: {
+        mnemonic:
+          HARDHAT_MNEMONIC ||
+          'test test test test test test test test test test test junk',
+        count: 32,
+      },
+      url: 'http://localhost:8545',
+      chainId: NetworkChainIds.Bsc,
+      gasPrice: 20 * 1000000000,
+    },
     ...createConfigNetworks(),
   },
   solidity: {

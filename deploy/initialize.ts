@@ -63,13 +63,13 @@ const func: DeployFunction = async (hre) => {
 
   // presale
 
-  const PRESALE_DEADLINE_IN = getNetworkEnv(
-    'PRESALE_DEADLINE_IN',
-    14, //14 days
-  );
   const PRESALE_TOKENS_AMOUNT_PER_NATIVE = getNetworkEnv(
     'PRESALE_TOKENS_AMOUNT_PER_NATIVE',
     BigNumber.from('200000'), // 200000
+  );
+  const PRESALE_MIN_PURCHASE_PRICE = getNetworkEnv(
+    'PRESALE_MIN_PURCHASE_PRICE',
+    BigNumber.from('100000000000000000'), // 0.100000000000000000
   );
   const PRESALE_MAX_PURCHASE_PRICE = getNetworkEnv(
     'PRESALE_MAX_PURCHASE_PRICE',
@@ -78,10 +78,6 @@ const func: DeployFunction = async (hre) => {
   const PRESALE_TOTAL_TOKENS = getNetworkEnv(
     'PRESALE_TOTAL_TOKENS',
     BigNumber.from('1000000000000000000000000000'), // 1,000,000,000.000000000000000000
-  );
-  const PRESALE_FINISHED = getNetworkEnv(
-    'PRESALE_FINISHED', //
-    false,
   );
 
   const { from } = await getNamedAccounts();
@@ -108,6 +104,8 @@ const func: DeployFunction = async (hre) => {
       knownContracts.getAddress(ContractNames.UniswapV2Router),
     );
   }
+
+  // token
 
   if (await read(ContractNames.MetaheroToken, 'initialized')) {
     log(`${ContractNames.MetaheroToken} already initialized`);
@@ -182,8 +180,8 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       token,
       PRESALE_TOKENS_AMOUNT_PER_NATIVE,
+      PRESALE_MIN_PURCHASE_PRICE,
       PRESALE_MAX_PURCHASE_PRICE,
-      PRESALE_DEADLINE_IN * 24 * 60 * 60,
     );
 
     const signers = await getSigners();
@@ -198,17 +196,6 @@ const func: DeployFunction = async (hre) => {
         },
         'addAccounts',
         signers.slice(1).map(({ address }) => address),
-      );
-    }
-
-    if (PRESALE_FINISHED) {
-      await execute(
-        ContractNames.MetaheroToken,
-        {
-          from,
-          log: true,
-        },
-        'finishPresale',
       );
     }
   }

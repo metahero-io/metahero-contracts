@@ -1,49 +1,29 @@
-import { join } from 'path';
-import { readFile } from 'fs-extra';
-import { network, ethers, deployments } from 'hardhat';
+import { ethers, deployments } from 'hardhat';
 import { utils } from 'ethers';
-import {
-  MetaheroPresale,
-  MetaheroPresale__factory as MetaheroPresaleFactory,
-} from '../typings';
+import { MetaheroPresale__factory as MetaheroPresaleFactory } from '../typings';
+import { readLines, logTx } from './helpers';
 
-const { name } = network;
 const { getSigners } = ethers;
 
+const FILE_NAME = 'presaleAccounts.csv';
 const BATCH_SIZE = 50;
-const DATA_FILE_NAME = 'presaleAccounts.csv';
 
 async function main(): Promise<void> {
-  let addresses: string[];
+  const addresses = await readLines(FILE_NAME, (address) => {
+    let result: string;
+    try {
+      result = utils.getAddress(address);
+    } catch (err) {
+      result = null;
+    }
+    return result;
+  });
 
-  const dataFilePath = join(__dirname, 'data', name, DATA_FILE_NAME);
+  const { address: presaleAddress } = await deployments.get('MetaheroPresale');
+  const [owner] = await getSigners();
 
-  try {
-    const content = await readFile(dataFilePath, { encoding: 'utf8' });
-
-    addresses = content
-      .split('\n')
-      .map((address) => {
-        let result: string;
-
-        try {
-          result = utils.getAddress(address);
-        } catch (err) {
-          //
-        }
-
-        return result;
-      })
-      .filter((address) => address);
-  } catch (err) {
-    throw new Error(`Invalid "${DATA_FILE_NAME}" input file`);
-  }
-
-  const { address } = await deployments.get('MetaheroPresale');
-  const [sender] = await getSigners();
-
-  if (sender) {
-    const presale = MetaheroPresaleFactory.connect(address, sender);
+  if (presaleAddress && owner) {
+    const presale = MetaheroPresaleFactory.connect(presaleAddress, owner);
 
     const batch: {
       index: number;
@@ -57,17 +37,10 @@ async function main(): Promise<void> {
       batch.addresses.push(addresses[i]);
 
       if (batch.addresses.length === BATCH_SIZE || i === addresses.length - 1) {
-        console.log(`batch #${batch.index}, addresses:`, batch.addresses);
-
-        const tx = await presale.addAccounts(batch.addresses);
-        const { gasUsed } = await tx.wait();
-
-        console.log(
-          '[COMPLETED] tx:',
-          tx.hash,
-          ' (gasUsed:',
-          gasUsed.toString(),
-          ')',
+        await logTx(
+          `Batch #${batch.index}, addresses:`,
+          presale.addAccounts(batch.addresses),
+          batch.addresses,
         );
 
         batch.index++;

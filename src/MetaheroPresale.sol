@@ -17,6 +17,7 @@ contract MetaheroPresale is Owned, Initializable {
 
   struct Settings {
     uint256 tokensAmountPerNative;
+    uint256 minPurchasePrice; // min purchase price per whitelisted account
     uint256 maxPurchasePrice; // max purchase price per whitelisted account
   }
 
@@ -28,25 +29,25 @@ contract MetaheroPresale is Owned, Initializable {
   MetaheroToken public token;
   Settings public settings;
   Summary public summary;
-  uint256 public deadline;
+  bool public started;
 
   mapping (address => bool) public whitelist;
 
   // events
 
+  event Initialized(
+    address token,
+    uint256 tokensAmountPerNative,
+    uint256 minPurchasePrice,
+    uint256 maxPurchasePrice
+  );
+
+  event PresaleStarted();
+
   event TokensPurchased(
     address indexed account,
     uint256 tokensPrice,
     uint256 tokensAmount
-  );
-
-  event SettingsUpdated(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  );
-
-  event DeadlineUpdated(
-    uint256 deadline
   );
 
   event AccountAdded(
@@ -75,7 +76,7 @@ contract MetaheroPresale is Owned, Initializable {
     payable
   {
     require(
-      block.timestamp < deadline, // solhint-disable-line not-rely-on-time
+     started,
       "MetaheroPresale#1"
     );
 
@@ -90,15 +91,20 @@ contract MetaheroPresale is Owned, Initializable {
     );
 
     require(
-      msg.value <= settings.maxPurchasePrice,
+      msg.value >= settings.minPurchasePrice,
       "MetaheroPresale#4"
+    );
+
+    require(
+      msg.value <= settings.maxPurchasePrice,
+      "MetaheroPresale#5"
     );
 
     uint256 tokensAmount = msg.value.mul(settings.tokensAmountPerNative);
 
     require(
       tokensAmount <= summary.totalTokens,
-      "MetaheroPresale#5"
+      "MetaheroPresale#6"
     );
 
     whitelist[msg.sender] = false;
@@ -121,49 +127,60 @@ contract MetaheroPresale is Owned, Initializable {
   function initialize(
     address payable token_,
     uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice,
-    uint256 deadlineIn // in seconds
+    uint256 minPurchasePrice,
+    uint256 maxPurchasePrice
   )
     external
     onlyInitializer
   {
     require(
       token_ != address(0),
-      "MetaheroPresale#6"
+      "MetaheroPresale#7"
+    );
+
+    require(
+      tokensAmountPerNative != 0,
+      "MetaheroPresale#8"
+    );
+
+    require(
+      minPurchasePrice <= maxPurchasePrice,
+      "MetaheroPresale#9"
+    );
+
+    require(
+      maxPurchasePrice != 0,
+      "MetaheroPresale#10"
     );
 
     token = MetaheroToken(token_);
 
+    settings.tokensAmountPerNative = tokensAmountPerNative;
+    settings.minPurchasePrice = minPurchasePrice;
+    settings.maxPurchasePrice = maxPurchasePrice;
+
     summary.totalTokens = token.balanceOf(address(this));
 
-    _updateSettings(
+    emit Initialized(
+      token_,
       tokensAmountPerNative,
-      maxPurchasePrice
-    );
-
-    _updateDeadline(deadlineIn);
-  }
-
-  function updateSettings(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  )
-    external
-    onlyOwner
-  {
-    _updateSettings(
-      tokensAmountPerNative,
+      minPurchasePrice,
       maxPurchasePrice
     );
   }
 
-  function updateDeadline(
-    uint256 deadlineIn_ // in seconds
-  )
+  function startPresale()
     external
     onlyOwner
   {
-    _updateDeadline(deadlineIn_);
+    require(
+      !started,
+      "MetaheroPresale#11"
+    );
+
+    started = true;
+
+    emit PresaleStarted();
   }
 
   function syncTotalTokens()
@@ -193,7 +210,7 @@ contract MetaheroPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "MetaheroPresale#7"
+        "MetaheroPresale#12"
       );
 
       if (whitelist[accounts[index]]) {
@@ -209,7 +226,7 @@ contract MetaheroPresale is Owned, Initializable {
 
     require(
       totalRemoved != 0,
-      "MetaheroPresale#8"
+      "MetaheroPresale#13"
     );
 
     summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);
@@ -219,11 +236,6 @@ contract MetaheroPresale is Owned, Initializable {
     external
     onlyOwner
   {
-    require(
-      block.timestamp >= deadline, // solhint-disable-line not-rely-on-time
-      "MetaheroPresale#9"
-    );
-
     uint256 totalTokens = token.balanceOf(address(this));
 
     if (totalTokens != 0) {
@@ -237,43 +249,6 @@ contract MetaheroPresale is Owned, Initializable {
 
   // private functions
 
-  function _updateSettings(
-    uint256 tokensAmountPerNative,
-    uint256 maxPurchasePrice
-  )
-    private
-  {
-    require(
-      tokensAmountPerNative != 0,
-      "MetaheroPresale#10"
-    );
-
-    require(
-      maxPurchasePrice != 0,
-      "MetaheroPresale#11"
-    );
-
-    settings.tokensAmountPerNative = tokensAmountPerNative;
-    settings.maxPurchasePrice = maxPurchasePrice;
-
-    emit SettingsUpdated(
-      tokensAmountPerNative,
-      maxPurchasePrice
-    );
-  }
-
-  function _updateDeadline(
-    uint256 deadlineIn
-  )
-    private
-  {
-    deadline = block.timestamp.add(deadlineIn); // solhint-disable-line not-rely-on-time
-
-    emit DeadlineUpdated(
-      deadline
-    );
-  }
-
   function _addAccounts(
     address[] memory accounts
   )
@@ -285,7 +260,7 @@ contract MetaheroPresale is Owned, Initializable {
     for (uint256 index ; index < accountsLen ; index++) {
       require(
         accounts[index] != address(0),
-        "MetaheroPresale#12"
+        "MetaheroPresale#14"
       );
 
       if (!whitelist[accounts[index]]) {
@@ -301,7 +276,7 @@ contract MetaheroPresale is Owned, Initializable {
 
     require(
       totalAdded != 0,
-      "MetaheroPresale#13"
+      "MetaheroPresale#15"
     );
 
     summary.totalAccounts = summary.totalAccounts.add(totalAdded);
