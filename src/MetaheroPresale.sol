@@ -75,52 +75,19 @@ contract MetaheroPresale is Owned, Initializable {
     external
     payable
   {
-    require(
-     started,
-      "MetaheroPresale#1"
-    );
-
-    require(
-      whitelist[msg.sender],
-      "MetaheroPresale#2"
-    );
-
-    require(
-      msg.value != 0,
-      "MetaheroPresale#3"
-    );
-
-    require(
-      msg.value >= settings.minPurchasePrice,
-      "MetaheroPresale#4"
-    );
-
-    require(
-      msg.value <= settings.maxPurchasePrice,
-      "MetaheroPresale#5"
-    );
-
-    uint256 tokensAmount = msg.value.mul(settings.tokensAmountPerNative);
-
-    require(
-      tokensAmount <= summary.totalTokens,
-      "MetaheroPresale#6"
-    );
-
-    whitelist[msg.sender] = false;
-
-    summary.totalAccounts = summary.totalAccounts.sub(1);
-    summary.totalTokens = summary.totalTokens.sub(tokensAmount);
-
-    token.transfer(
+    _buyTokens(
       msg.sender,
-      tokensAmount
+      msg.value
     );
+  }
 
-    emit TokensPurchased(
+  function buyTokens()
+    external
+    payable
+  {
+    _buyTokens(
       msg.sender,
-      msg.value,
-      tokensAmount
+      msg.value
     );
   }
 
@@ -280,5 +247,60 @@ contract MetaheroPresale is Owned, Initializable {
     );
 
     summary.totalAccounts = summary.totalAccounts.add(totalAdded);
+  }
+
+  function _buyTokens(
+    address sender,
+    uint256 tokensPrice
+  )
+    private
+  {
+    require(
+      started,
+      "MetaheroPresale#1"
+    );
+
+    require(
+      whitelist[sender],
+      "MetaheroPresale#2"
+    );
+
+    require(
+      tokensPrice != 0,
+      "MetaheroPresale#3"
+    );
+
+    require(
+      tokensPrice >= settings.minPurchasePrice,
+      "MetaheroPresale#4"
+    );
+
+    require(
+      tokensPrice <= settings.maxPurchasePrice,
+      "MetaheroPresale#5"
+    );
+
+    uint256 tokensAmount = tokensPrice.mul(settings.tokensAmountPerNative);
+
+    require(
+      tokensAmount <= summary.totalTokens,
+      "MetaheroPresale#6"
+    );
+
+    whitelist[sender] = false;
+
+    summary.totalAccounts = summary.totalAccounts.sub(1);
+    summary.totalTokens = summary.totalTokens.sub(tokensAmount);
+
+    token.transfer(
+      sender,
+      tokensAmount
+    );
+
+    emit TokensPurchased(
+      sender,
+      tokensPrice,
+      tokensAmount
+    );
   }
 }

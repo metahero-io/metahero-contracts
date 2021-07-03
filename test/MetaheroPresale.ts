@@ -360,8 +360,7 @@ describe('MetaheroPresale', () => {
 
         it('expect to revert when presale has not been started', async () => {
           await expect(
-            account.sendTransaction({
-              to: presale.address,
+            presale.connect(account).buyTokens({
               value: 1,
             }),
           ).to.be.revertedWith('MetaheroPresale#1');
@@ -442,8 +441,7 @@ describe('MetaheroPresale', () => {
           const tokensPrice = 10;
           const tokensAmount = TOKENS_AMOUNT_PER_NATIVE.mul(tokensPrice);
 
-          const tx = await account.sendTransaction({
-            to: presale.address,
+          const tx = await presale.connect(account).buyTokens({
             value: tokensPrice,
           });
 
