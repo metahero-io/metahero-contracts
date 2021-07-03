@@ -53,12 +53,14 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     external
     payable
   {
-    require(
-      msg.value != 0,
-      "MetaheroLPMForUniswapV2#1"
-    );
+    _deposit(msg.value);
+  }
 
-    wrappedNative.deposit{value: msg.value}();
+  function deposit()
+    external
+    payable
+  {
+    _deposit(msg.value);
   }
 
   function initialize(
@@ -204,6 +206,19 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
   // private functions
 
+  function _deposit(
+    uint256 amount
+  )
+    private
+  {
+    require(
+      amount != 0,
+      "MetaheroLPMForUniswapV2#1"
+    );
+
+    wrappedNative.deposit{value: amount}();
+  }
+
   function _swapTokens(
     uint256 amount
   )
@@ -254,21 +269,12 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
         wrappedNativeAmount
       );
 
-      (
-        address tokenA,
-        address tokenB,
-        uint256 amountADesired,
-        uint256 amountBDesired
-      ) = correctPairOrder
-        ? (address(token), address(wrappedNative), tokensAmount, wrappedNativeAmount)
-        : (address(wrappedNative), address(token), wrappedNativeAmount, tokensAmount);
-
       // omit revert
       try uniswapRouter.addLiquidity(
-        tokenA,
-        tokenB,
-        amountADesired,
-        amountBDesired,
+        address(token),
+        address(wrappedNative),
+        tokensAmount,
+        wrappedNativeAmount,
         0,
         0,
         address(this),
@@ -292,16 +298,9 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
         liquidity
       );
 
-      (
-        address tokenA,
-        address tokenB
-      ) = correctPairOrder
-        ? (address(token), address(wrappedNative))
-        : (address(wrappedNative), address(token));
-
       uniswapRouter.removeLiquidity(
-        tokenA,
-        tokenB,
+        address(token),
+        address(wrappedNative),
         liquidity,
         0,
         0,
