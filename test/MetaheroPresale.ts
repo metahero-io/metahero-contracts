@@ -360,7 +360,7 @@ describe('MetaheroPresale', () => {
 
         it('expect to revert when presale has not been started', async () => {
           await expect(
-            external.sendTransaction({
+            account.sendTransaction({
               to: presale.address,
               value: 1,
             }),
