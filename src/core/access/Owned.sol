@@ -4,17 +4,23 @@ pragma solidity ^0.6.12;
 /**
  * @title Owned
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Owned {
+  /**
+   * @return owner address
+   */
   address public owner;
 
   // modifiers
 
+  /**
+   * @dev Throws if msg.sender is not the owner
+   */
   modifier onlyOwner() {
     require(
       msg.sender == owner,
-      "Owned#1"
+      "Owned#1" // msg.sender is not the owner
     );
 
     _;
@@ -22,6 +28,10 @@ contract Owned {
 
   // events
 
+  /**
+   * @dev Emitted when the owner is updated
+   * @param owner new owner address
+   */
   event OwnerUpdated(
     address owner
   );
@@ -37,6 +47,10 @@ contract Owned {
 
   // external functions
 
+  /**
+   * @notice Set a new guardian
+   * @param owner owner address
+   */
   function setOwner(
     address owner_
   )
@@ -55,12 +69,12 @@ contract Owned {
   {
     require(
       owner_ != address(0),
-      "Owned#2"
+      "Owned#2" // owner is the zero address
     );
 
     require(
       owner_ != owner,
-      "Owned#3"
+      "Owned#3" // does not update the owner
     );
 
     owner = owner_;

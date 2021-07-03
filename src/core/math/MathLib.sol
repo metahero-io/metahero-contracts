@@ -7,7 +7,7 @@ import "./SafeMathLib.sol";
 /**
  * @title Math library
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 library MathLib {
   using SafeMathLib for uint256;

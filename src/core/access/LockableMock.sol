@@ -7,7 +7,7 @@ import "./Lockable.sol";
 /**
  * @title Lockable mock
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract LockableMock is Lockable {
   // events

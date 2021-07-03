@@ -7,7 +7,7 @@ import "./Controlled.sol";
 /**
  * @title Controlled mock
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract ControlledMock is Controlled {
   // events

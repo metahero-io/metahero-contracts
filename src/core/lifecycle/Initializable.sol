@@ -4,24 +4,28 @@ pragma solidity ^0.6.12;
 /**
  * @title Initializable
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Initializable {
   address private initializer;
 
   // modifiers
 
+  /**
+   * @dev Throws if msg.sender is not the initializer
+   */
   modifier onlyInitializer() {
     require(
       initializer != address(0),
-      "Initializable#1"
+      "Initializable#1" // already initialized
     );
 
     require(
       msg.sender == initializer,
-      "Initializable#2"
+      "Initializable#2" // msg.sender is not the initializer
     );
 
+    /// @dev removes initializer
     initializer = address(0);
 
     _;
@@ -38,6 +42,10 @@ contract Initializable {
 
   // external functions (views)
 
+  /**
+   * @notice Check if contract is initialized
+   * @return true when contract is initialized
+   */
   function initialized()
     external
     view

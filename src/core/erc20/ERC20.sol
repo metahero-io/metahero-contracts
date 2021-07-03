@@ -7,7 +7,7 @@ import "./IERC20.sol";
 /**
  * @title ERC20 abstract token
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 abstract contract ERC20 is IERC20 {
   string public override name;
@@ -16,6 +16,9 @@ abstract contract ERC20 is IERC20 {
 
   /**
    * @dev Internal constructor
+   * @param name name
+   * @param symbol symbol
+   * @param decimals decimals amount
    */
   constructor (
     string memory name_,
