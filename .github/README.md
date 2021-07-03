@@ -17,6 +17,8 @@
   * Burn fee - `1%` _(configurable)_
   * Rewards fee - `1%` _(configurable)_
 
+## [NPM](../README.md)
+
 ## [Deployments](../deployments/README.md)
 
 ## Development
