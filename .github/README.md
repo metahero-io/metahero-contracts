@@ -1,9 +1,9 @@
-# Metahero
+# Metahero contracts
 
 [![NPM version][npm-image]][npm-url]
 [![License MIT][license-image]][license-url]
 
-## Token details
+## `MetaheroToken`
 
 * [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md) Standard: 
   * name - `Metahero`
