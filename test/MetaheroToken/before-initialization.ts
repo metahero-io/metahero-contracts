@@ -67,6 +67,21 @@ describe('MetaheroToken', () => {
         ).to.be.revertedWith('MetaheroToken#3');
       });
 
+      it('expect to revert when the total fee is too high', async () => {
+        await expect(
+          token.initialize(
+            ZERO_FEE,
+            ZERO_FEE,
+            { sender: 30, recipient: 1 },
+            0,
+            constants.AddressZero,
+            constants.AddressZero,
+            0,
+            [],
+          ),
+        ).to.be.revertedWith('MetaheroToken#26');
+      });
+
       it('expect to initialize the contract', async () => {
         const tx = await token.initialize(
           ZERO_FEE,

@@ -46,6 +46,10 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     bool excludeRecipientFromFee; // removes the fee from all recipient accounts on outgoing transfers
   }
 
+  // globals
+
+  uint256 private constant MAX_FEE = 30; // max sum of all fees - 30%
+
   // metadata
 
   string private constant TOKEN_NAME = "Metahero";
@@ -210,6 +214,8 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     external
     onlyInitializer
   {
+    _verifyFees(burnFees, lpFees, rewardsFees);
+
     settings.burnFees = burnFees;
     settings.lpFees = lpFees;
     settings.rewardsFees = rewardsFees;
@@ -295,6 +301,8 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     external
     onlyDAO // only for dao
   {
+    _verifyFees(burnFees, lpFees, rewardsFees);
+
     settings.burnFees = burnFees;
     settings.lpFees = lpFees;
     settings.rewardsFees = rewardsFees;
@@ -1358,5 +1366,29 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     totalFee = lpFee.add(rewardsFee).add(burnFee);
 
     return (totalFee, burnFee, lpFee);
+  }
+
+  // private functions (pure)
+
+  function _verifyFees(
+    Fees memory burnFees,
+    Fees memory lpFees,
+    Fees memory rewardsFees
+  )
+    private
+    pure
+  {
+    uint256 totalFee = burnFees.sender.add(
+      burnFees.recipient
+    ).add(
+      lpFees.sender.add(lpFees.recipient)
+    ).add(
+      rewardsFees.sender.add(rewardsFees.recipient)
+    );
+
+    require(
+      totalFee <= MAX_FEE,
+      "MetaheroToken#26" // the total fee is too high
+    );
   }
 }
