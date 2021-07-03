@@ -588,6 +588,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
       "MetaheroToken#7" // account is the zero address
     );
 
+    // if already excluded
     if (excludedAccounts[account].exists) {
       require(
         excludedAccounts[account].excludeSenderFromFee != excludeSenderFromFee ||
@@ -962,6 +963,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     uint256 totalSupply_ = summary.totalSupply;
 
+    // when sender does not remove the fee from the recipient
     if (!excludedAccounts[sender].excludeRecipientFromFee) {
       (
         recipientTotalFee,
@@ -1043,6 +1045,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
     uint256 totalSupply_ = summary.totalSupply;
 
+    // when recipient does not remove the fee from the sender
     if (!excludedAccounts[recipient].excludeSenderFromFee) {
       (
         senderTotalFee,
@@ -1162,7 +1165,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     accountBalances[holder] = holderBalance;
     summary.totalHolding = totalHolding;
 
-    if (address(dao) != address(0)) {
+    if (address(dao) != address(0)) { // if dao is not the zero address
       dao.syncMember(
         holder,
         holderBalance,
@@ -1184,7 +1187,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     accountBalances[holderB] = holderBBalance;
     summary.totalHolding = totalHolding;
 
-    if (address(dao) != address(0)) {
+    if (address(dao) != address(0)) { // if dao is not the zero address
       dao.syncMembers(
         holderA,
         holderABalance,
@@ -1202,7 +1205,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
-    if (amount != 0) {
+    if (amount != 0) { // when amount is not zero
       emit Transfer(
         sender,
         recipient,
@@ -1216,7 +1219,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   )
     private
   {
-    if (amount != 0) {
+    if (amount != 0) { // when amount is not zero
       accountBalances[address(lpm)] = accountBalances[address(lpm)].add(amount);
 
       summary.totalExcluded = summary.totalExcluded.add(amount);
@@ -1226,7 +1229,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   function _syncLP()
     private
   {
-    if (address(lpm) != address(0)) {
+    if (address(lpm) != address(0)) { // if lpm is not the zero address
       lpm.syncLP();
     }
   }
@@ -1234,6 +1237,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   function _updateTotalRewards()
     private
   {
+    // totalRewards = totalSupply - totalExcluded - totalHolding
     uint256 totalRewards = summary.totalSupply
     .sub(summary.totalExcluded)
     .sub(summary.totalHolding);
@@ -1263,7 +1267,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
 
       if (newTotalSupply >= settings.minTotalSupply) {
         totalSupply_ = newTotalSupply;
-      } else  {
+      } else  { // turn of burn fee
         totalFee = totalFee.sub(burnFee);
         burnFee = 0;
       }
@@ -1284,7 +1288,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
       bool shouldSyncLPAfter
     )
   {
-    if (address(lpm) != address(0)) {
+    if (address(lpm) != address(0)) { // if lpm is not the zero address
       (shouldSyncLPBefore, shouldSyncLPAfter) = lpm.canSyncLP(
         sender,
         recipient
@@ -1302,7 +1306,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
     returns (uint256 result)
   {
     if (
-      !excludedAccounts[account].exists &&
+      !excludedAccounts[account].exists && // only for holders
       summary.totalRewards != 0
     ) {
       result = summary.totalRewards
