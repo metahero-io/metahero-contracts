@@ -14,6 +14,9 @@ library MathLib {
 
   // internal functions (pure)
 
+  /**
+   * @notice Calcs a x p / 100
+   */
   function percent(
     uint256 a,
     uint256 p

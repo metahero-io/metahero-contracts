@@ -48,8 +48,8 @@ contract Owned {
   // external functions
 
   /**
-   * @notice Set a new guardian
-   * @param owner owner address
+   * @notice Sets a new owner
+   * @param owner_ owner address
    */
   function setOwner(
     address owner_

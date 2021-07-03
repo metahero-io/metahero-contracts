@@ -16,9 +16,9 @@ abstract contract ERC20 is IERC20 {
 
   /**
    * @dev Internal constructor
-   * @param name name
-   * @param symbol symbol
-   * @param decimals decimals amount
+   * @param name_ name
+   * @param symbol_ symbol
+   * @param decimals_ decimals amount
    */
   constructor (
     string memory name_,

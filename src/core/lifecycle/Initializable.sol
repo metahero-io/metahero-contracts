@@ -43,7 +43,7 @@ contract Initializable {
   // external functions (views)
 
   /**
-   * @notice Check if contract is initialized
+   * @notice Checks if contract is initialized
    * @return true when contract is initialized
    */
   function initialized()

@@ -11,19 +11,25 @@ import "./MetaheroToken.sol";
 /**
  * @title Metahero abstract liquidity pool manager
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 abstract contract MetaheroLPM is Lockable, Owned, Initializable {
   using SafeMathLib for uint256;
 
+  /**
+   * @return token address
+   */
   MetaheroToken public token;
 
   // modifiers
 
+  /**
+   * @dev Throws if msg.sender is not the token
+   */
   modifier onlyToken() {
     require(
       msg.sender == address(token),
-      "MetaheroLPM#1"
+      "MetaheroLPM#1" // msg.sender is not the token
     );
 
     _;
@@ -31,6 +37,10 @@ abstract contract MetaheroLPM is Lockable, Owned, Initializable {
 
   // events
 
+  /**
+   * @dev Emitted when tokens from the liquidity pool are burned
+   * @param amount burnt amount
+   */
   event LPBurnt(
     uint256 amount
   );
@@ -49,6 +59,9 @@ abstract contract MetaheroLPM is Lockable, Owned, Initializable {
 
   // external functions
 
+  /**
+   * @notice Syncs liquidity pool
+   */
   function syncLP()
     external
     onlyToken
@@ -57,6 +70,10 @@ abstract contract MetaheroLPM is Lockable, Owned, Initializable {
     _syncLP();
   }
 
+  /**
+   * @notice Burns tokens from the liquidity pool
+   * @param amount tokens amount
+   */
   function burnLP(
     uint256 amount
   )
@@ -66,7 +83,7 @@ abstract contract MetaheroLPM is Lockable, Owned, Initializable {
   {
     require(
       amount != 0,
-      "MetaheroLPM#2"
+      "MetaheroLPM#2" // amount is zero
     );
 
     _burnLP(amount);
@@ -99,7 +116,7 @@ abstract contract MetaheroLPM is Lockable, Owned, Initializable {
   {
     require(
       token_ != address(0),
-      "MetaheroLPM#3"
+      "MetaheroLPM#3" // token is the zero address
     );
 
     token = MetaheroToken(token_);
