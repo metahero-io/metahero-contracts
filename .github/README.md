@@ -5,17 +5,17 @@
 
 ## Token details
 
-* _[ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)  standard_: 
-  * _Name_ - `Metahero`
-  * _Symbol_ - `HERO`
-  * _Decimals_ - `18`
-* _Total Supply_:
-  * _Initial_ - `10,000,000,000 HERO` (configurable)
-  * _Minimal_ - `100,000,000 HERO` (configurable)
-* _Transaction Fees_ (from each holder participant):
-  * _Liquidity pool_ fee - `3%` (configurable) 
-  * _Burn fee_ - `1%` (configurable)
-  * _Rewards fee_ - `1%` (configurable)
+* [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)  standard: 
+  * Name - `Metahero`
+  * Symbol - `HERO`
+  * Decimals - `18`
+* Total Supply:
+  * Initial - `10,000,000,000 HERO` _(configurable)_
+  * Minimal - `100,000,000 HERO` _(configurable)_
+* Transaction Fees _(from each holder participant)_:
+  * Liquidity pool fee - `3%` _(configurable)_ 
+  * Burn fee - `1%` _(configurable)_
+  * Rewards fee - `1%` _(configurable)_
 
 ## [Deployments](../deployments/README.md)
 
@@ -35,9 +35,9 @@ via `env` variables:
 | name | note |
 | --- | --- |
 | `<network config prefix>_PROVIDER_PRIVATE_KEY` | |
-| `<network config prefix>_PROVIDER_URL` | optional |
-| `<network config prefix>_PROVIDER_GAS` | optional |
-| `<network config prefix>_PROVIDER_GAS_PRICE` | optional |
+| `<network config prefix>_PROVIDER_URL` | _optional_ |
+| `<network config prefix>_PROVIDER_GAS` | _optional_ |
+| `<network config prefix>_PROVIDER_GAS_PRICE` | _optional_ |
 
 ### Deployment
 
