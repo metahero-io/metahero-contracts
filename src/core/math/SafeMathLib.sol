@@ -9,6 +9,9 @@ pragma solidity ^0.6.12;
 library SafeMathLib {
   // internal functions (pure)
 
+  /**
+   * @notice Calcs a + b
+   */
   function add(
     uint256 a,
     uint256 b
@@ -27,6 +30,9 @@ library SafeMathLib {
     return c;
   }
 
+  /**
+   * @notice Calcs a - b
+   */
   function sub(
     uint256 a,
     uint256 b
@@ -43,6 +49,9 @@ library SafeMathLib {
     return a - b;
   }
 
+  /**
+   * @notice Calcs a x b
+   */
   function mul(
     uint256 a,
     uint256 b
@@ -63,6 +72,9 @@ library SafeMathLib {
     return result;
   }
 
+  /**
+   * @notice Calcs a / b
+   */
   function div(
     uint256 a,
     uint256 b

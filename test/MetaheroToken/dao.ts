@@ -22,7 +22,13 @@ describe('MetaheroToken', () => {
     let token: MetaheroToken;
     let dao: MetaheroDAOMock;
 
-    const createBeforeHook = (useDAOMock = false) => {
+    const createBeforeHook = (
+      options: { useDAOMock?: boolean; postBefore?: () => Promise<void> } = {},
+    ) => {
+      const { useDAOMock, postBefore } = {
+        useDAOMock: false,
+        ...options,
+      };
       before(async () => {
         [owner, ...signers] = await getSigners();
 
@@ -52,6 +58,10 @@ describe('MetaheroToken', () => {
 
           await token.setDAO(dao.address);
         }
+
+        if (postBefore) {
+          await postBefore();
+        }
       });
     };
 
@@ -80,7 +90,15 @@ describe('MetaheroToken', () => {
     });
 
     context('updateFees()', () => {
-      createBeforeHook();
+      let dao: Signer;
+
+      createBeforeHook({
+        postBefore: async () => {
+          dao = signers.pop();
+
+          await token.setDAO(dao.address);
+        },
+      });
 
       it('expect to revert when sender is not the dao', async () => {
         await expect(
@@ -88,10 +106,15 @@ describe('MetaheroToken', () => {
         ).to.be.revertedWith('MetaheroToken#1');
       });
 
-      it('expect to update fees', async () => {
-        const dao = signers[0];
-        await token.setDAO(dao.address);
+      it('expect to revert when the total fee is too high', async () => {
+        await expect(
+          token
+            .connect(dao)
+            .updateFees(ZERO_FEE, ZERO_FEE, { sender: 30, recipient: 1 }),
+        ).to.be.revertedWith('MetaheroToken#26');
+      });
 
+      it('expect to update fees', async () => {
         const tx = await token
           .connect(dao)
           .updateFees(ZERO_FEE, ZERO_FEE, ZERO_FEE);
@@ -103,7 +126,9 @@ describe('MetaheroToken', () => {
     context('# with dao mock', () => {
       let totalWeight = 0;
 
-      createBeforeHook(true);
+      createBeforeHook({
+        useDAOMock: true,
+      });
 
       context('_updateHoldingBalance()', () => {
         let member: Signer;

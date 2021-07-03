@@ -11,7 +11,7 @@ const { getSigners } = ethers;
 
 const LP_NATIVE_EXTRA_AMOUNT = getNetworkEnv(
   'LP_NATIVE_EXTRA_AMOUNT',
-  BigNumber.from('100'), // 0.000000000000000100
+  BigNumber.from('500000000000000000'), // 0.500000000000000000
 );
 
 const LP_TOKEN_AMOUNT = getNetworkEnv(

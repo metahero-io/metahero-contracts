@@ -4,17 +4,23 @@ pragma solidity ^0.6.12;
 /**
  * @title Controlled
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract Controlled {
+  /**
+   * @return controller address
+   */
   address public controller;
 
   // modifiers
 
+  /**
+   * @dev Throws if msg.sender is not the controller
+   */
   modifier onlyController() {
     require(
       msg.sender == controller,
-      "Controlled#1"
+      "Controlled#1" // msg.sender is not the controller
     );
 
     _;
@@ -22,6 +28,10 @@ contract Controlled {
 
   // events
 
+  /**
+   * @dev Emitted when the controller is updated
+   * @param controller new controller address
+   */
   event ControllerUpdated(
     address controller
   );
@@ -52,12 +62,12 @@ contract Controlled {
   {
     require(
       controller_ != address(0),
-      "Controlled#2"
+      "Controlled#2" // controller is the zero address
     );
 
     require(
       controller_ != controller,
-      "Controlled#3"
+      "Controlled#3" // does not update the controller
     );
 
     controller = controller_;
@@ -72,7 +82,7 @@ contract Controlled {
   {
     require(
       controller != address(0),
-      "Controlled#4"
+      "Controlled#4" // controller is the zero address
     );
 
     controller = address(0);

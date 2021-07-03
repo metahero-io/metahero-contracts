@@ -8,7 +8,7 @@ import "./ERC20.sol";
 /**
  * @title ERC20 token mock
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract ERC20Mock is ERC20 {
   using SafeMathLib for uint256;

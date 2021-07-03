@@ -11,17 +11,32 @@ import "./MetaheroLPM.sol";
 /**
  * @title Metahero liquidity pool manager for Uniswap v2
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract MetaheroLPMForUniswapV2 is MetaheroLPM {
   struct Settings {
-    uint256 enableBurnLPAtValue;
-    address stableCoin;
+    uint256 enableBurnLPAtValue; // value of the tokens that turned on the burnLP method
+    address stableCoin; // stable coin address eg. BUSD, DAI
   }
 
+  /**
+   * @return settings object
+   */
   Settings public settings;
+
+  /**
+   * @return Uniswap V2 factory address
+   */
   IUniswapV2Factory public uniswapFactory;
+
+  /**
+   * @return Uniswap V2 pair address
+   */
   IUniswapV2Pair public uniswapPair;
+
+  /**
+   * @return Uniswap V2 router02 address
+   */
   IUniswapV2Router02 public uniswapRouter;
 
   IWrappedNative private wrappedNative;
@@ -29,6 +44,14 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
   // events
 
+  /**
+   * @dev Emitted the contract is initialized
+   * @param enableBurnLPAtValue value of the tokens that turned on the burnLP method
+   * @param stableCoin stable coin address eg. BUSD, DAI
+   * @param token token address
+   * @param uniswapRouter Uniswap V2 router02 address
+   * @param uniswapPair Uniswap V2 pair address
+   */
   event Initialized(
     uint256 enableBurnLPAtValue,
     address stableCoin,
@@ -49,6 +72,9 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
   // external functions
 
+  /**
+   * @dev Mints stable coins to the contract
+   */
   receive()
     external
     payable
@@ -56,6 +82,9 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     _deposit(msg.value);
   }
 
+  /**
+   * @dev Mints stable coins to the contract
+   */
   function deposit()
     external
     payable
@@ -63,6 +92,13 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     _deposit(msg.value);
   }
 
+  /**
+   * @dev Initializes the contract
+   * @param enableBurnLPAtValue value of the tokens that turned on the burnLP method
+   * @param stableCoin stable coin address eg. BUSD, DAI
+   * @param token_ token address
+   * @param uniswapRouter_ Uniswap V2 router02 address
+   */
   function initialize(
     uint256 enableBurnLPAtValue,
     address stableCoin,
@@ -77,7 +113,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     if (enableBurnLPAtValue != 0) {
       require(
         stableCoin != address(0),
-        "MetaheroLPMForUniswapV2#2"
+        "MetaheroLPMForUniswapV2#2" // stable coin is the zero address
       );
 
       settings.enableBurnLPAtValue = enableBurnLPAtValue;
@@ -86,7 +122,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
     require(
       uniswapRouter_ != address(0),
-      "MetaheroLPMForUniswapV2#3"
+      "MetaheroLPMForUniswapV2#3" // Uniswap V2 router02 is the zero address
     );
 
     uniswapRouter = IUniswapV2Router02(uniswapRouter_);
@@ -94,6 +130,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
     wrappedNative = IWrappedNative(uniswapRouter.WETH());
 
+    // create a pair
     uniswapPair = IUniswapV2Pair(uniswapFactory.createPair(
       address(token),
       address(wrappedNative)
@@ -112,6 +149,11 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
   // external functions (views)
 
+  /**
+   * @notice Checks when to sync the liquidity pool
+   * @param sender sender address
+   * @param recipient recipient address
+   */
   function canSyncLP(
     address sender,
     address recipient
@@ -124,9 +166,9 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
       bool shouldSyncLPAfter
     )
   {
-    if (sender != address(uniswapPair)) {
+    if (sender != address(uniswapPair)) { // omit when swap HERO > BNB
       if (recipient == address(uniswapPair)) {
-        shouldSyncLPBefore = true;
+        shouldSyncLPBefore = true; // swap BNB > HERO
       } else {
         shouldSyncLPAfter = true;
       }
@@ -147,8 +189,10 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
       uint256 swapAmount = totalAmount.div(2);
       uint256 liquidityAmount = totalAmount.sub(swapAmount);
 
+      // swap half for native
       _swapTokens(swapAmount);
 
+      // add other half with received native
       _addTokensToLiquidity(liquidityAmount);
     }
   }
@@ -164,19 +208,19 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
       require(
         tokenReserve != 0,
-        "MetaheroLPMForUniswapV2#4"
+        "MetaheroLPMForUniswapV2#4" // token reserve is zero
       );
 
       require(
         amount <= tokenReserve,
-        "MetaheroLPMForUniswapV2#5"
+        "MetaheroLPMForUniswapV2#5" // amount higher than token reserve
       );
 
       uint256 tokenReserveValue = _calcTokensValue(tokenReserve);
 
       require(
         tokenReserveValue > settings.enableBurnLPAtValue,
-        "MetaheroLPMForUniswapV2#6"
+        "MetaheroLPMForUniswapV2#6" // burnLP disabled
       );
 
       uint256 amountValue = _calcTokensValue(amount);
@@ -184,22 +228,23 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
 
       require(
         amountValue <= maxAmountValue,
-        "MetaheroLPMForUniswapV2#7"
+        "MetaheroLPMForUniswapV2#7" // amount is too high
       );
     }
 
+    // remove liquidity
     _removeLiquidity();
 
     uint256 totalAmount = token.balanceOf(address(this));
 
     require(
       totalAmount >= amount,
-      "MetaheroLPMForUniswapV2#8"
+      "MetaheroLPMForUniswapV2#8" // amount is too high
     );
 
-    token.burn(amount);
+    token.burn(amount); // burn tokens
 
-    _addTokensToLiquidity(
+    _addTokensToLiquidity( // adds others to liquidity
       totalAmount.sub(amount)
     );
   }
@@ -213,7 +258,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
   {
     require(
       amount != 0,
-      "MetaheroLPMForUniswapV2#1"
+      "MetaheroLPMForUniswapV2#1" // amount is zero
     );
 
     wrappedNative.deposit{value: amount}();
@@ -234,7 +279,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
     path[0] = address(token);
     path[1] = address(wrappedNative);
 
-    // omit revert
+    // omit revert, let's use those tokens on the next swap
     try uniswapRouter.swapExactTokensForTokens(
       amount,
       0,
@@ -269,7 +314,7 @@ contract MetaheroLPMForUniswapV2 is MetaheroLPM {
         wrappedNativeAmount
       );
 
-      // omit revert
+      // omit revert, let's use those tokens on the next swap
       try uniswapRouter.addLiquidity(
         address(token),
         address(wrappedNative),

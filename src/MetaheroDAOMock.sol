@@ -7,7 +7,7 @@ import "./IMetaheroDAO.sol";
 /**
  * @title Metahero DAO mock
  *
- * @author Stanisław Głogowski <stan@metaMetahero.io>
+ * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract MetaheroDAOMock is IMetaheroDAO {
   // events
