@@ -5,14 +5,14 @@
 
 ## Token details
 
-* [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md) Standard: 
+* [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md) standard: 
   * Name - `Metahero`
   * Symbol - `HERO`
   * Decimals - `18`
-* Total Supply:
+* Total supply:
   * Initial - `10,000,000,000 HERO` _(configurable)_
   * Minimal - `100,000,000 HERO` _(configurable)_
-* Transaction Fees _(from each holder participant)_:
+* Transaction fees _(from each holder participant)_:
   * Liquidity pool fee - `3%` _(configurable)_ 
   * Burn fee - `1%` _(configurable)_
   * Rewards fee - `1%` _(configurable)_
