@@ -1,0 +1,603 @@
+{
+  "address": "0xED1c8355808Da214d7208a2d8DBb844BDF74c17C",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "AccountAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "AccountRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokensAmountPerNative",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minPurchasePrice",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxPurchasePrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "PresaleStarted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokensPrice",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokensAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokensPurchased",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "accounts",
+          "type": "address[]"
+        }
+      ],
+      "name": "addAccounts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "buyTokens",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "finishPresale",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "token_",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokensAmountPerNative",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minPurchasePrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPurchasePrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "initialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "accounts",
+          "type": "address[]"
+        }
+      ],
+      "name": "removeAccounts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner_",
+          "type": "address"
+        }
+      ],
+      "name": "setOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "settings",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokensAmountPerNative",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minPurchasePrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPurchasePrice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "startPresale",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "started",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "summary",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalAccounts",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalTokens",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "syncTotalTokens",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract MetaheroToken",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelist",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "transactionHash": "0x0462a921791c4bfb9e38b3a12afc39307d3634d9787fbd369c3d813d9880cf17",
+  "receipt": {
+    "to": null,
+    "from": "0x2101F46D23b84eEa6a310B1dBa58f66DCE17A0Cf",
+    "contractAddress": "0xED1c8355808Da214d7208a2d8DBb844BDF74c17C",
+    "transactionIndex": 1,
+    "gasUsed": "1899144",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x57fa24b48495f5ad637bd0f39aa0a241d801c9614840babbfae8b21cece02fc6",
+    "transactionHash": "0x0462a921791c4bfb9e38b3a12afc39307d3634d9787fbd369c3d813d9880cf17",
+    "logs": [],
+    "blockNumber": 10293444,
+    "cumulativeGasUsed": "2030462",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "944f27d8c9be259369626edd253df334",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AccountAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AccountRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokensAmountPerNative\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minPurchasePrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxPurchasePrice\",\"type\":\"uint256\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnerUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"PresaleStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokensPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokensAmount\",\"type\":\"uint256\"}],\"name\":\"TokensPurchased\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"addAccounts\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"buyTokens\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"finishPresale\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"token_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokensAmountPerNative\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minPurchasePrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxPurchasePrice\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"removeAccounts\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner_\",\"type\":\"address\"}],\"name\":\"setOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"settings\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tokensAmountPerNative\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minPurchasePrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxPurchasePrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"startPresale\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"started\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"summary\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalAccounts\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalTokens\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"syncTotalTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract MetaheroToken\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"whitelist\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"author\":\"Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\",\"events\":{\"AccountAdded(address)\":{\"details\":\"Emitted after account is added to the whitelist\",\"params\":{\"account\":\"account address\"}},\"AccountRemoved(address)\":{\"details\":\"Emitted after account is removed from the whitelist\",\"params\":{\"account\":\"account address\"}},\"Initialized(address,uint256,uint256,uint256)\":{\"details\":\"Emitted the contract is initialized\",\"params\":{\"maxPurchasePrice\":\"max purchase price in native\",\"minPurchasePrice\":\"min purchase price in native\",\"token\":\"token address\",\"tokensAmountPerNative\":\"tokens amount per native\"}},\"PresaleStarted()\":{\"details\":\"Emitted after the presale starts\"},\"TokensPurchased(address,uint256,uint256)\":{\"details\":\"Emitted after purchasing tokens\",\"params\":{\"account\":\"account address\",\"tokensAmount\":\"tokens amount\",\"tokensPrice\":\"tokens price\"}}},\"kind\":\"dev\",\"methods\":{\"addAccounts(address[])\":{\"details\":\"Adds accounts to the whitelist\",\"params\":{\"accounts\":\"array of accounts addresses\"}},\"buyTokens()\":{\"details\":\"Starts the process of buying tokens\"},\"constructor\":{\"details\":\"Public constructor\"},\"finishPresale()\":{\"details\":\"Finishes the presale\"},\"initialize(address,uint256,uint256,uint256)\":{\"details\":\"Initializes the contract\",\"params\":{\"maxPurchasePrice\":\"max purchase price\",\"minPurchasePrice\":\"min purchase price\",\"token_\":\"token address\",\"tokensAmountPerNative\":\"tokens amount per native\"}},\"initialized()\":{\"returns\":{\"_0\":\"true when contract is initialized\"}},\"removeAccounts(address[])\":{\"details\":\"Removes accounts from the whitelist\",\"params\":{\"accounts\":\"array of accounts addresses\"}},\"setOwner(address)\":{\"params\":{\"owner_\":\"owner address\"}},\"startPresale()\":{\"details\":\"Starts the presale\"},\"syncTotalTokens()\":{\"details\":\"Syncs total tokens\"}},\"stateVariables\":{\"settings\":{\"return\":\"settings object\"},\"started\":{\"return\":\"true when presale started\"},\"summary\":{\"return\":\"summary object\"},\"token\":{\"return\":\"token address\"},\"whitelist\":{\"return\":\"map with whitelisted accounts\"}},\"title\":\"Metahero presale\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"initialized()\":{\"notice\":\"Checks if contract is initialized\"},\"setOwner(address)\":{\"notice\":\"Sets a new owner\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/MetaheroPresale.sol\":\"MetaheroPresale\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"src/IMetaheroDAO.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Metahero DAO interface\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ninterface IMetaheroDAO {\\n  // external functions\\n\\n  /**\\n   * @notice Called by a token to sync a dao member\\n   * @param member member address\\n   * @param memberWeight member weight\\n   * @param totalWeight all members weight\\n   */\\n  function syncMember(\\n    address member,\\n    uint256 memberWeight,\\n    uint256 totalWeight\\n  )\\n    external;\\n\\n  /**\\n   * @notice Called by a token to sync a dao members\\n   * @param memberA member A address\\n   * @param memberAWeight member A weight\\n   * @param memberB member B address\\n   * @param memberBWeight member B weight\\n   * @param totalWeight all members weight\\n   */\\n  function syncMembers(\\n    address memberA,\\n    uint256 memberAWeight,\\n    address memberB,\\n    uint256 memberBWeight,\\n    uint256 totalWeight\\n  )\\n    external;\\n}\\n\",\"keccak256\":\"0xaa68c9443d03578bfe95ea1c70344c80fb414c9878b72b66541d63cb7cea26a2\",\"license\":\"MIT\"},\"src/MetaheroLPM.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\nimport \\\"./core/access/Lockable.sol\\\";\\nimport \\\"./core/access/Owned.sol\\\";\\nimport \\\"./core/lifecycle/Initializable.sol\\\";\\nimport \\\"./core/math/SafeMathLib.sol\\\";\\nimport \\\"./MetaheroToken.sol\\\";\\n\\n\\n/**\\n * @title Metahero abstract liquidity pool manager\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\nabstract contract MetaheroLPM is Lockable, Owned, Initializable {\\n  using SafeMathLib for uint256;\\n\\n  /**\\n   * @return token address\\n   */\\n  MetaheroToken public token;\\n\\n  // modifiers\\n\\n  /**\\n   * @dev Throws if msg.sender is not the token\\n   */\\n  modifier onlyToken() {\\n    require(\\n      msg.sender == address(token),\\n      \\\"MetaheroLPM#1\\\" // msg.sender is not the token\\n    );\\n\\n    _;\\n  }\\n\\n  // events\\n\\n  /**\\n   * @dev Emitted when tokens from the liquidity pool are burned\\n   * @param amount burnt amount\\n   */\\n  event LPBurnt(\\n    uint256 amount\\n  );\\n\\n  /**\\n   * @dev Internal constructor\\n   */\\n  constructor ()\\n    internal\\n    Lockable()\\n    Owned()\\n    Initializable()\\n  {\\n    //\\n  }\\n\\n  // external functions\\n\\n  /**\\n   * @notice Syncs liquidity pool\\n   */\\n  function syncLP()\\n    external\\n    onlyToken\\n    lock\\n  {\\n    _syncLP();\\n  }\\n\\n  /**\\n   * @notice Burns tokens from the liquidity pool\\n   * @param amount tokens amount\\n   */\\n  function burnLP(\\n    uint256 amount\\n  )\\n    external\\n    onlyOwner\\n    lockOrThrowError\\n  {\\n    require(\\n      amount != 0,\\n      \\\"MetaheroLPM#2\\\" // amount is zero\\n    );\\n\\n    _burnLP(amount);\\n\\n    emit LPBurnt(\\n      amount\\n    );\\n  }\\n\\n  // external functions (views)\\n\\n  function canSyncLP(\\n    address sender,\\n    address recipient\\n  )\\n    external\\n    view\\n    virtual\\n    returns (\\n      bool shouldSyncLPBefore,\\n      bool shouldSyncLPAfter\\n    );\\n\\n  // internal functions\\n\\n  function _initialize(\\n    address token_\\n  )\\n    internal\\n  {\\n    require(\\n      token_ != address(0),\\n      \\\"MetaheroLPM#3\\\" // token is the zero address\\n    );\\n\\n    token = MetaheroToken(token_);\\n  }\\n\\n  function _syncLP()\\n    internal\\n    virtual;\\n\\n  function _burnLP(\\n    uint256 amount\\n  )\\n    internal\\n    virtual;\\n}\\n\",\"keccak256\":\"0x471162c079f9176e3ab754e90964ac14bac1764edc9af77b3fa740b8b9744c40\",\"license\":\"MIT\"},\"src/MetaheroPresale.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\nimport \\\"./core/access/Owned.sol\\\";\\nimport \\\"./core/lifecycle/Initializable.sol\\\";\\nimport \\\"./core/math/SafeMathLib.sol\\\";\\nimport \\\"./MetaheroToken.sol\\\";\\n\\n\\n/**\\n * @title Metahero presale\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract MetaheroPresale is Owned, Initializable {\\n  using SafeMathLib for uint256;\\n\\n  struct Settings {\\n    uint256 tokensAmountPerNative;\\n    uint256 minPurchasePrice; // min purchase price per whitelisted account\\n    uint256 maxPurchasePrice; // max purchase price per whitelisted account\\n  }\\n\\n  struct Summary {\\n    uint256 totalAccounts; // total accounts in presale\\n    uint256 totalTokens; // total tokens in presale\\n  }\\n\\n  /**\\n   * @return token address\\n   */\\n  MetaheroToken public token;\\n\\n  /**\\n   * @return settings object\\n   */\\n  Settings public settings;\\n\\n  /**\\n   * @return summary object\\n   */\\n  Summary public summary;\\n\\n  /**\\n   * @return true when presale started\\n   */\\n  bool public started;\\n\\n  /**\\n   * @return map with whitelisted accounts\\n   */\\n  mapping (address => bool) public whitelist;\\n\\n  // events\\n\\n  /**\\n   * @dev Emitted the contract is initialized\\n   * @param token token address\\n   * @param tokensAmountPerNative tokens amount per native\\n   * @param minPurchasePrice min purchase price in native\\n   * @param maxPurchasePrice max purchase price in native\\n   */\\n  event Initialized(\\n    address token,\\n    uint256 tokensAmountPerNative,\\n    uint256 minPurchasePrice,\\n    uint256 maxPurchasePrice\\n  );\\n\\n  /**\\n   * @dev Emitted after the presale starts\\n   */\\n  event PresaleStarted();\\n\\n  /**\\n   * @dev Emitted after purchasing tokens\\n   * @param account account address\\n   * @param tokensPrice tokens price\\n   * @param tokensAmount tokens amount\\n   */\\n  event TokensPurchased(\\n    address indexed account,\\n    uint256 tokensPrice,\\n    uint256 tokensAmount\\n  );\\n\\n  /**\\n   * @dev Emitted after account is added to the whitelist\\n   * @param account account address\\n   */\\n  event AccountAdded(\\n    address indexed account\\n  );\\n\\n  /**\\n   * @dev Emitted after account is removed from the whitelist\\n   * @param account account address\\n   */\\n  event AccountRemoved(\\n    address indexed account\\n  );\\n\\n  /**\\n   * @dev Public constructor\\n   */\\n  constructor ()\\n    public\\n    Owned()\\n    Initializable()\\n  {\\n    //\\n  }\\n\\n  // external functions\\n\\n  /**\\n   * @dev Alias for buyTokens\\n   */\\n  receive()\\n    external\\n    payable\\n  {\\n    _buyTokens(\\n      msg.sender,\\n      msg.value\\n    );\\n  }\\n\\n  /**\\n   * @dev Starts the process of buying tokens\\n   */\\n  function buyTokens()\\n    external\\n    payable\\n  {\\n    _buyTokens(\\n      msg.sender,\\n      msg.value\\n    );\\n  }\\n\\n  /**\\n   * @dev Initializes the contract\\n   * @param token_ token address\\n   * @param tokensAmountPerNative tokens amount per native\\n   * @param minPurchasePrice min purchase price\\n   * @param maxPurchasePrice max purchase price\\n   */\\n  function initialize(\\n    address payable token_,\\n    uint256 tokensAmountPerNative,\\n    uint256 minPurchasePrice,\\n    uint256 maxPurchasePrice\\n  )\\n    external\\n    onlyInitializer\\n  {\\n    require(\\n      token_ != address(0),\\n      \\\"MetaheroPresale#7\\\" // token is the zero address\\n    );\\n\\n    require(\\n      tokensAmountPerNative != 0,\\n      \\\"MetaheroPresale#8\\\" // tokens amount per native is zero\\n    );\\n\\n    require(\\n      minPurchasePrice <= maxPurchasePrice,\\n      \\\"MetaheroPresale#9\\\" // max purchase price is lower than min\\n    );\\n\\n    require(\\n      maxPurchasePrice != 0,\\n      \\\"MetaheroPresale#10\\\" // max purchase price is zero\\n    );\\n\\n    token = MetaheroToken(token_);\\n\\n    settings.tokensAmountPerNative = tokensAmountPerNative;\\n    settings.minPurchasePrice = minPurchasePrice;\\n    settings.maxPurchasePrice = maxPurchasePrice;\\n\\n    // sync balance\\n    summary.totalTokens = token.balanceOf(address(this));\\n\\n    emit Initialized(\\n      token_,\\n      tokensAmountPerNative,\\n      minPurchasePrice,\\n      maxPurchasePrice\\n    );\\n  }\\n\\n  /**\\n   * @dev Starts the presale\\n   */\\n  function startPresale()\\n    external\\n    onlyOwner\\n  {\\n    require(\\n      !started,\\n      \\\"MetaheroPresale#11\\\" // presale already started\\n    );\\n\\n    started = true;\\n\\n    emit PresaleStarted();\\n  }\\n\\n  /**\\n   * @dev Syncs total tokens\\n   */\\n  function syncTotalTokens()\\n    external\\n  {\\n    summary.totalTokens = token.balanceOf(address(this));\\n  }\\n\\n  /**\\n   * @dev Adds accounts to the whitelist\\n   * @param accounts array of accounts addresses\\n   */\\n  function addAccounts(\\n    address[] calldata accounts\\n  )\\n    external\\n    onlyOwner\\n  {\\n    _addAccounts(accounts);\\n  }\\n\\n  /**\\n   * @dev Removes accounts from the whitelist\\n   * @param accounts array of accounts addresses\\n   */\\n  function removeAccounts(\\n    address[] calldata accounts\\n  )\\n    external\\n    onlyOwner\\n  {\\n    uint256 totalRemoved;\\n    uint256 accountsLen = accounts.length;\\n\\n    for (uint256 index ; index < accountsLen ; index++) {\\n      require(\\n        accounts[index] != address(0),\\n        \\\"MetaheroPresale#12\\\" // account is the zero address\\n      );\\n\\n      if (whitelist[accounts[index]]) {\\n        whitelist[accounts[index]] = false;\\n\\n        totalRemoved = totalRemoved.add(1);\\n\\n        emit AccountRemoved(\\n          accounts[index]\\n        );\\n      }\\n    }\\n\\n    require(\\n      totalRemoved != 0,\\n      \\\"MetaheroPresale#13\\\" // no accounts to remove\\n    );\\n\\n    summary.totalAccounts = summary.totalAccounts.sub(totalRemoved);\\n  }\\n\\n  /**\\n   * @dev Finishes the presale\\n   */\\n  function finishPresale()\\n    external\\n    onlyOwner\\n  {\\n    uint256 totalTokens = token.balanceOf(address(this));\\n\\n    if (totalTokens != 0) {\\n      // burn all pending presale tokens\\n      token.burn(\\n        totalTokens\\n      );\\n    }\\n\\n    selfdestruct(msg.sender); // destroy and transfer all native to the sender\\n  }\\n\\n  // private functions\\n\\n  function _addAccounts(\\n    address[] memory accounts\\n  )\\n    private\\n  {\\n    uint256 totalAdded;\\n    uint256 accountsLen = accounts.length;\\n\\n    for (uint256 index ; index < accountsLen ; index++) {\\n      require(\\n        accounts[index] != address(0),\\n        \\\"MetaheroPresale#14\\\" // account is the zero address\\n      );\\n\\n      if (!whitelist[accounts[index]]) {\\n        whitelist[accounts[index]] = true;\\n\\n        totalAdded = totalAdded.add(1);\\n\\n        emit AccountAdded(\\n          accounts[index]\\n        );\\n      }\\n    }\\n\\n    require(\\n      totalAdded != 0,\\n      \\\"MetaheroPresale#15\\\" // not accounts to add\\n    );\\n\\n    summary.totalAccounts = summary.totalAccounts.add(totalAdded);\\n  }\\n\\n  function _buyTokens(\\n    address sender,\\n    uint256 tokensPrice\\n  )\\n    private\\n  {\\n    require(\\n      started,\\n      \\\"MetaheroPresale#1\\\" // the presale has not started\\n    );\\n\\n    require(\\n      whitelist[sender],\\n      \\\"MetaheroPresale#2\\\" // sender not on the whitelist\\n    );\\n\\n    require(\\n      tokensPrice != 0,\\n      \\\"MetaheroPresale#3\\\" // token prize is zero\\n    );\\n\\n    require(\\n      tokensPrice >= settings.minPurchasePrice,\\n      \\\"MetaheroPresale#4\\\" // token prize is too low\\n    );\\n\\n    require(\\n      tokensPrice <= settings.maxPurchasePrice,\\n      \\\"MetaheroPresale#5\\\" // token prize is too high\\n    );\\n\\n    uint256 tokensAmount = tokensPrice.mul(settings.tokensAmountPerNative);\\n\\n    require(\\n      tokensAmount <= summary.totalTokens,\\n      \\\"MetaheroPresale#6\\\" // not enough tokens in presale\\n    );\\n\\n    // remove sender from the whitelist\\n    whitelist[sender] = false;\\n\\n    // update summary\\n    summary.totalAccounts = summary.totalAccounts.sub(1);\\n    summary.totalTokens = summary.totalTokens.sub(tokensAmount);\\n\\n    token.transfer(\\n      sender,\\n      tokensAmount\\n    );\\n\\n    emit TokensPurchased(\\n      sender,\\n      tokensPrice,\\n      tokensAmount\\n    );\\n  }\\n}\\n\",\"keccak256\":\"0xaa63a8f4edcac3db4c64afde46855c1c249c0df46496599d56bfee74f90a95cc\",\"license\":\"MIT\"},\"src/MetaheroToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\npragma experimental ABIEncoderV2;\\n\\nimport \\\"./core/access/Controlled.sol\\\";\\nimport \\\"./core/access/Owned.sol\\\";\\nimport \\\"./core/erc20/ERC20.sol\\\";\\nimport \\\"./core/lifecycle/Initializable.sol\\\";\\nimport \\\"./core/math/MathLib.sol\\\";\\nimport \\\"./core/math/SafeMathLib.sol\\\";\\nimport \\\"./IMetaheroDAO.sol\\\";\\nimport \\\"./MetaheroLPM.sol\\\";\\n\\n\\n/**\\n * @title Metahero token\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract MetaheroToken is Controlled, Owned, ERC20, Initializable {\\n  using MathLib for uint256;\\n  using SafeMathLib for uint256;\\n\\n  struct Fees {\\n    uint256 sender; // percent from sender\\n    uint256 recipient; // percent from recipient\\n  }\\n\\n  struct Settings {\\n    Fees burnFees; // fee taken and burned\\n    Fees lpFees; // fee taken and added to the liquidity pool manager\\n    Fees rewardsFees; // fee taken and added to rewards\\n    uint256 minTotalSupply; // min amount of tokens total supply\\n  }\\n\\n  struct Summary {\\n    uint256 totalExcluded; // total held by excluded accounts\\n    uint256 totalHolding; // total held by holder accounts\\n    uint256 totalRewards; // total rewards\\n    uint256 totalSupply; // total supply\\n  }\\n\\n  struct ExcludedAccount {\\n    bool exists; // true if exists\\n    bool excludeSenderFromFee; // removes the fee from all sender accounts on incoming transfers\\n    bool excludeRecipientFromFee; // removes the fee from all recipient accounts on outgoing transfers\\n  }\\n\\n  // globals\\n\\n  uint256 private constant MAX_FEE = 30; // max sum of all fees - 30%\\n\\n  // metadata\\n\\n  string private constant TOKEN_NAME = \\\"Metahero\\\";\\n  string private constant TOKEN_SYMBOL = \\\"HERO\\\";\\n  uint8 private constant TOKEN_DECIMALS = 18; // 0.000000000000000000\\n\\n  /**\\n   * @return dao address\\n   */\\n  IMetaheroDAO public dao;\\n\\n  /**\\n   * @return liquidity pool manager address\\n   */\\n  MetaheroLPM public lpm;\\n\\n  /**\\n   * @return settings object\\n   */\\n  Settings public settings;\\n\\n  /**\\n   * @return summary object\\n   */\\n  Summary public summary;\\n\\n  /**\\n   * @return return true when presale is finished\\n   */\\n  bool public presaleFinished;\\n\\n  mapping (address => uint256) private accountBalances;\\n  mapping (address => mapping (address => uint256)) private accountAllowances;\\n  mapping (address => ExcludedAccount) private excludedAccounts;\\n\\n  // events\\n\\n  /**\\n   * @dev Emitted when the contract is initialized\\n   * @param burnFees burn fees\\n   * @param lpFees liquidity pool fees\\n   * @param rewardsFees rewards fees\\n   * @param minTotalSupply min total supply\\n   * @param lpm liquidity pool manager address\\n   * @param controller controller address\\n   */\\n  event Initialized(\\n    Fees burnFees,\\n    Fees lpFees,\\n    Fees rewardsFees,\\n    uint256 minTotalSupply,\\n    address lpm,\\n    address controller\\n  );\\n\\n  /**\\n   * @dev Emitted when the dao is updated\\n   * @param dao dao address\\n   */\\n  event DAOUpdated(\\n    address dao\\n  );\\n\\n  /**\\n   * @dev Emitted when fees are updated\\n   * @param burnFees burn fees\\n   * @param lpFees liquidity pool fees\\n   * @param rewardsFees rewards fees\\n   */\\n  event FeesUpdated(\\n    Fees burnFees,\\n    Fees lpFees,\\n    Fees rewardsFees\\n  );\\n\\n  /**\\n   * @dev Emitted when the presale is finished\\n   */\\n  event PresaleFinished();\\n\\n  /**\\n   * @dev Emitted when account is excluded\\n   * @param account account address\\n   * @param excludeSenderFromFee exclude sender from fee\\n   * @param excludeRecipientFromFee exclude recipient from fee\\n   */\\n  event AccountExcluded(\\n    address indexed account,\\n    bool excludeSenderFromFee,\\n    bool excludeRecipientFromFee\\n  );\\n\\n  /**\\n   * @dev Emitted when total rewards amount is updated\\n   * @param totalRewards total rewards amount\\n   */\\n  event TotalRewardsUpdated(\\n    uint256 totalRewards\\n  );\\n\\n  // modifiers\\n\\n  /**\\n   * @dev Throws if msg.sender is not the dao\\n   */\\n  modifier onlyDAO() {\\n    require(\\n      msg.sender == address(dao),\\n      \\\"MetaheroToken#1\\\" // msg.sender is not the dao\\n    );\\n\\n    _;\\n  }\\n\\n  /**\\n   * @dev Throws if msg.sender is not the excluded account\\n   */\\n  modifier onlyExcludedAccount() {\\n    require(\\n      excludedAccounts[msg.sender].exists,\\n      \\\"MetaheroToken#2\\\" // msg.sender is not the excluded account\\n    );\\n\\n    _;\\n  }\\n\\n  /**\\n   * @dev Public constructor\\n   */\\n  constructor ()\\n    public\\n    Controlled()\\n    Owned()\\n    ERC20(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS) // sets metadata\\n    Initializable()\\n  {\\n    //\\n  }\\n\\n  // external functions\\n\\n  /**\\n   * @dev Initializes the contract\\n   * @param burnFees burn fees\\n   * @param lpFees liquidity pool fees\\n   * @param rewardsFees rewards fees\\n   * @param minTotalSupply min total supply\\n   * @param lpm_ liquidity pool manager address\\n   * @param controller_ controller address\\n   * @param totalSupply_ total supply\\n   */\\n  function initialize(\\n    Fees memory burnFees,\\n    Fees memory lpFees,\\n    Fees memory rewardsFees,\\n    uint256 minTotalSupply,\\n    address payable lpm_,\\n    address controller_,\\n    uint256 totalSupply_,\\n    address[] calldata excludedAccounts_\\n  )\\n    external\\n    onlyInitializer\\n  {\\n    _verifyFees(burnFees, lpFees, rewardsFees);\\n\\n    settings.burnFees = burnFees;\\n    settings.lpFees = lpFees;\\n    settings.rewardsFees = rewardsFees;\\n    settings.minTotalSupply = minTotalSupply;\\n\\n    if (\\n      lpFees.sender != 0 ||\\n      lpFees.recipient != 0\\n    ) {\\n      require(\\n        lpm_ != address(0),\\n        \\\"MetaheroToken#3\\\" // lpm is the zero address\\n      );\\n\\n      lpm = MetaheroLPM(lpm_);\\n    }\\n\\n    _initializeController(controller_);\\n\\n    emit Initialized(\\n      burnFees,\\n      lpFees,\\n      rewardsFees,\\n      minTotalSupply,\\n      lpm_,\\n      controller_\\n    );\\n\\n    // excludes owner account\\n    _excludeAccount(msg.sender, true, true);\\n\\n    if (totalSupply_ != 0) {\\n      _mint(\\n        msg.sender,\\n        totalSupply_\\n      );\\n    }\\n\\n    // adds predefined excluded accounts\\n    uint256 excludedAccountsLen = excludedAccounts_.length;\\n\\n    for (uint256 index; index < excludedAccountsLen; index++) {\\n      _excludeAccount(excludedAccounts_[index], false, false);\\n    }\\n  }\\n\\n  /**\\n   * @dev Sets the dao\\n   * @param dao_ dao address\\n   */\\n  function setDAO(\\n    address dao_\\n  )\\n    external\\n    onlyOwner\\n  {\\n    require(\\n      dao_ != address(0),\\n      \\\"MetaheroToken#4\\\" // lpm is the zero address\\n    );\\n\\n    dao = IMetaheroDAO(dao_);\\n\\n    emit DAOUpdated(\\n      dao_\\n    );\\n\\n    // makes a dao an owner\\n    _setOwner(dao_);\\n  }\\n\\n  /**\\n   * @dev Updates fees\\n   * @param burnFees burn fees\\n   * @param lpFees liquidity pool fees\\n   * @param rewardsFees rewards fees\\n   */\\n  function updateFees(\\n    Fees memory burnFees,\\n    Fees memory lpFees,\\n    Fees memory rewardsFees\\n  )\\n    external\\n    onlyDAO // only for dao\\n  {\\n    _verifyFees(burnFees, lpFees, rewardsFees);\\n\\n    settings.burnFees = burnFees;\\n    settings.lpFees = lpFees;\\n    settings.rewardsFees = rewardsFees;\\n\\n    emit FeesUpdated(\\n      burnFees,\\n      lpFees,\\n      rewardsFees\\n    );\\n  }\\n\\n  /**\\n   * @dev Set the presale as finished\\n   */\\n  function setPresaleAsFinished()\\n    external\\n    onlyOwner\\n  {\\n    require(\\n      !presaleFinished,\\n      \\\"MetaheroToken#5\\\" // the presale is already finished\\n    );\\n\\n    presaleFinished = true;\\n\\n    emit PresaleFinished();\\n  }\\n\\n  /**\\n   * @dev Excludes account\\n   * @param account account address\\n   * @param excludeSenderFromFee exclude sender from fee\\n   * @param excludeRecipientFromFee exclude recipient from fee\\n   */\\n  function excludeAccount(\\n    address account,\\n    bool excludeSenderFromFee,\\n    bool excludeRecipientFromFee\\n  )\\n    external\\n    onlyOwner\\n  {\\n    _excludeAccount(\\n      account,\\n      excludeSenderFromFee,\\n      excludeRecipientFromFee\\n    );\\n  }\\n\\n  /**\\n   * @dev Approve spending limit\\n   * @param spender spender address\\n   * @param amount spending limit\\n   */\\n  function approve(\\n    address spender,\\n    uint256 amount\\n  )\\n    external\\n    override\\n    returns (bool)\\n  {\\n    _approve(\\n      msg.sender,\\n      spender,\\n      amount\\n    );\\n\\n    return true;\\n  }\\n\\n  /**\\n   * @dev Mints tokens to recipient\\n   * @param recipient recipient address\\n   * @param amount tokens amount\\n   */\\n  function mintTo(\\n    address recipient,\\n    uint256 amount\\n  )\\n    external\\n    onlyController\\n  {\\n    _mint(\\n      recipient,\\n      amount\\n    );\\n  }\\n\\n  /**\\n   * @dev Burns tokens from msg.sender\\n   * @param amount tokens amount\\n   */\\n  function burn(\\n    uint256 amount\\n  )\\n    external\\n    onlyExcludedAccount\\n  {\\n    _burn(\\n      msg.sender,\\n      amount\\n    );\\n  }\\n\\n  /**\\n   * @dev Burns tokens from sender\\n   * @param sender sender address\\n   * @param amount tokens amount\\n   */\\n  function burnFrom(\\n    address sender,\\n    uint256 amount\\n  )\\n    external\\n    onlyController\\n  {\\n    _burn(\\n      sender,\\n      amount\\n    );\\n  }\\n\\n  /**\\n   * @dev Transfers tokens to recipient\\n   * @param recipient recipient address\\n   * @param amount tokens amount\\n   */\\n  function transfer(\\n    address recipient,\\n    uint256 amount\\n  )\\n    external\\n    override\\n    returns (bool)\\n  {\\n    _transfer(\\n      msg.sender,\\n      recipient,\\n      amount\\n    );\\n\\n    return true;\\n  }\\n\\n  /**\\n   * @dev Transfers tokens from sender to recipient\\n   * @param sender sender address\\n   * @param recipient recipient address\\n   * @param amount tokens amount\\n   */\\n  function transferFrom(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    external\\n    override\\n    returns (bool)\\n  {\\n    _transfer(\\n      sender,\\n      recipient,\\n      amount\\n    );\\n\\n    uint256 allowance = accountAllowances[sender][msg.sender];\\n\\n    require(\\n      allowance >= amount,\\n      \\\"MetaheroToken#6\\\"  // amount exceeds allowance\\n    );\\n\\n    _approve( // update allowance\\n      sender,\\n      msg.sender,\\n      allowance.sub(amount)\\n    );\\n\\n    return true;\\n  }\\n\\n  // external functions (views)\\n\\n  /**\\n   * @dev Gets excluded account\\n   * @param account account address\\n   */\\n  function getExcludedAccount(\\n    address account\\n  )\\n    external\\n    view\\n    returns (\\n      bool exists,\\n      bool excludeSenderFromFee,\\n      bool excludeRecipientFromFee\\n    )\\n  {\\n    return (\\n      excludedAccounts[account].exists,\\n      excludedAccounts[account].excludeSenderFromFee,\\n      excludedAccounts[account].excludeRecipientFromFee\\n    );\\n  }\\n\\n  /**\\n   * @dev Gets total supply\\n   * @return total supply\\n   */\\n  function totalSupply()\\n    external\\n    view\\n    override\\n    returns (uint256)\\n  {\\n    return summary.totalSupply;\\n  }\\n\\n  /**\\n   * @dev Gets allowance\\n   * @param owner owner address\\n   * @param spender spender address\\n   * @return allowance\\n   */\\n  function allowance(\\n    address owner,\\n    address spender\\n  )\\n    external\\n    view\\n    override\\n    returns (uint256)\\n  {\\n    return accountAllowances[owner][spender];\\n  }\\n\\n  /**\\n   * @dev Gets balance of\\n   * @param account account address\\n   * @return result account balance\\n   */\\n  function balanceOf(\\n    address account\\n  )\\n    external\\n    view\\n    override\\n    returns (uint256 result)\\n  {\\n    result = accountBalances[account].add(\\n      _calcRewards(account)\\n    );\\n\\n    return result;\\n  }\\n\\n  /**\\n   * @dev Gets balance summary\\n   * @param account account address\\n   */\\n  function getBalanceSummary(\\n    address account\\n  )\\n    external\\n    view\\n    returns (\\n      uint256 totalBalance,\\n      uint256 holdingBalance,\\n      uint256 totalRewards\\n    )\\n  {\\n    holdingBalance = accountBalances[account];\\n    totalRewards = _calcRewards(account);\\n    totalBalance = holdingBalance.add(totalRewards);\\n\\n    return (totalBalance, holdingBalance, totalRewards);\\n  }\\n\\n  // private functions\\n\\n  function _excludeAccount(\\n    address account,\\n    bool excludeSenderFromFee,\\n    bool excludeRecipientFromFee\\n  )\\n    private\\n  {\\n    require(\\n      account != address(0),\\n      \\\"MetaheroToken#7\\\" // account is the zero address\\n    );\\n\\n    // if already excluded\\n    if (excludedAccounts[account].exists) {\\n      require(\\n        excludedAccounts[account].excludeSenderFromFee != excludeSenderFromFee ||\\n        excludedAccounts[account].excludeRecipientFromFee != excludeRecipientFromFee,\\n        \\\"MetaheroToken#8\\\" // does not update exclude account\\n      );\\n\\n      excludedAccounts[account].excludeSenderFromFee = excludeSenderFromFee;\\n      excludedAccounts[account].excludeRecipientFromFee = excludeRecipientFromFee;\\n    } else {\\n      require(\\n        accountBalances[account] == 0,\\n        \\\"MetaheroToken#9\\\" // can not exclude holder account\\n      );\\n\\n      excludedAccounts[account].exists = true;\\n      excludedAccounts[account].excludeSenderFromFee = excludeSenderFromFee;\\n      excludedAccounts[account].excludeRecipientFromFee = excludeRecipientFromFee;\\n    }\\n\\n    emit AccountExcluded(\\n      account,\\n      excludeSenderFromFee,\\n      excludeRecipientFromFee\\n    );\\n  }\\n\\n  function _approve(\\n    address owner,\\n    address spender,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      spender != address(0),\\n      \\\"MetaheroToken#11\\\" // spender is the zero address\\n    );\\n\\n    accountAllowances[owner][spender] = amount;\\n\\n    emit Approval(\\n      owner,\\n      spender,\\n      amount\\n    );\\n  }\\n\\n  function _mint(\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      recipient != address(0),\\n      \\\"MetaheroToken#12\\\" // recipient is the zero address\\n    );\\n\\n    require(\\n      amount != 0,\\n      \\\"MetaheroToken#13\\\" // amount is zero\\n    );\\n\\n    summary.totalSupply = summary.totalSupply.add(amount);\\n\\n    // if exclude account\\n    if (excludedAccounts[recipient].exists) {\\n      summary.totalExcluded = summary.totalExcluded.add(amount);\\n\\n      accountBalances[recipient] = accountBalances[recipient].add(amount);\\n    } else {\\n      _updateHoldingBalance(\\n        recipient,\\n        accountBalances[recipient].add(amount),\\n        summary.totalHolding.add(amount)\\n      );\\n    }\\n\\n    _emitTransfer(\\n      address(0),\\n      recipient,\\n      amount\\n    );\\n  }\\n\\n  function _burn(\\n    address sender,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      sender != address(0),\\n      \\\"MetaheroToken#14\\\" // sender is the zero address\\n    );\\n\\n    require(\\n      amount != 0,\\n      \\\"MetaheroToken#15\\\" // amount is zero\\n    );\\n\\n    require(\\n      accountBalances[sender] >= amount,\\n      \\\"MetaheroToken#16\\\" // amount exceeds sender balance\\n    );\\n\\n    uint256 totalSupply_ = summary.totalSupply.sub(amount);\\n\\n    if (settings.minTotalSupply != 0) {\\n      require(\\n        totalSupply_ >= settings.minTotalSupply,\\n        \\\"MetaheroToken#17\\\" // new total supply exceeds min total supply\\n      );\\n    }\\n\\n    summary.totalSupply = totalSupply_;\\n\\n    // if exclude account\\n    if (excludedAccounts[sender].exists) {\\n      summary.totalExcluded = summary.totalExcluded.sub(amount);\\n\\n      accountBalances[sender] = accountBalances[sender].sub(amount);\\n    } else {\\n      _updateHoldingBalance(\\n        sender,\\n        accountBalances[sender].sub(amount),\\n        summary.totalHolding.sub(amount)\\n      );\\n    }\\n\\n    _emitTransfer(\\n      sender,\\n      address(0),\\n      amount\\n    );\\n  }\\n\\n  function _transfer(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      sender != address(0),\\n      \\\"MetaheroToken#18\\\" // sender is the zero address\\n    );\\n\\n    require(\\n      recipient != address(0),\\n      \\\"MetaheroToken#19\\\" // recipient is the zero address\\n    );\\n\\n    if (sender == recipient) { // special transfer type\\n      _syncLP(); // sync only LP\\n\\n      _emitTransfer(\\n        sender,\\n        recipient,\\n        0\\n      );\\n    } else {\\n      require(\\n        excludedAccounts[sender].exists ||\\n        presaleFinished,\\n        \\\"MetaheroToken#20\\\" // presale not finished yet\\n      );\\n\\n      require(\\n        amount != 0,\\n        \\\"MetaheroToken#21\\\" // amount is zero\\n      );\\n\\n      if (\\n        !excludedAccounts[sender].exists &&\\n        !excludedAccounts[recipient].exists\\n      ) {\\n        _transferBetweenHolderAccounts(\\n          sender,\\n          recipient,\\n          amount\\n        );\\n      } else if (\\n        excludedAccounts[sender].exists &&\\n        !excludedAccounts[recipient].exists\\n      ) {\\n        _transferFromExcludedAccount(\\n          sender,\\n          recipient,\\n          amount\\n        );\\n      } else if (\\n        !excludedAccounts[sender].exists &&\\n        excludedAccounts[recipient].exists\\n      ) {\\n        _transferToExcludedAccount(\\n          sender,\\n          recipient,\\n          amount\\n        );\\n      } else {\\n        _transferBetweenExcludedAccounts(\\n          sender,\\n          recipient,\\n          amount\\n        );\\n      }\\n    }\\n  }\\n\\n  function _transferBetweenHolderAccounts(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    uint256 senderAmount;\\n    uint256 senderBurnFee;\\n    uint256 senderLpFee;\\n\\n    uint256 recipientAmount;\\n    uint256 recipientBurnFee;\\n    uint256 recipientLpFee;\\n\\n    uint256 totalFee;\\n\\n    {\\n      uint256 totalSupply_ = summary.totalSupply;\\n\\n      // calc fees for sender and recipient\\n      {\\n        uint256 senderTotalFee;\\n        uint256 recipientTotalFee;\\n\\n        (\\n          senderTotalFee,\\n          senderBurnFee,\\n          senderLpFee\\n        ) = _calcTransferSenderFees(amount);\\n\\n        (\\n          totalSupply_,\\n          senderTotalFee,\\n          senderBurnFee\\n        ) = _matchTotalSupplyWithFees(totalSupply_, senderTotalFee, senderBurnFee);\\n\\n        (\\n          recipientTotalFee,\\n          recipientBurnFee,\\n          recipientLpFee\\n        ) = _calcTransferRecipientFees(amount);\\n\\n        (\\n          totalSupply_,\\n          recipientTotalFee,\\n          recipientBurnFee\\n        ) = _matchTotalSupplyWithFees(totalSupply_, recipientTotalFee, recipientBurnFee);\\n\\n        totalFee = senderTotalFee.add(recipientTotalFee);\\n        senderAmount = amount.add(senderTotalFee);\\n        recipientAmount = amount.sub(recipientTotalFee);\\n      }\\n\\n      // appends total rewards\\n      if (summary.totalRewards != 0) {\\n        uint256 totalHoldingWithRewards = summary.totalHolding.add(\\n          summary.totalRewards\\n        );\\n\\n        senderAmount = senderAmount.mul(summary.totalHolding).div(\\n          totalHoldingWithRewards\\n        );\\n        recipientAmount = recipientAmount.mul(summary.totalHolding).div(\\n          totalHoldingWithRewards\\n        );\\n        totalFee = totalFee.mul(summary.totalHolding).div(\\n          totalHoldingWithRewards\\n        );\\n      }\\n\\n      require(\\n        accountBalances[sender] >= senderAmount,\\n        \\\"MetaheroToken#22\\\" // amount exceeds sender balance\\n      );\\n\\n      summary.totalSupply = totalSupply_;\\n\\n      // reduce local vars\\n      senderAmount = accountBalances[sender].sub(senderAmount);\\n      recipientAmount = accountBalances[recipient].add(recipientAmount);\\n\\n      _updateHoldingBalances(\\n        sender,\\n        senderAmount,\\n        recipient,\\n        recipientAmount,\\n        summary.totalHolding.sub(totalFee)\\n      );\\n\\n      _increaseTotalLP(senderLpFee.add(recipientLpFee));\\n    }\\n\\n    // emits events\\n\\n    {\\n      _emitTransfer(\\n        sender,\\n        recipient,\\n        amount\\n      );\\n\\n      _emitTransfer(\\n        sender,\\n        address(0),\\n        senderBurnFee\\n      );\\n\\n      _emitTransfer(\\n        sender,\\n        address(lpm),\\n        senderLpFee\\n      );\\n\\n      _emitTransfer(\\n        recipient,\\n        address(0),\\n        recipientBurnFee\\n      );\\n\\n      _emitTransfer(\\n        recipient,\\n        address(lpm),\\n        recipientLpFee\\n      );\\n\\n      _updateTotalRewards();\\n\\n      _syncLP();\\n    }\\n  }\\n\\n  function _transferFromExcludedAccount(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      accountBalances[sender] >= amount,\\n      \\\"MetaheroToken#23\\\" // amount exceeds sender balance\\n    );\\n\\n    (\\n      bool shouldSyncLPBefore,\\n      bool shouldSyncLPAfter\\n    ) = _canSyncLP(\\n      sender,\\n      address(0)\\n    );\\n\\n    if (shouldSyncLPBefore) {\\n      lpm.syncLP();\\n    }\\n\\n    uint256 recipientTotalFee;\\n    uint256 recipientBurnFee;\\n    uint256 recipientLPFee;\\n\\n    uint256 totalSupply_ = summary.totalSupply;\\n\\n    // when sender does not remove the fee from the recipient\\n    if (!excludedAccounts[sender].excludeRecipientFromFee) {\\n      (\\n        recipientTotalFee,\\n        recipientBurnFee,\\n        recipientLPFee\\n      ) = _calcTransferRecipientFees(amount);\\n\\n      (\\n        totalSupply_,\\n        recipientTotalFee,\\n        recipientBurnFee\\n      ) = _matchTotalSupplyWithFees(totalSupply_, recipientTotalFee, recipientBurnFee);\\n    }\\n\\n    uint256 recipientAmount = amount.sub(recipientTotalFee);\\n\\n    summary.totalSupply = totalSupply_;\\n    summary.totalExcluded = summary.totalExcluded.sub(amount);\\n\\n    accountBalances[sender] = accountBalances[sender].sub(amount);\\n\\n    _updateHoldingBalance(\\n      recipient,\\n      accountBalances[recipient].add(recipientAmount),\\n      summary.totalHolding.add(recipientAmount)\\n    );\\n\\n    _increaseTotalLP(recipientLPFee);\\n\\n    // emits events\\n\\n    _emitTransfer(\\n      sender,\\n      recipient,\\n      amount\\n    );\\n\\n    _emitTransfer(\\n      recipient,\\n      address(0),\\n      recipientBurnFee\\n    );\\n\\n    _emitTransfer(\\n      recipient,\\n      address(lpm),\\n      recipientLPFee\\n    );\\n\\n    _updateTotalRewards();\\n\\n    if (shouldSyncLPAfter) {\\n      lpm.syncLP();\\n    }\\n  }\\n\\n  function _transferToExcludedAccount(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    (\\n      bool shouldSyncLPBefore,\\n      bool shouldSyncLPAfter\\n    ) = _canSyncLP(\\n      address(0),\\n      recipient\\n    );\\n\\n    if (shouldSyncLPBefore) {\\n      lpm.syncLP();\\n    }\\n\\n    uint256 senderTotalFee;\\n    uint256 senderBurnFee;\\n    uint256 senderLpFee;\\n\\n    uint256 totalSupply_ = summary.totalSupply;\\n\\n    // when recipient does not remove the fee from the sender\\n    if (!excludedAccounts[recipient].excludeSenderFromFee) {\\n      (\\n        senderTotalFee,\\n        senderBurnFee,\\n        senderLpFee\\n      ) = _calcTransferSenderFees(amount);\\n\\n      (\\n        totalSupply_,\\n        senderTotalFee,\\n        senderBurnFee\\n      ) = _matchTotalSupplyWithFees(totalSupply_, senderTotalFee, senderBurnFee);\\n    }\\n\\n    uint256 senderAmount = amount.add(senderTotalFee);\\n\\n    // append total rewards\\n    if (summary.totalRewards != 0) {\\n      uint256 totalHoldingWithRewards = summary.totalHolding.add(\\n        summary.totalRewards\\n      );\\n\\n      senderAmount = senderAmount.mul(summary.totalHolding).div(\\n        totalHoldingWithRewards\\n      );\\n    }\\n\\n    require(\\n      accountBalances[sender] >= senderAmount,\\n      \\\"MetaheroToken#24\\\" // amount exceeds sender balance\\n    );\\n\\n    summary.totalSupply = totalSupply_;\\n    summary.totalExcluded = summary.totalExcluded.add(amount);\\n\\n    accountBalances[recipient] = accountBalances[recipient].add(amount);\\n\\n    _updateHoldingBalance(\\n      sender,\\n      accountBalances[sender].sub(senderAmount),\\n      summary.totalHolding.sub(senderAmount)\\n    );\\n\\n    _increaseTotalLP(senderLpFee);\\n\\n    // emits events\\n\\n    _emitTransfer(\\n      sender,\\n      recipient,\\n      amount\\n    );\\n\\n    _emitTransfer(\\n      sender,\\n      address(0),\\n      senderBurnFee\\n    );\\n\\n    _emitTransfer(\\n      sender,\\n      address(lpm),\\n      senderLpFee\\n    );\\n\\n    _updateTotalRewards();\\n\\n    if (shouldSyncLPAfter) {\\n      lpm.syncLP();\\n    }\\n  }\\n\\n  function _transferBetweenExcludedAccounts(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    require(\\n      accountBalances[sender] >= amount,\\n      \\\"MetaheroToken#25\\\" // amount exceeds sender balance\\n    );\\n\\n    (\\n      bool shouldSyncLPBefore,\\n      bool shouldSyncLPAfter\\n    ) = _canSyncLP(\\n      address(0),\\n      recipient\\n    );\\n\\n    if (shouldSyncLPBefore) {\\n      lpm.syncLP();\\n    }\\n\\n    accountBalances[sender] = accountBalances[sender].sub(amount);\\n    accountBalances[recipient] = accountBalances[recipient].add(amount);\\n\\n    _emitTransfer(\\n      sender,\\n      recipient,\\n      amount\\n    );\\n\\n    if (shouldSyncLPAfter) {\\n      lpm.syncLP();\\n    }\\n  }\\n\\n  function _updateHoldingBalance(\\n    address holder,\\n    uint256 holderBalance,\\n    uint256 totalHolding\\n  )\\n    private\\n  {\\n    accountBalances[holder] = holderBalance;\\n    summary.totalHolding = totalHolding;\\n\\n    if (address(dao) != address(0)) { // if dao is not the zero address\\n      dao.syncMember(\\n        holder,\\n        holderBalance,\\n        totalHolding\\n      );\\n    }\\n  }\\n\\n  function _updateHoldingBalances(\\n    address holderA,\\n    uint256 holderABalance,\\n    address holderB,\\n    uint256 holderBBalance,\\n    uint256 totalHolding\\n  )\\n    private\\n  {\\n    accountBalances[holderA] = holderABalance;\\n    accountBalances[holderB] = holderBBalance;\\n    summary.totalHolding = totalHolding;\\n\\n    if (address(dao) != address(0)) { // if dao is not the zero address\\n      dao.syncMembers(\\n        holderA,\\n        holderABalance,\\n        holderB,\\n        holderBBalance,\\n        totalHolding\\n      );\\n    }\\n  }\\n\\n  function _emitTransfer(\\n    address sender,\\n    address recipient,\\n    uint256 amount\\n  )\\n    private\\n  {\\n    if (amount != 0) { // when amount is not zero\\n      emit Transfer(\\n        sender,\\n        recipient,\\n        amount\\n      );\\n    }\\n  }\\n\\n  function _increaseTotalLP(\\n    uint256 amount\\n  )\\n    private\\n  {\\n    if (amount != 0) { // when amount is not zero\\n      accountBalances[address(lpm)] = accountBalances[address(lpm)].add(amount);\\n\\n      summary.totalExcluded = summary.totalExcluded.add(amount);\\n    }\\n  }\\n\\n  function _syncLP()\\n    private\\n  {\\n    if (address(lpm) != address(0)) { // if lpm is not the zero address\\n      lpm.syncLP();\\n    }\\n  }\\n\\n  function _updateTotalRewards()\\n    private\\n  {\\n    // totalRewards = totalSupply - totalExcluded - totalHolding\\n    uint256 totalRewards = summary.totalSupply\\n    .sub(summary.totalExcluded)\\n    .sub(summary.totalHolding);\\n\\n    if (totalRewards != summary.totalRewards) {\\n      summary.totalRewards = totalRewards;\\n\\n      emit TotalRewardsUpdated(\\n        totalRewards\\n      );\\n    }\\n  }\\n\\n  // private functions (views)\\n\\n  function _matchTotalSupplyWithFees(\\n    uint256 totalSupply_,\\n    uint256 totalFee,\\n    uint256 burnFee\\n  )\\n    private\\n    view\\n    returns (uint256, uint256, uint256)\\n  {\\n    if (burnFee != 0) {\\n      uint256 newTotalSupply = totalSupply_.sub(burnFee);\\n\\n      if (newTotalSupply >= settings.minTotalSupply) {\\n        totalSupply_ = newTotalSupply;\\n      } else  { // turn of burn fee\\n        totalFee = totalFee.sub(burnFee);\\n        burnFee = 0;\\n      }\\n    }\\n\\n    return (totalSupply_, totalFee, burnFee);\\n  }\\n\\n\\n  function _canSyncLP(\\n    address sender,\\n    address recipient\\n  )\\n    private\\n    view\\n    returns (\\n      bool shouldSyncLPBefore,\\n      bool shouldSyncLPAfter\\n    )\\n  {\\n    if (address(lpm) != address(0)) { // if lpm is not the zero address\\n      (shouldSyncLPBefore, shouldSyncLPAfter) = lpm.canSyncLP(\\n        sender,\\n        recipient\\n      );\\n    }\\n\\n    return (shouldSyncLPBefore, shouldSyncLPAfter);\\n  }\\n\\n  function _calcRewards(\\n    address account\\n  )\\n    private\\n    view\\n    returns (uint256 result)\\n  {\\n    if (\\n      !excludedAccounts[account].exists && // only for holders\\n      summary.totalRewards != 0\\n    ) {\\n      result = summary.totalRewards\\n        .mul(accountBalances[account])\\n        .div(summary.totalHolding);\\n    }\\n\\n    return result;\\n  }\\n\\n  function _calcTransferSenderFees(\\n    uint256 amount\\n  )\\n    private\\n    view\\n    returns (\\n      uint256 totalFee,\\n      uint256 burnFee,\\n      uint256 lpFee\\n    )\\n  {\\n    uint256 rewardsFee = amount.percent(settings.rewardsFees.sender);\\n\\n    lpFee = amount.percent(settings.lpFees.sender);\\n    burnFee = amount.percent(settings.burnFees.sender);\\n\\n    totalFee = lpFee.add(rewardsFee).add(burnFee);\\n\\n    return (totalFee, burnFee, lpFee);\\n  }\\n\\n  function _calcTransferRecipientFees(\\n    uint256 amount\\n  )\\n    private\\n    view\\n    returns (\\n      uint256 totalFee,\\n      uint256 burnFee,\\n      uint256 lpFee\\n    )\\n  {\\n    uint256 rewardsFee = amount.percent(settings.rewardsFees.recipient);\\n\\n    lpFee = amount.percent(settings.lpFees.recipient);\\n    burnFee = amount.percent(settings.burnFees.recipient);\\n\\n    totalFee = lpFee.add(rewardsFee).add(burnFee);\\n\\n    return (totalFee, burnFee, lpFee);\\n  }\\n\\n  // private functions (pure)\\n\\n  function _verifyFees(\\n    Fees memory burnFees,\\n    Fees memory lpFees,\\n    Fees memory rewardsFees\\n  )\\n    private\\n    pure\\n  {\\n    uint256 totalFee = burnFees.sender.add(\\n      burnFees.recipient\\n    ).add(\\n      lpFees.sender.add(lpFees.recipient)\\n    ).add(\\n      rewardsFees.sender.add(rewardsFees.recipient)\\n    );\\n\\n    require(\\n      totalFee <= MAX_FEE,\\n      \\\"MetaheroToken#26\\\" // the total fee is too high\\n    );\\n  }\\n}\\n\",\"keccak256\":\"0x0add457e556d5395295037a9acc65a7d22833fcd448812ddf845f87ea4f9b633\",\"license\":\"MIT\"},\"src/core/access/Controlled.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Controlled\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract Controlled {\\n  /**\\n   * @return controller address\\n   */\\n  address public controller;\\n\\n  // modifiers\\n\\n  /**\\n   * @dev Throws if msg.sender is not the controller\\n   */\\n  modifier onlyController() {\\n    require(\\n      msg.sender == controller,\\n      \\\"Controlled#1\\\" // msg.sender is not the controller\\n    );\\n\\n    _;\\n  }\\n\\n  // events\\n\\n  /**\\n   * @dev Emitted when the controller is updated\\n   * @param controller new controller address\\n   */\\n  event ControllerUpdated(\\n    address controller\\n  );\\n\\n  /**\\n   * @dev Internal constructor\\n   */\\n  constructor()\\n    internal\\n  {\\n    //\\n  }\\n\\n  // internal functions\\n\\n  function _initializeController(\\n    address controller_\\n  )\\n    internal\\n  {\\n    controller = controller_;\\n  }\\n\\n  function _setController(\\n    address controller_\\n  )\\n    internal\\n  {\\n    require(\\n      controller_ != address(0),\\n      \\\"Controlled#2\\\" // controller is the zero address\\n    );\\n\\n    require(\\n      controller_ != controller,\\n      \\\"Controlled#3\\\" // does not update the controller\\n    );\\n\\n    controller = controller_;\\n\\n    emit ControllerUpdated(\\n      controller_\\n    );\\n  }\\n\\n  function _removeController()\\n    internal\\n  {\\n    require(\\n      controller != address(0),\\n      \\\"Controlled#4\\\" // controller is the zero address\\n    );\\n\\n    controller = address(0);\\n\\n    emit ControllerUpdated(\\n      address(0)\\n    );\\n  }\\n}\\n\",\"keccak256\":\"0x6fd7d2734e5013ec71b009a7348b2de27330370bad175c62ffd39285eefeaaee\",\"license\":\"MIT\"},\"src/core/access/Lockable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Lockable\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract Lockable {\\n  /**\\n   * @return true when contract is locked\\n   */\\n  bool public locked;\\n\\n  // modifiers\\n\\n\\n  /**\\n   * @dev Calls only when contract is unlocked\\n   */\\n  modifier lock() {\\n    if (!locked) {\\n      locked = true;\\n\\n      _;\\n\\n      locked = false;\\n    }\\n  }\\n\\n  /**\\n   * @dev Throws if contract is locked\\n   */\\n  modifier lockOrThrowError() {\\n    require(\\n      !locked,\\n      \\\"Lockable#1\\\" // contract is locked\\n    );\\n\\n    locked = true;\\n\\n    _;\\n\\n    locked = false;\\n  }\\n\\n  /**\\n   * @dev Internal constructor\\n   */\\n  constructor()\\n    internal\\n  {\\n    //\\n  }\\n}\\n\",\"keccak256\":\"0x99756073634c8bff46b02af4a3f69176b803a03415a9293478d2c635285c9ae6\",\"license\":\"MIT\"},\"src/core/access/Owned.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Owned\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract Owned {\\n  /**\\n   * @return owner address\\n   */\\n  address public owner;\\n\\n  // modifiers\\n\\n  /**\\n   * @dev Throws if msg.sender is not the owner\\n   */\\n  modifier onlyOwner() {\\n    require(\\n      msg.sender == owner,\\n      \\\"Owned#1\\\" // msg.sender is not the owner\\n    );\\n\\n    _;\\n  }\\n\\n  // events\\n\\n  /**\\n   * @dev Emitted when the owner is updated\\n   * @param owner new owner address\\n   */\\n  event OwnerUpdated(\\n    address owner\\n  );\\n\\n  /**\\n   * @dev Internal constructor\\n   */\\n  constructor()\\n    internal\\n  {\\n    owner = msg.sender;\\n  }\\n\\n  // external functions\\n\\n  /**\\n   * @notice Sets a new owner\\n   * @param owner_ owner address\\n   */\\n  function setOwner(\\n    address owner_\\n  )\\n    external\\n    onlyOwner\\n  {\\n    _setOwner(owner_);\\n  }\\n\\n  // internal functions\\n\\n  function _setOwner(\\n    address owner_\\n  )\\n    internal\\n  {\\n    require(\\n      owner_ != address(0),\\n      \\\"Owned#2\\\" // owner is the zero address\\n    );\\n\\n    require(\\n      owner_ != owner,\\n      \\\"Owned#3\\\" // does not update the owner\\n    );\\n\\n    owner = owner_;\\n\\n    emit OwnerUpdated(\\n      owner_\\n    );\\n  }\\n}\\n\",\"keccak256\":\"0xf51e5a9b2810c8dac7bd959f56d334ba9221f0c87dd7d79062188a25f634ca68\",\"license\":\"MIT\"},\"src/core/erc20/ERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\nimport \\\"./IERC20.sol\\\";\\n\\n\\n/**\\n * @title ERC20 abstract token\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\nabstract contract ERC20 is IERC20 {\\n  string public override name;\\n  string public override symbol;\\n  uint8 public override decimals;\\n\\n  /**\\n   * @dev Internal constructor\\n   * @param name_ name\\n   * @param symbol_ symbol\\n   * @param decimals_ decimals amount\\n   */\\n  constructor (\\n    string memory name_,\\n    string memory symbol_,\\n    uint8 decimals_\\n  )\\n    internal\\n  {\\n    name = name_;\\n    symbol = symbol_;\\n    decimals = decimals_;\\n  }\\n}\\n\",\"keccak256\":\"0x7bf37353ffc0e4a6c0991a3d43d9bc3ffeae5f1dad6cc37ebd65eea009121821\",\"license\":\"MIT\"},\"src/core/erc20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title ERC20 token interface\\n *\\n * @notice See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md\\n */\\ninterface IERC20 {\\n  // events\\n\\n  event Approval(\\n    address indexed owner,\\n    address indexed spender,\\n    uint256 value\\n  );\\n\\n  event Transfer(\\n    address indexed from,\\n    address indexed to,\\n    uint256 value\\n  );\\n\\n  // external functions\\n\\n  function approve(\\n    address spender,\\n    uint256 value\\n  )\\n    external\\n    returns (bool);\\n\\n  function transfer(\\n    address to,\\n    uint256 value\\n  )\\n    external\\n    returns (bool);\\n\\n  function transferFrom(\\n    address from,\\n    address to,\\n    uint256 value\\n  )\\n    external\\n    returns (bool);\\n\\n  // external functions (views)\\n\\n  function totalSupply()\\n    external\\n    view\\n    returns (uint256);\\n\\n  function balanceOf(\\n    address owner\\n  )\\n    external\\n    view\\n    returns (uint256);\\n\\n  function allowance(\\n    address owner,\\n    address spender\\n  )\\n    external\\n    view\\n    returns (uint256);\\n\\n  // external functions (pure)\\n\\n  function name()\\n    external\\n    pure\\n    returns (string memory);\\n\\n  function symbol()\\n    external\\n    pure\\n    returns (string memory);\\n\\n  function decimals()\\n    external\\n    pure\\n    returns (uint8);\\n}\\n\",\"keccak256\":\"0x724e6080597d9117b6b78581bad2dc6faa30bf63e015ec583df6cb10ce7fb7c8\",\"license\":\"MIT\"},\"src/core/lifecycle/Initializable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Initializable\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\ncontract Initializable {\\n  address private initializer;\\n\\n  // modifiers\\n\\n  /**\\n   * @dev Throws if msg.sender is not the initializer\\n   */\\n  modifier onlyInitializer() {\\n    require(\\n      initializer != address(0),\\n      \\\"Initializable#1\\\" // already initialized\\n    );\\n\\n    require(\\n      msg.sender == initializer,\\n      \\\"Initializable#2\\\" // msg.sender is not the initializer\\n    );\\n\\n    /// @dev removes initializer\\n    initializer = address(0);\\n\\n    _;\\n  }\\n\\n  /**\\n   * @dev Internal constructor\\n   */\\n  constructor()\\n    internal\\n  {\\n    initializer = msg.sender;\\n  }\\n\\n  // external functions (views)\\n\\n  /**\\n   * @notice Checks if contract is initialized\\n   * @return true when contract is initialized\\n   */\\n  function initialized()\\n    external\\n    view\\n    returns (bool)\\n  {\\n    return initializer == address(0);\\n  }\\n}\\n\",\"keccak256\":\"0xe4741a154e5f2e6db7ba837b33e3d2f9c32179217de0c13cbda888170be5e24d\",\"license\":\"MIT\"},\"src/core/math/MathLib.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\nimport \\\"./SafeMathLib.sol\\\";\\n\\n\\n/**\\n * @title Math library\\n *\\n * @author Stanis\\u0142aw G\\u0142ogowski <stan@metahero.io>\\n */\\nlibrary MathLib {\\n  using SafeMathLib for uint256;\\n\\n  // internal functions (pure)\\n\\n  /**\\n   * @notice Calcs a x p / 100\\n   */\\n  function percent(\\n    uint256 a,\\n    uint256 p\\n  )\\n    internal\\n    pure\\n    returns (uint256 result)\\n  {\\n    if (a != 0 && p != 0) {\\n      result = a.mul(p).div(100);\\n    }\\n\\n    return result;\\n  }\\n}\\n\",\"keccak256\":\"0xeb9ba17d84220387df239090b90907a7d14cae4f82fd5e9aa67dfd710b1625ef\",\"license\":\"MIT\"},\"src/core/math/SafeMathLib.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.6.12;\\n\\n/**\\n * @title Safe math library\\n *\\n * @notice Based on https://github.com/OpenZeppelin/openzeppelin-contracts/blob/5fe8f4e93bd1d4f5cc9a6899d7f24f5ffe4c14aa/contracts/math/SafeMath.sol\\n */\\nlibrary SafeMathLib {\\n  // internal functions (pure)\\n\\n  /**\\n   * @notice Calcs a + b\\n   */\\n  function add(\\n    uint256 a,\\n    uint256 b\\n  )\\n    internal\\n    pure\\n    returns (uint256)\\n  {\\n    uint256 c = a + b;\\n\\n    require(\\n      c >= a,\\n      \\\"SafeMathLib#1\\\"\\n    );\\n\\n    return c;\\n  }\\n\\n  /**\\n   * @notice Calcs a - b\\n   */\\n  function sub(\\n    uint256 a,\\n    uint256 b\\n  )\\n    internal\\n    pure\\n    returns (uint256)\\n  {\\n    require(\\n      b <= a,\\n      \\\"SafeMathLib#2\\\"\\n    );\\n\\n    return a - b;\\n  }\\n\\n  /**\\n   * @notice Calcs a x b\\n   */\\n  function mul(\\n    uint256 a,\\n    uint256 b\\n  )\\n    internal\\n    pure\\n    returns (uint256 result)\\n  {\\n    if (a != 0 && b != 0) {\\n      result = a * b;\\n\\n      require(\\n        result / a == b,\\n        \\\"SafeMathLib#3\\\"\\n      );\\n    }\\n\\n    return result;\\n  }\\n\\n  /**\\n   * @notice Calcs a / b\\n   */\\n  function div(\\n    uint256 a,\\n    uint256 b\\n  )\\n    internal\\n    pure\\n    returns (uint256)\\n  {\\n    require(\\n      b != 0,\\n      \\\"SafeMathLib#4\\\"\\n    );\\n\\n    return a / b;\\n  }\\n}\\n\",\"keccak256\":\"0xb4d920f8a4ce97a5cd5a7afe9943be07e05abb3ea267c772473644173f5b71e2\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555033600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506120de806100a16000396000f3fe6080604052600436106100ec5760003560e01c8063974654c61161008a578063d0febe4c11610059578063d0febe4c14610430578063d25d4bcf1461043a578063e06174e414610451578063fc0c546a1461048a576100fd565b8063974654c6146102fa5780639b19251a14610311578063ac71abde14610378578063b16a867c146103fe576100fd565b80631f2698ab116100c65780631f2698ab1461019757806348785016146101c45780634ec81af11461024a5780638da5cb5b146102b9576100fd565b806304c98b2b1461010257806313af403514610119578063158ef93e1461016a576100fd565b366100fd576100fb33346104cb565b005b600080fd5b34801561010e57600080fd5b506101176109d5565b005b34801561012557600080fd5b506101686004803603602081101561013c57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610b62565b005b34801561017657600080fd5b5061017f610c2f565b60405180821515815260200191505060405180910390f35b3480156101a357600080fd5b506101ac610c87565b60405180821515815260200191505060405180910390f35b3480156101d057600080fd5b50610248600480360360208110156101e757600080fd5b810190808035906020019064010000000081111561020457600080fd5b82018360208201111561021657600080fd5b8035906020019184602083028401116401000000008311171561023857600080fd5b9091929391929390505050610c9a565b005b34801561025657600080fd5b506102b76004803603608081101561026d57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291908035906020019092919080359060200190929190505050611062565b005b3480156102c557600080fd5b506102ce6115ca565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34801561030657600080fd5b5061030f6115ee565b005b34801561031d57600080fd5b506103606004803603602081101561033457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050611826565b60405180821515815260200191505060405180910390f35b34801561038457600080fd5b506103fc6004803603602081101561039b57600080fd5b81019080803590602001906401000000008111156103b857600080fd5b8201836020820111156103ca57600080fd5b803590602001918460208302840111640100000000831117156103ec57600080fd5b9091929391929390505050611846565b005b34801561040a57600080fd5b50610413611955565b604051808381526020018281526020019250505060405180910390f35b610438611967565b005b34801561044657600080fd5b5061044f611973565b005b34801561045d57600080fd5b50610466611a42565b60405180848152602001838152602001828152602001935050505060405180910390f35b34801561049657600080fd5b5061049f611a5a565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600860009054906101000a900460ff1661054d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233100000000000000000000000000000081525060200191505060405180910390fd5b600960008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1661060c576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233200000000000000000000000000000081525060200191505060405180910390fd5b6000811415610683576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233300000000000000000000000000000081525060200191505060405180910390fd5b6003600101548110156106fe576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233400000000000000000000000000000081525060200191505060405180910390fd5b600360020154811115610779576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233500000000000000000000000000000081525060200191505060405180910390fd5b600061079360036000015483611a8090919063ffffffff16565b9050600660010154811115610810576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233600000000000000000000000000000081525060200191505060405180910390fd5b6000600960008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055506108816001600660000154611b2290919063ffffffff16565b6006600001819055506108a281600660010154611b2290919063ffffffff16565b600660010181905550600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a9059cbb84836040518363ffffffff1660e01b8152600401808373ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b15801561093e57600080fd5b505af1158015610952573d6000803e3d6000fd5b505050506040513d602081101561096857600080fd5b8101908080519060200190929190505050508273ffffffffffffffffffffffffffffffffffffffff167f8fafebcaf9d154343dad25669bfa277f4fbacd7ac6b0c4fed522580e040a0f338383604051808381526020018281526020019250505060405180910390a2505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610a96576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b600860009054906101000a900460ff1615610b19576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233131000000000000000000000000000081525060200191505060405180910390fd5b6001600860006101000a81548160ff0219169083151502179055507f17c3338141363aab2512c08f8a7764328ca95979f7057663eb93f7e250139b4c60405160405180910390a1565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610c23576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b610c2c81611ba5565b50565b60008073ffffffffffffffffffffffffffffffffffffffff16600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614905090565b600860009054906101000a900460ff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610d5b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b60008083839050905060005b81811015610fc357600073ffffffffffffffffffffffffffffffffffffffff16858583818110610d9357fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415610e3a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233132000000000000000000000000000081525060200191505060405180910390fd5b60096000868684818110610e4a57fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615610fb657600060096000878785818110610ec657fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550610f48600184611d9a90919063ffffffff16565b9250848482818110610f5657fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167fbf2e373b8263f701e10efcac80ea442afcb29c6852b3a42b0b46cc8edaaf54a760405160405180910390a25b8080600101915050610d67565b50600082141561103b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233133000000000000000000000000000081525060200191505060405180910390fd5b61105382600660000154611b2290919063ffffffff16565b60066000018190555050505050565b600073ffffffffffffffffffffffffffffffffffffffff16600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415611127576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600f8152602001807f496e697469616c697a61626c652331000000000000000000000000000000000081525060200191505060405180910390fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146111ea576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600f8152602001807f496e697469616c697a61626c652332000000000000000000000000000000000081525060200191505060405180910390fd5b6000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600073ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff1614156112cf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233700000000000000000000000000000081525060200191505060405180910390fd5b6000831415611346576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233800000000000000000000000000000081525060200191505060405180910390fd5b808211156113bc576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233900000000000000000000000000000081525060200191505060405180910390fd5b6000811415611433576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233130000000000000000000000000000081525060200191505060405180910390fd5b83600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550826003600001819055508160036001018190555080600360020181905550600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561151b57600080fd5b505afa15801561152f573d6000803e3d6000fd5b505050506040513d602081101561154557600080fd5b81019080805190602001909291905050506006600101819055507f6b40d9ac9d9dcc4ba6477664fdae5809a701208c8db1cbb7bc759993691146a984848484604051808573ffffffffffffffffffffffffffffffffffffffff16815260200184815260200183815260200182815260200194505050505060405180910390a150505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146116af576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561173a57600080fd5b505afa15801561174e573d6000803e3d6000fd5b505050506040513d602081101561176457600080fd5b810190808051906020019092919050505090506000811461180d57600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166342966c68826040518263ffffffff1660e01b815260040180828152602001915050600060405180830381600087803b1580156117f457600080fd5b505af1158015611808573d6000803e3d6000fd5b505050505b3373ffffffffffffffffffffffffffffffffffffffff16ff5b60096020528060005260406000206000915054906101000a900460ff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614611907576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b611951828280806020026020016040519081016040528093929190818152602001838360200280828437600081840152601f19601f82011690508083019250505050505050611e22565b5050565b60068060000154908060010154905082565b61197133346104cb565b565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b1580156119fc57600080fd5b505afa158015611a10573d6000803e3d6000fd5b505050506040513d6020811015611a2657600080fd5b8101908080519060200190929190505050600660010181905550565b60038060000154908060010154908060020154905083565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000808314158015611a93575060008214155b15611b1c57818302905081838281611aa757fe5b0414611b1b576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223330000000000000000000000000000000000000081525060200191505060405180910390fd5b5b92915050565b600082821115611b9a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223320000000000000000000000000000000000000081525060200191505060405180910390fd5b818303905092915050565b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415611c48576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423320000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415611d0a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423330000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055507f4ffd725fc4a22075e9ec71c59edf9c38cdeb588a91b24fc5b61388c5be41282b81604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390a150565b600080828401905083811015611e18576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223310000000000000000000000000000000000000081525060200191505060405180910390fd5b8091505092915050565b6000808251905060005b8181101561203357600073ffffffffffffffffffffffffffffffffffffffff16848281518110611e5857fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff161415611eea576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233134000000000000000000000000000081525060200191505060405180910390fd5b60096000858381518110611efa57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1661202657600160096000868481518110611f6057fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550611fcd600184611d9a90919063ffffffff16565b9250838181518110611fdb57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff167f8f42195a0bbfa58954be4349deb9efc38bdb9c298e529f705f8bc1e38bce039960405160405180910390a25b8080600101915050611e2c565b5060008214156120ab576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233135000000000000000000000000000081525060200191505060405180910390fd5b6120c382600660000154611d9a90919063ffffffff16565b60066000018190555050505056fea164736f6c634300060c000a",
+  "deployedBytecode": "0x6080604052600436106100ec5760003560e01c8063974654c61161008a578063d0febe4c11610059578063d0febe4c14610430578063d25d4bcf1461043a578063e06174e414610451578063fc0c546a1461048a576100fd565b8063974654c6146102fa5780639b19251a14610311578063ac71abde14610378578063b16a867c146103fe576100fd565b80631f2698ab116100c65780631f2698ab1461019757806348785016146101c45780634ec81af11461024a5780638da5cb5b146102b9576100fd565b806304c98b2b1461010257806313af403514610119578063158ef93e1461016a576100fd565b366100fd576100fb33346104cb565b005b600080fd5b34801561010e57600080fd5b506101176109d5565b005b34801561012557600080fd5b506101686004803603602081101561013c57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610b62565b005b34801561017657600080fd5b5061017f610c2f565b60405180821515815260200191505060405180910390f35b3480156101a357600080fd5b506101ac610c87565b60405180821515815260200191505060405180910390f35b3480156101d057600080fd5b50610248600480360360208110156101e757600080fd5b810190808035906020019064010000000081111561020457600080fd5b82018360208201111561021657600080fd5b8035906020019184602083028401116401000000008311171561023857600080fd5b9091929391929390505050610c9a565b005b34801561025657600080fd5b506102b76004803603608081101561026d57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291908035906020019092919080359060200190929190505050611062565b005b3480156102c557600080fd5b506102ce6115ca565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34801561030657600080fd5b5061030f6115ee565b005b34801561031d57600080fd5b506103606004803603602081101561033457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050611826565b60405180821515815260200191505060405180910390f35b34801561038457600080fd5b506103fc6004803603602081101561039b57600080fd5b81019080803590602001906401000000008111156103b857600080fd5b8201836020820111156103ca57600080fd5b803590602001918460208302840111640100000000831117156103ec57600080fd5b9091929391929390505050611846565b005b34801561040a57600080fd5b50610413611955565b604051808381526020018281526020019250505060405180910390f35b610438611967565b005b34801561044657600080fd5b5061044f611973565b005b34801561045d57600080fd5b50610466611a42565b60405180848152602001838152602001828152602001935050505060405180910390f35b34801561049657600080fd5b5061049f611a5a565b604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b600860009054906101000a900460ff1661054d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233100000000000000000000000000000081525060200191505060405180910390fd5b600960008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1661060c576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233200000000000000000000000000000081525060200191505060405180910390fd5b6000811415610683576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233300000000000000000000000000000081525060200191505060405180910390fd5b6003600101548110156106fe576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233400000000000000000000000000000081525060200191505060405180910390fd5b600360020154811115610779576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233500000000000000000000000000000081525060200191505060405180910390fd5b600061079360036000015483611a8090919063ffffffff16565b9050600660010154811115610810576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233600000000000000000000000000000081525060200191505060405180910390fd5b6000600960008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff0219169083151502179055506108816001600660000154611b2290919063ffffffff16565b6006600001819055506108a281600660010154611b2290919063ffffffff16565b600660010181905550600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a9059cbb84836040518363ffffffff1660e01b8152600401808373ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b15801561093e57600080fd5b505af1158015610952573d6000803e3d6000fd5b505050506040513d602081101561096857600080fd5b8101908080519060200190929190505050508273ffffffffffffffffffffffffffffffffffffffff167f8fafebcaf9d154343dad25669bfa277f4fbacd7ac6b0c4fed522580e040a0f338383604051808381526020018281526020019250505060405180910390a2505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610a96576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b600860009054906101000a900460ff1615610b19576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233131000000000000000000000000000081525060200191505060405180910390fd5b6001600860006101000a81548160ff0219169083151502179055507f17c3338141363aab2512c08f8a7764328ca95979f7057663eb93f7e250139b4c60405160405180910390a1565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610c23576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b610c2c81611ba5565b50565b60008073ffffffffffffffffffffffffffffffffffffffff16600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1614905090565b600860009054906101000a900460ff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614610d5b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b60008083839050905060005b81811015610fc357600073ffffffffffffffffffffffffffffffffffffffff16858583818110610d9357fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415610e3a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233132000000000000000000000000000081525060200191505060405180910390fd5b60096000868684818110610e4a57fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1615610fb657600060096000878785818110610ec657fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550610f48600184611d9a90919063ffffffff16565b9250848482818110610f5657fe5b9050602002013573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167fbf2e373b8263f701e10efcac80ea442afcb29c6852b3a42b0b46cc8edaaf54a760405160405180910390a25b8080600101915050610d67565b50600082141561103b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233133000000000000000000000000000081525060200191505060405180910390fd5b61105382600660000154611b2290919063ffffffff16565b60066000018190555050505050565b600073ffffffffffffffffffffffffffffffffffffffff16600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff161415611127576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600f8152602001807f496e697469616c697a61626c652331000000000000000000000000000000000081525060200191505060405180910390fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146111ea576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600f8152602001807f496e697469616c697a61626c652332000000000000000000000000000000000081525060200191505060405180910390fd5b6000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550600073ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff1614156112cf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233700000000000000000000000000000081525060200191505060405180910390fd5b6000831415611346576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233800000000000000000000000000000081525060200191505060405180910390fd5b808211156113bc576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260118152602001807f4d6574616865726f50726573616c65233900000000000000000000000000000081525060200191505060405180910390fd5b6000811415611433576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233130000000000000000000000000000081525060200191505060405180910390fd5b83600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550826003600001819055508160036001018190555080600360020181905550600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561151b57600080fd5b505afa15801561152f573d6000803e3d6000fd5b505050506040513d602081101561154557600080fd5b81019080805190602001909291905050506006600101819055507f6b40d9ac9d9dcc4ba6477664fdae5809a701208c8db1cbb7bc759993691146a984848484604051808573ffffffffffffffffffffffffffffffffffffffff16815260200184815260200183815260200182815260200194505050505060405180910390a150505050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16146116af576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b6000600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561173a57600080fd5b505afa15801561174e573d6000803e3d6000fd5b505050506040513d602081101561176457600080fd5b810190808051906020019092919050505090506000811461180d57600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166342966c68826040518263ffffffff1660e01b815260040180828152602001915050600060405180830381600087803b1580156117f457600080fd5b505af1158015611808573d6000803e3d6000fd5b505050505b3373ffffffffffffffffffffffffffffffffffffffff16ff5b60096020528060005260406000206000915054906101000a900460ff1681565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614611907576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423310000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b611951828280806020026020016040519081016040528093929190818152602001838360200280828437600081840152601f19601f82011690508083019250505050505050611e22565b5050565b60068060000154908060010154905082565b61197133346104cb565b565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231306040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b1580156119fc57600080fd5b505afa158015611a10573d6000803e3d6000fd5b505050506040513d6020811015611a2657600080fd5b8101908080519060200190929190505050600660010181905550565b60038060000154908060010154908060020154905083565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000808314158015611a93575060008214155b15611b1c57818302905081838281611aa757fe5b0414611b1b576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223330000000000000000000000000000000000000081525060200191505060405180910390fd5b5b92915050565b600082821115611b9a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223320000000000000000000000000000000000000081525060200191505060405180910390fd5b818303905092915050565b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415611c48576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423320000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415611d0a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260078152602001807f4f776e656423330000000000000000000000000000000000000000000000000081525060200191505060405180910390fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055507f4ffd725fc4a22075e9ec71c59edf9c38cdeb588a91b24fc5b61388c5be41282b81604051808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390a150565b600080828401905083811015611e18576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252600d8152602001807f536166654d6174684c696223310000000000000000000000000000000000000081525060200191505060405180910390fd5b8091505092915050565b6000808251905060005b8181101561203357600073ffffffffffffffffffffffffffffffffffffffff16848281518110611e5857fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff161415611eea576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233134000000000000000000000000000081525060200191505060405180910390fd5b60096000858381518110611efa57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060009054906101000a900460ff1661202657600160096000868481518110611f6057fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060006101000a81548160ff021916908315150217905550611fcd600184611d9a90919063ffffffff16565b9250838181518110611fdb57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff167f8f42195a0bbfa58954be4349deb9efc38bdb9c298e529f705f8bc1e38bce039960405160405180910390a25b8080600101915050611e2c565b5060008214156120ab576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260128152602001807f4d6574616865726f50726573616c65233135000000000000000000000000000081525060200191505060405180910390fd5b6120c382600660000154611d9a90919063ffffffff16565b60066000018190555050505056fea164736f6c634300060c000a",
+  "devdoc": {
+    "author": "Stanisław Głogowski <stan@metahero.io>",
+    "events": {
+      "AccountAdded(address)": {
+        "details": "Emitted after account is added to the whitelist",
+        "params": {
+          "account": "account address"
+        }
+      },
+      "AccountRemoved(address)": {
+        "details": "Emitted after account is removed from the whitelist",
+        "params": {
+          "account": "account address"
+        }
+      },
+      "Initialized(address,uint256,uint256,uint256)": {
+        "details": "Emitted the contract is initialized",
+        "params": {
+          "maxPurchasePrice": "max purchase price in native",
+          "minPurchasePrice": "min purchase price in native",
+          "token": "token address",
+          "tokensAmountPerNative": "tokens amount per native"
+        }
+      },
+      "PresaleStarted()": {
+        "details": "Emitted after the presale starts"
+      },
+      "TokensPurchased(address,uint256,uint256)": {
+        "details": "Emitted after purchasing tokens",
+        "params": {
+          "account": "account address",
+          "tokensAmount": "tokens amount",
+          "tokensPrice": "tokens price"
+        }
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "addAccounts(address[])": {
+        "details": "Adds accounts to the whitelist",
+        "params": {
+          "accounts": "array of accounts addresses"
+        }
+      },
+      "buyTokens()": {
+        "details": "Starts the process of buying tokens"
+      },
+      "constructor": {
+        "details": "Public constructor"
+      },
+      "finishPresale()": {
+        "details": "Finishes the presale"
+      },
+      "initialize(address,uint256,uint256,uint256)": {
+        "details": "Initializes the contract",
+        "params": {
+          "maxPurchasePrice": "max purchase price",
+          "minPurchasePrice": "min purchase price",
+          "token_": "token address",
+          "tokensAmountPerNative": "tokens amount per native"
+        }
+      },
+      "initialized()": {
+        "returns": {
+          "_0": "true when contract is initialized"
+        }
+      },
+      "removeAccounts(address[])": {
+        "details": "Removes accounts from the whitelist",
+        "params": {
+          "accounts": "array of accounts addresses"
+        }
+      },
+      "setOwner(address)": {
+        "params": {
+          "owner_": "owner address"
+        }
+      },
+      "startPresale()": {
+        "details": "Starts the presale"
+      },
+      "syncTotalTokens()": {
+        "details": "Syncs total tokens"
+      }
+    },
+    "stateVariables": {
+      "settings": {
+        "return": "settings object"
+      },
+      "started": {
+        "return": "true when presale started"
+      },
+      "summary": {
+        "return": "summary object"
+      },
+      "token": {
+        "return": "token address"
+      },
+      "whitelist": {
+        "return": "map with whitelisted accounts"
+      }
+    },
+    "title": "Metahero presale",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "initialized()": {
+        "notice": "Checks if contract is initialized"
+      },
+      "setOwner(address)": {
+        "notice": "Sets a new owner"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 4117,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 4704,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "initializer",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_address"
+      },
+      {
+        "astId": 1026,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "token",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(MetaheroToken)3870"
+      },
+      {
+        "astId": 1029,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "settings",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_struct(Settings)1018_storage"
+      },
+      {
+        "astId": 1032,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "summary",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_struct(Summary)1023_storage"
+      },
+      {
+        "astId": 1035,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "started",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_bool"
+      },
+      {
+        "astId": 1040,
+        "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+        "label": "whitelist",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_mapping(t_address,t_bool)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_contract(MetaheroToken)3870": {
+        "encoding": "inplace",
+        "label": "contract MetaheroToken",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_struct(Settings)1018_storage": {
+        "encoding": "inplace",
+        "label": "struct MetaheroPresale.Settings",
+        "members": [
+          {
+            "astId": 1013,
+            "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+            "label": "tokensAmountPerNative",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1015,
+            "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+            "label": "minPurchasePrice",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1017,
+            "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+            "label": "maxPurchasePrice",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(Summary)1023_storage": {
+        "encoding": "inplace",
+        "label": "struct MetaheroPresale.Summary",
+        "members": [
+          {
+            "astId": 1020,
+            "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+            "label": "totalAccounts",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 1022,
+            "contract": "src/MetaheroPresale.sol:MetaheroPresale",
+            "label": "totalTokens",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

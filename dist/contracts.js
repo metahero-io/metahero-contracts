@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 module.exports = {
-  "HEROLPManagerForUniswapV2": {
+  "MetaheroLPMForUniswapV2": {
     "abi": [
       {
         "inputs": [],
@@ -10,7 +10,38 @@ module.exports = {
       },
       {
         "anonymous": false,
-        "inputs": [],
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "enableBurnLPAtValue",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "stableCoin",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "uniswapRouter",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "uniswapPair",
+            "type": "address"
+          }
+        ],
         "name": "Initialized",
         "type": "event"
       },
@@ -80,6 +111,13 @@ module.exports = {
           }
         ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "stateMutability": "payable",
         "type": "function"
       },
       {
@@ -192,7 +230,7 @@ module.exports = {
         "name": "token",
         "outputs": [
           {
-            "internalType": "contract HEROToken",
+            "internalType": "contract MetaheroToken",
             "name": "",
             "type": "address"
           }
@@ -205,7 +243,7 @@ module.exports = {
         "name": "uniswapFactory",
         "outputs": [
           {
-            "internalType": "contract UniswapV2Factory",
+            "internalType": "contract IUniswapV2Factory",
             "name": "",
             "type": "address"
           }
@@ -218,7 +256,7 @@ module.exports = {
         "name": "uniswapPair",
         "outputs": [
           {
-            "internalType": "contract UniswapV2Pair",
+            "internalType": "contract IUniswapV2Pair",
             "name": "",
             "type": "address"
           }
@@ -231,7 +269,7 @@ module.exports = {
         "name": "uniswapRouter",
         "outputs": [
           {
-            "internalType": "contract UniswapV2Router02",
+            "internalType": "contract IUniswapV2Router02",
             "name": "",
             "type": "address"
           }
@@ -245,10 +283,10 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0x8545910A97E8703C8bFE74ad1C2A2e03C6e4f178"
+      "97": "0x34D3fB5C2528a882d8b202F8b38D833DE4917ea6"
     }
   },
-  "HEROPresale": {
+  "MetaheroPresale": {
     "abi": [
       {
         "inputs": [],
@@ -286,17 +324,29 @@ module.exports = {
         "inputs": [
           {
             "indexed": false,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": false,
             "internalType": "uint256",
-            "name": "deadline",
+            "name": "tokensAmountPerNative",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "minPurchasePrice",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "maxPurchasePrice",
             "type": "uint256"
           }
         ],
-        "name": "DeadlineUpdated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [],
         "name": "Initialized",
         "type": "event"
       },
@@ -315,21 +365,8 @@ module.exports = {
       },
       {
         "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "tokensAmountPerNative",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "maxPurchasePrice",
-            "type": "uint256"
-          }
-        ],
-        "name": "SettingsUpdated",
+        "inputs": [],
+        "name": "PresaleStarted",
         "type": "event"
       },
       {
@@ -372,15 +409,9 @@ module.exports = {
       },
       {
         "inputs": [],
-        "name": "deadline",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
+        "name": "buyTokens",
+        "outputs": [],
+        "stateMutability": "payable",
         "type": "function"
       },
       {
@@ -404,12 +435,12 @@ module.exports = {
           },
           {
             "internalType": "uint256",
-            "name": "maxPurchasePrice",
+            "name": "minPurchasePrice",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "deadlineIn",
+            "name": "maxPurchasePrice",
             "type": "uint256"
           }
         ],
@@ -481,8 +512,33 @@ module.exports = {
           },
           {
             "internalType": "uint256",
+            "name": "minPurchasePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "maxPurchasePrice",
             "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "startPresale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "started",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
           }
         ],
         "stateMutability": "view",
@@ -518,43 +574,12 @@ module.exports = {
         "name": "token",
         "outputs": [
           {
-            "internalType": "contract HEROToken",
+            "internalType": "contract MetaheroToken",
             "name": "",
             "type": "address"
           }
         ],
         "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "deadlineIn_",
-            "type": "uint256"
-          }
-        ],
-        "name": "updateDeadline",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "tokensAmountPerNative",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maxPurchasePrice",
-            "type": "uint256"
-          }
-        ],
-        "name": "updateSettings",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
       },
       {
@@ -582,10 +607,10 @@ module.exports = {
       }
     ],
     "addresses": {
-      "97": "0xf5118A6DC19DcD1808E1Ae4794dC7D5d89c3ee91"
+      "97": "0xED1c8355808Da214d7208a2d8DBb844BDF74c17C"
     }
   },
-  "HEROToken": {
+  "MetaheroToken": {
     "abi": [
       {
         "inputs": [],
@@ -657,7 +682,154 @@ module.exports = {
       },
       {
         "anonymous": false,
-        "inputs": [],
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "dao",
+            "type": "address"
+          }
+        ],
+        "name": "DAOUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "burnFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "lpFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "rewardsFees",
+            "type": "tuple"
+          }
+        ],
+        "name": "FeesUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "burnFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "lpFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "rewardsFees",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "minTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "lpm",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "controller",
+            "type": "address"
+          }
+        ],
         "name": "Initialized",
         "type": "event"
       },
@@ -799,11 +971,42 @@ module.exports = {
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "burnFrom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "controller",
         "outputs": [
           {
             "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "dao",
+        "outputs": [
+          {
+            "internalType": "contract IMetaheroDAO",
             "name": "",
             "type": "address"
           }
@@ -848,13 +1051,6 @@ module.exports = {
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "finishPresale",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "inputs": [
           {
             "internalType": "address",
@@ -886,6 +1082,35 @@ module.exports = {
       {
         "inputs": [
           {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getExcludedAccount",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "exists",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "excludeSenderFromFee",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "excludeRecipientFromFee",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "components": [
               {
                 "internalType": "uint256",
@@ -898,7 +1123,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "burnFees",
             "type": "tuple"
           },
@@ -915,7 +1140,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "lpFees",
             "type": "tuple"
           },
@@ -932,7 +1157,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "rewardsFees",
             "type": "tuple"
           },
@@ -943,7 +1168,7 @@ module.exports = {
           },
           {
             "internalType": "address payable",
-            "name": "lpManager_",
+            "name": "lpm_",
             "type": "address"
           },
           {
@@ -982,10 +1207,10 @@ module.exports = {
       },
       {
         "inputs": [],
-        "name": "lpManager",
+        "name": "lpm",
         "outputs": [
           {
-            "internalType": "contract HEROLPManager",
+            "internalType": "contract MetaheroLPM",
             "name": "",
             "type": "address"
           }
@@ -997,7 +1222,7 @@ module.exports = {
         "inputs": [
           {
             "internalType": "address",
-            "name": "account",
+            "name": "recipient",
             "type": "address"
           },
           {
@@ -1006,7 +1231,7 @@ module.exports = {
             "type": "uint256"
           }
         ],
-        "name": "mint",
+        "name": "mintTo",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1054,11 +1279,31 @@ module.exports = {
         "inputs": [
           {
             "internalType": "address",
+            "name": "dao_",
+            "type": "address"
+          }
+        ],
+        "name": "setDAO",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
             "name": "owner_",
             "type": "address"
           }
         ],
         "name": "setOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "setPresaleAsFinished",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1080,7 +1325,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "burnFees",
             "type": "tuple"
           },
@@ -1097,7 +1342,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "lpFees",
             "type": "tuple"
           },
@@ -1114,7 +1359,7 @@ module.exports = {
                 "type": "uint256"
               }
             ],
-            "internalType": "struct HEROToken.Fees",
+            "internalType": "struct MetaheroToken.Fees",
             "name": "rewardsFees",
             "type": "tuple"
           },
@@ -1233,10 +1478,69 @@ module.exports = {
         ],
         "stateMutability": "nonpayable",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "burnFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "lpFees",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "sender",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "recipient",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct MetaheroToken.Fees",
+            "name": "rewardsFees",
+            "type": "tuple"
+          }
+        ],
+        "name": "updateFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       }
     ],
     "addresses": {
-      "97": "0xCfE8388956685B14f9139Da7b4dC068E730C0C88"
+      "97": "0xF5353e1dF6d302dE915B36981F101061b91c8b79"
     }
   }
 };

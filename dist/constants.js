@@ -2,8 +2,8 @@
 
 module.exports = {
   ContractNames: {
-    HEROLPManagerForUniswapV2: 'HEROLPManagerForUniswapV2',
-    HEROPresale: 'HEROPresale',
-    HEROToken: 'HEROToken',
+    MetaheroLPMForUniswapV2: 'MetaheroLPMForUniswapV2',
+    MetaheroPresale: 'MetaheroPresale',
+    MetaheroToken: 'MetaheroToken',
   },
 };
