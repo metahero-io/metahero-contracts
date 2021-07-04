@@ -6,7 +6,7 @@ import { readLines, logTx } from './helpers';
 const { getSigners } = ethers;
 
 const FILE_NAME = 'presaleAccounts.csv';
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 250;
 
 async function main(): Promise<void> {
   const addresses = await readLines(FILE_NAME, (address) => {
@@ -38,9 +38,9 @@ async function main(): Promise<void> {
 
       if (batch.addresses.length === BATCH_SIZE || i === addresses.length - 1) {
         await logTx(
-          `Batch #${batch.index}, addresses:`,
+          `Batch #${batch.index}, size:`,
           presale.addAccounts(batch.addresses),
-          batch.addresses,
+          batch.addresses.length,
         );
 
         batch.index++;
