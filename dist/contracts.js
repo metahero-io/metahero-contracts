@@ -283,6 +283,7 @@ module.exports = {
       }
     ],
     "addresses": {
+      "56": "0x5b5331ACAcF9009E8308651A5DE5E7E8e1Bf2373",
       "97": "0x34D3fB5C2528a882d8b202F8b38D833DE4917ea6"
     }
   },
@@ -607,6 +608,7 @@ module.exports = {
       }
     ],
     "addresses": {
+      "56": "0xFc7C3626F19Bf7751DFCDbd3b8aBA1FF9270C7b7",
       "97": "0xED1c8355808Da214d7208a2d8DBb844BDF74c17C"
     }
   },
@@ -1540,6 +1542,7 @@ module.exports = {
       }
     ],
     "addresses": {
+      "56": "0x054053c9C728F56639eC91F3a92b590BAF0b02Ff",
       "97": "0xF5353e1dF6d302dE915B36981F101061b91c8b79"
     }
   }
