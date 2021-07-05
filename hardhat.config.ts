@@ -20,32 +20,29 @@ const {
   HARDHAT_DISABLE_FORKING,
 } = process.env;
 
+const localNetwork = {
+  accounts: {
+    mnemonic:
+      HARDHAT_MNEMONIC ||
+      'test test test test test test test test test test test junk',
+    count: 32,
+  },
+  chainId: NetworkChainIds.Bsc,
+  gasPrice: 10 * 1000000000,
+};
+
 const config: HardhatUserConfig = {
   namedAccounts: {
     from: 0,
   },
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic:
-          HARDHAT_MNEMONIC ||
-          'test test test test test test test test test test test junk',
-        count: 32,
-      },
-      chainId: NetworkChainIds.Bsc,
-      gasPrice: 20 * 1000000000,
+      ...localNetwork,
       allowUnlimitedContractSize: true,
     },
     localhost: {
-      accounts: {
-        mnemonic:
-          HARDHAT_MNEMONIC ||
-          'test test test test test test test test test test test junk',
-        count: 32,
-      },
+      ...localNetwork,
       url: 'http://localhost:8545',
-      chainId: NetworkChainIds.Bsc,
-      gasPrice: 20 * 1000000000,
     },
     ...createConfigNetworks(),
   },
@@ -82,7 +79,7 @@ const config: HardhatUserConfig = {
   knownContractsAddresses: {
     [NetworkChainIds.Bsc]: {
       [ContractNames.UniswapV2Router]:
-        '0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F',
+        '0x10ed43c718714eb63d5aa57b78b54704e256024e',
       [ContractNames.StableCoin]: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     },
     [NetworkChainIds.BscTest]: {

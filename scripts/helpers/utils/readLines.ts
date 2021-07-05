@@ -24,7 +24,7 @@ export async function readLines<T = string>(
     const content = await readFile(filePath, { encoding: 'utf8' });
     result = content
       .split('\n')
-      .map((line) => lineParser(line))
+      .map((line) => lineParser(line.replace(/\r/gi, '')))
       .filter((value) => !!value);
   } catch (err) {
     result = [];

@@ -13,11 +13,6 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
-  await deploy(ContractNames.MetaheroPresale, {
-    from,
-    log: true,
-  });
-
   await deploy(ContractNames.MetaheroToken, {
     from,
     log: true,

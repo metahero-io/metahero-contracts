@@ -6,7 +6,6 @@ const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
     getNamedAccounts,
-    ethers: { getSigners },
     getNetworkEnv,
     knownContracts,
   } = hre;
@@ -59,25 +58,6 @@ const func: DeployFunction = async (hre) => {
   const TOKEN_MIN_TOTAL_SUPPLY = getNetworkEnv(
     'TOKEN_MIN_TOTAL_SUPPLY',
     BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
-  );
-
-  // presale
-
-  const PRESALE_TOKENS_AMOUNT_PER_NATIVE = getNetworkEnv(
-    'PRESALE_TOKENS_AMOUNT_PER_NATIVE',
-    BigNumber.from('200000'), // 200000
-  );
-  const PRESALE_MIN_PURCHASE_PRICE = getNetworkEnv(
-    'PRESALE_MIN_PURCHASE_PRICE',
-    BigNumber.from('100000000000000000'), // 0.100000000000000000
-  );
-  const PRESALE_MAX_PURCHASE_PRICE = getNetworkEnv(
-    'PRESALE_MAX_PURCHASE_PRICE',
-    BigNumber.from('10000000000000000000'), // 10.000000000000000000
-  );
-  const PRESALE_TOTAL_TOKENS = getNetworkEnv(
-    'PRESALE_TOTAL_TOKENS',
-    BigNumber.from('1000000000000000000000000000'), // 1,000,000,000.000000000000000000
   );
 
   const { from } = await getNamedAccounts();
@@ -136,68 +116,6 @@ const func: DeployFunction = async (hre) => {
         uniswapPair,
       ],
     );
-  }
-
-  // presale
-
-  if (await read(ContractNames.MetaheroPresale, 'initialized')) {
-    log(`${ContractNames.MetaheroPresale} already initialized`);
-  } else {
-    const { address: presale } = await get(ContractNames.MetaheroPresale);
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroToken,
-      {
-        from,
-        log: true,
-      },
-      'excludeAccount',
-      presale,
-      true,
-      true,
-    );
-
-    if (PRESALE_TOTAL_TOKENS.gt(0)) {
-      await execute(
-        ContractNames.MetaheroToken,
-        {
-          from,
-          log: true,
-        },
-        'transfer',
-        presale,
-        PRESALE_TOTAL_TOKENS,
-      );
-    }
-
-    await execute(
-      ContractNames.MetaheroPresale,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-      PRESALE_TOKENS_AMOUNT_PER_NATIVE,
-      PRESALE_MIN_PURCHASE_PRICE,
-      PRESALE_MAX_PURCHASE_PRICE,
-    );
-
-    const signers = await getSigners();
-
-    // for local node only
-    if (signers.length > 1) {
-      await execute(
-        ContractNames.MetaheroPresale,
-        {
-          from,
-          log: true,
-        },
-        'addAccounts',
-        signers.slice(1).map(({ address }) => address),
-      );
-    }
   }
 };
 
