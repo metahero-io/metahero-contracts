@@ -31,8 +31,8 @@ console.log(
 );
 
 console.log(
-  'MetaheroPresale BSC testnet address:', 
-  getContractAddress(ContractNames.MetaheroPresale, 97), // chainId: 97
+  'MetaheroToken BSC testnet address:', 
+  getContractAddress(ContractNames.MetaheroToken, 97), // chainId: 97
 );
 ```
 
