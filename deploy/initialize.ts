@@ -85,6 +85,24 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
+  // time lock registry
+
+  if (await read(ContractNames.MetaheroTimeLockRegistry, 'initialized')) {
+    log(`${ContractNames.MetaheroTimeLockRegistry} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroTimeLockRegistry,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+    );
+  }
+
   // token
 
   if (await read(ContractNames.MetaheroToken, 'initialized')) {
