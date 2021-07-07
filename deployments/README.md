@@ -12,5 +12,6 @@
 | contract | deployed at | transaction hash |  
 | --- | --- | --- |
 | `MetaheroLPMForUniswapV2` | [0x7C1E495a45E2aEd13c8a2F8251124A30b13F20Cc](https://testnet.bscscan.com/address/0x7C1E495a45E2aEd13c8a2F8251124A30b13F20Cc) | [0x318c141dc1f47489c4e5ded1b14b4b156ba8b90ceedf0de85e9bfd464ee9d04c](https://testnet.bscscan.com/tx/0x318c141dc1f47489c4e5ded1b14b4b156ba8b90ceedf0de85e9bfd464ee9d04c) |
+| `MetaheroTimeLockRegistry` | [0x144851722E8659c814DF0B912500AF085E8139AC](https://testnet.bscscan.com/address/0x144851722E8659c814DF0B912500AF085E8139AC) | [0x5af91371f0ec51ba6e720e8c47e14aa210bd2072e47e4ecfdf421d5e1a9fec12](https://testnet.bscscan.com/tx/0x5af91371f0ec51ba6e720e8c47e14aa210bd2072e47e4ecfdf421d5e1a9fec12) |
 | `MetaheroToken` | [0xd50DA1B93F7a9253BCbc07b8A05D94B522567BF7](https://testnet.bscscan.com/address/0xd50DA1B93F7a9253BCbc07b8A05D94B522567BF7) | [0x91a060ab8a3062fa825a8f1ba492d741bceea2e4edb8fea40a40e63bbfd1389e](https://testnet.bscscan.com/tx/0x91a060ab8a3062fa825a8f1ba492d741bceea2e4edb8fea40a40e63bbfd1389e) |
 
