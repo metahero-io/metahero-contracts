@@ -154,6 +154,7 @@ contract MetaheroTimeLockRegistry is Initializable {
     external
   {
     _lockTokens(
+      msg.sender,
       claimer,
       amount,
       unlockedIn
@@ -173,6 +174,7 @@ contract MetaheroTimeLockRegistry is Initializable {
   {
     _lockTokens(
       msg.sender,
+      msg.sender,
       amount,
       unlockedIn
     );
@@ -185,6 +187,7 @@ contract MetaheroTimeLockRegistry is Initializable {
     external
   {
     _claimTokens(
+      msg.sender,
       msg.sender
     );
   }
@@ -199,6 +202,7 @@ contract MetaheroTimeLockRegistry is Initializable {
     external
   {
     _claimTokens(
+      msg.sender,
       recipient
     );
   }
@@ -282,6 +286,7 @@ contract MetaheroTimeLockRegistry is Initializable {
   }
 
   function _lockTokens(
+    address spender,
     address claimer,
     uint256 amount,
     uint256 unlockedIn
@@ -306,29 +311,48 @@ contract MetaheroTimeLockRegistry is Initializable {
     uint256 deadline = block.timestamp.add(unlockedIn); // solhint-disable-line not-rely-on-time
 
     address claimerWallet = claimerWallets[claimer];
-    uint256 expectedClaimerWalletBalance = token.balanceOf(claimerWallet).add(amount);
+
+    bool excluded;
+
+    if (spender != claimer) {
+      (excluded,,) = token.getExcludedAccount(spender);
+
+      require(
+        excluded,
+        "MetaheroTimeLockRegistry#6" // spender is not the excluded account
+      );
+    }
+
+    (excluded,,) = token.getExcludedAccount(claimer);
+
+    require(
+      excluded,
+      "MetaheroTimeLockRegistry#7" // claimer is not the excluded account
+    );
+
+    (excluded,,) = token.getExcludedAccount(claimerWallet);
+
+    require(
+      excluded,
+      "MetaheroTimeLockRegistry#8" // claimer wallet is not the excluded account
+    );
 
     token.transferFrom(
-      msg.sender,
+      spender,
       claimerWallet,
       amount
     );
 
-    require(
-      token.balanceOf(claimerWallet) == expectedClaimerWalletBalance,
-      "MetaheroTimeLockRegistry#6" // invalid claimer wallet balance after transfer
-    );
-
     TimeLock memory timeLock;
 
-    timeLock.spender = msg.sender;
+    timeLock.spender = spender;
     timeLock.amount = amount;
     timeLock.deadline = deadline;
 
     claimerTimeLocks[claimer].push(timeLock);
 
     emit TokensLocked(
-      msg.sender,
+      spender,
       claimer,
       claimerWallet,
       amount,
@@ -337,23 +361,32 @@ contract MetaheroTimeLockRegistry is Initializable {
   }
 
   function _claimTokens(
+    address claimer,
     address recipient
   )
     private
   {
     require(
-      claimerWallets[msg.sender] != address(0),
-      "MetaheroTimeLockRegistry#7" // claimer wallet doesn't exist
+      claimerWallets[claimer] != address(0),
+      "MetaheroTimeLockRegistry#9" // claimer wallet doesn't exist
     );
 
     require(
       recipient != address(0),
-      "MetaheroTimeLockRegistry#8" // claimer is the zero address
+      "MetaheroTimeLockRegistry#10" // claimer is the zero address
     );
 
+    if (recipient != claimer) {
+      (bool excluded,,) = token.getExcludedAccount(recipient);
+
+      require(
+        excluded,
+        "MetaheroTimeLockRegistry#11" // recipient is not the excluded account
+      );
+    }
 
     uint256 amount;
-    uint256 len = claimerTimeLocks[msg.sender].length;
+    uint256 len = claimerTimeLocks[claimer].length;
 
     if (len != 0) {
       uint256 lastIndex = len - 1;
@@ -361,11 +394,11 @@ contract MetaheroTimeLockRegistry is Initializable {
       TimeLock memory timeLock;
 
       for (uint256 index; index <= lastIndex; ) {
-        timeLock = claimerTimeLocks[msg.sender][index];
+        timeLock = claimerTimeLocks[claimer][index];
 
         if (timeLock.deadline <= block.timestamp) { // solhint-disable-line not-rely-on-time
           if (index != lastIndex) {
-            claimerTimeLocks[msg.sender][index] = claimerTimeLocks[msg.sender][lastIndex];
+            claimerTimeLocks[claimer][index] = claimerTimeLocks[claimer][lastIndex];
             lastIndex--;
           } else {
             index++;
@@ -375,14 +408,14 @@ contract MetaheroTimeLockRegistry is Initializable {
 
           emit TokensUnlocked(
             timeLock.spender,
-            msg.sender,
-            claimerWallets[msg.sender],
+            claimer,
+            claimerWallets[claimer],
             recipient,
             timeLock.amount,
             timeLock.deadline
           );
 
-          claimerTimeLocks[msg.sender].pop();
+          claimerTimeLocks[claimer].pop();
         } else {
           index++;
         }
@@ -391,16 +424,9 @@ contract MetaheroTimeLockRegistry is Initializable {
 
     require(
       amount != 0,
-      "MetaheroTimeLockRegistry#9" // amount is zero
+      "MetaheroTimeLockRegistry#12" // amount is zero
     );
 
-    uint256 expectedRecipientBalance = token.balanceOf(recipient).add(amount);
-
-    MetaheroTimeLockWallet(claimerWallets[msg.sender]).transferTokens(recipient, amount);
-
-    require(
-      token.balanceOf(recipient) == expectedRecipientBalance,
-      "MetaheroTimeLockRegistry#11" // invalid recipient balance after transfer
-    );
+    MetaheroTimeLockWallet(claimerWallets[claimer]).transferTokens(recipient, amount);
   }
 }

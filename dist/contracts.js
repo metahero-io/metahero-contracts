@@ -577,7 +577,7 @@ module.exports = {
     ],
     "addresses": {
       "56": null,
-      "97": "0x144851722E8659c814DF0B912500AF085E8139AC"
+      "97": "0xB96E2A891e72B9aE5AA822C0Fe3Bd7F5E373eE0a"
     }
   },
   "MetaheroToken": {

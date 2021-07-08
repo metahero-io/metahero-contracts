@@ -42,13 +42,13 @@ describe('MetaheroTimeLockWallet', () => {
 
       await expect(
         wallet.connect(signer).transferTokens(randomAddress(), 1),
-      ).to.be.revertedWith('');
+      ).to.be.revertedWith('MetaheroTimeLockWallet#1');
     });
 
     it('expect to revert on transfer failed', async () => {
       await expect(
         wallet.connect(registry).transferTokens(randomAddress(), 1),
-      ).to.be.revertedWith('');
+      ).to.be.revertedWith('MetaheroTimeLockWallet#2');
     });
 
     it('expect to transfer tokens', async () => {

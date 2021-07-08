@@ -37,6 +37,8 @@ describe('MetaheroTimeLockRegistry', () => {
     [owner, controller, ...signers] = await getSigners();
   });
 
+  // helpers
+
   const computeClaimerWallet = (claimer: string) => {
     const salt = utils.solidityKeccak256(['address'], [claimer]);
     const creationCode = utils.solidityKeccak256(
@@ -51,19 +53,16 @@ describe('MetaheroTimeLockRegistry', () => {
     return utils.getCreate2Address(registry.address, salt, creationCode);
   };
 
-  const prepareBalances = async (
-    spender: Signer,
-    claimer: string,
-    amount: BigNumberish,
-    excludeWallet = true,
-  ) => {
-    await token.connect(controller).mintTo(spender.address, amount);
+  const excludeAccount = async (account: string) => {
+    await token.excludeAccount(account, true, true);
+  };
 
-    await token.connect(spender).approve(registry.address, amount);
+  const mintTokens = async (recipient: string, amount: BigNumberish) => {
+    await token.connect(controller).mintTo(recipient, amount);
+  };
 
-    if (excludeWallet) {
-      await token.excludeAccount(computeClaimerWallet(claimer), true, true);
-    }
+  const approveTokens = async (sender: Signer, amount: BigNumberish) => {
+    await token.connect(sender).approve(registry.address, amount);
   };
 
   const createTimeLocks = async (
@@ -78,7 +77,17 @@ describe('MetaheroTimeLockRegistry', () => {
       BigNumber.from(0),
     );
 
-    await prepareBalances(spender, claimer, amount, true);
+    const claimerWallet = computeClaimerWallet(claimer);
+
+    await excludeAccount(spender.address);
+    await excludeAccount(claimerWallet);
+
+    if (spender.address != claimer) {
+      await excludeAccount(claimer);
+    }
+
+    await approveTokens(spender, amount);
+    await mintTokens(spender.address, amount);
 
     for (const { amount, unlockedIn } of timeLockConfigs) {
       const timestamp = await setNextBlockTimestamp();
@@ -224,17 +233,28 @@ describe('MetaheroTimeLockRegistry', () => {
         ).to.be.revertedWith('MetaheroTimeLockRegistry#5');
       });
 
-      it("expect to revert locked amount doesn't match transferred amount", async () => {
+      it('expect to revert when spender is not the excluded account', async () => {
         const signer = signers.pop();
-        const amount = 1000;
+        await expect(
+          registry.connect(signer).lockTokensTo(randomAddress(), 1000, 1000),
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#6');
+      });
 
-        await token.connect(signer).approve(registry.address, amount);
+      it('expect to revert when claimer is not the excluded account', async () => {
+        const signer = signers.pop();
+        await excludeAccount(signer.address);
+        await expect(
+          registry.connect(signer).lockTokensTo(randomAddress(), 1000, 1000),
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#7');
+      });
 
-        await token.connect(controller).mintTo(signer.address, amount * 2);
+      it('expect to revert when claimer wallet is not the excluded account', async () => {
+        const signer = signers.pop();
+        await excludeAccount(signer.address);
 
         await expect(
-          registry.connect(signer).lockTokensTo(randomAddress(), amount, 0),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#6');
+          registry.connect(signer).lockTokensTo(signer.address, 1000, 1000),
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#8');
       });
 
       it('expect to lock tokens to fresh account', async () => {
@@ -244,7 +264,12 @@ describe('MetaheroTimeLockRegistry', () => {
         const amount = 1000;
         const unlockedIn = 1;
 
-        await prepareBalances(signer, claimer, amount, true);
+        await excludeAccount(signer.address);
+        await excludeAccount(claimer);
+        await excludeAccount(claimerWallet);
+
+        await mintTokens(signer.address, amount);
+        await approveTokens(signer, amount);
 
         const timestamp = await setNextBlockTimestamp();
 
@@ -286,7 +311,11 @@ describe('MetaheroTimeLockRegistry', () => {
         const amount = 200;
         const unlockedIn = 2;
 
-        await prepareBalances(claimer, claimer.address, amount, true);
+        await excludeAccount(claimer.address);
+        await excludeAccount(claimerWallet);
+
+        await mintTokens(claimer.address, amount);
+        await approveTokens(claimer, amount);
 
         const timestamp = await setNextBlockTimestamp();
 
@@ -320,15 +349,15 @@ describe('MetaheroTimeLockRegistry', () => {
           timeLocks = await createTimeLocks(spender, claimer.address, [
             {
               amount: 1000,
-              unlockedIn: 10,
+              unlockedIn: 100,
             },
             {
               amount: 2000,
-              unlockedIn: 20,
+              unlockedIn: 200,
             },
             {
               amount: 3000,
-              unlockedIn: 30,
+              unlockedIn: 300,
             },
           ]);
         },
@@ -337,33 +366,13 @@ describe('MetaheroTimeLockRegistry', () => {
       it('expect to revert before first deadline', async () => {
         await expect(
           registry.connect(claimer).claimTokens(),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#9');
-      });
-
-      it('expect to revert on invalid recipient balance after transfer', async () => {
-        await token.excludeAccount(
-          computeClaimerWallet(claimer.address),
-          false,
-          false,
-        );
-
-        const { deadline } = timeLocks[0];
-
-        await setNextBlockTimestamp(deadline);
-
-        await expect(
-          registry.connect(claimer).claimTokens(),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#11');
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#12');
       });
 
       it('expect to claim tokens from #1 time lock', async () => {
-        await token.excludeAccount(
-          computeClaimerWallet(claimer.address),
-          true,
-          true,
-        );
-
         const { amount, deadline } = timeLocks[0];
+
+        await setNextBlockTimestamp(deadline);
 
         const expectedClaimerBalance = (
           await token.balanceOf(claimer.address)
@@ -442,19 +451,29 @@ describe('MetaheroTimeLockRegistry', () => {
 
         await expect(
           registry.connect(signer).claimTokensTo(randomAddress()),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#7');
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#9');
       });
 
       it('expect to revert when recipient is the zero address', async () => {
         await expect(
           registry.connect(claimer).claimTokensTo(constants.AddressZero),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#8');
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#10');
       });
 
-      it('expect to revert on no time locks', async () => {
+      it('expect to revert when recipient is not the excluded account', async () => {
         await expect(
           registry.connect(claimer).claimTokensTo(randomAddress()),
-        ).to.be.revertedWith('MetaheroTimeLockRegistry#9');
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#11');
+      });
+
+      it('expect to revert when there is no time locks', async () => {
+        const recipient = randomAddress();
+
+        await excludeAccount(recipient);
+
+        await expect(
+          registry.connect(claimer).claimTokensTo(recipient),
+        ).to.be.revertedWith('MetaheroTimeLockRegistry#12');
       });
     });
 
@@ -492,6 +511,7 @@ describe('MetaheroTimeLockRegistry', () => {
     context('getClaimerTimeLocks()', () => {
       const amount1 = 300;
       const amount2 = 500;
+      const amountTotal = amount1 + amount2;
       const claimer = randomAddress();
       let spender: Signer;
       let deadline1: number;
@@ -501,7 +521,12 @@ describe('MetaheroTimeLockRegistry', () => {
         postBefore: async () => {
           spender = signers.pop();
 
-          await prepareBalances(spender, claimer, amount1 + amount2, true);
+          await excludeAccount(spender.address);
+          await excludeAccount(claimer);
+          await excludeAccount(computeClaimerWallet(claimer));
+
+          await mintTokens(spender.address, amountTotal);
+          await approveTokens(spender, amountTotal);
 
           {
             const unlockedIn = 1000;

@@ -51,19 +51,21 @@ contract MetaheroTimeLockWallet {
   )
     external
   {
-    require( // solhint-disable-line reason-string
-      msg.sender == registry // msg.sender is not the registry
+    require(
+      msg.sender == registry,
+      "MetaheroTimeLockWallet#1" // msg.sender is not the registry
     );
 
     (bool success, bytes memory response) = address(token).call( // solhint-disable-line avoid-low-level-calls
       abi.encodeWithSelector(ERC20_TRANSFER_SELECTOR, recipient, amount)
     );
 
-    require( // solhint-disable-line reason-string
-      success && ( // transfer failed
+    require(
+      success && (
         response.length == 0 ||
         abi.decode(response, (bool))
-      )
+      ),
+      "MetaheroTimeLockWallet#2" // transfer failed
     );
   }
 }
