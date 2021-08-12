@@ -87,6 +87,71 @@ module.exports = {
       {
         "inputs": [
           {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8897423d",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8897423d",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x90173b82",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x90173b82",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xd2aa0e28",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xd2aa0e28",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xfe89a781",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xfe89a781",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "sender",
             "type": "address"
@@ -285,299 +350,6 @@ module.exports = {
     "addresses": {
       "56": "0x5DA5b71B88C42544b642D4AB781B30831EDAC341",
       "97": "0x7C1E495a45E2aEd13c8a2F8251124A30b13F20Cc"
-    }
-  },
-  "MetaheroTimeLockRegistry": {
-    "abi": [
-      {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "claimerWallet",
-            "type": "address"
-          }
-        ],
-        "name": "ClaimerWalletCreated",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          }
-        ],
-        "name": "Initialized",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "claimerWallet",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "deadline",
-            "type": "uint256"
-          }
-        ],
-        "name": "TokensLocked",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "spender",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "claimerWallet",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "deadline",
-            "type": "uint256"
-          }
-        ],
-        "name": "TokensUnlocked",
-        "type": "event"
-      },
-      {
-        "inputs": [],
-        "name": "claimTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          }
-        ],
-        "name": "claimTokensTo",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          }
-        ],
-        "name": "computeClaimerWallet",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "result",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          }
-        ],
-        "name": "createClaimerWallet",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          }
-        ],
-        "name": "getClaimerTimeLocks",
-        "outputs": [
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "spender",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct MetaheroTimeLockRegistry.TimeLock[]",
-            "name": "",
-            "type": "tuple[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "token_",
-            "type": "address"
-          }
-        ],
-        "name": "initialize",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "initialized",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "unlockedIn",
-            "type": "uint256"
-          }
-        ],
-        "name": "lockTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "claimer",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "unlockedIn",
-            "type": "uint256"
-          }
-        ],
-        "name": "lockTokensTo",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "name": "token",
-        "outputs": [
-          {
-            "internalType": "contract MetaheroToken",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }
-    ],
-    "addresses": {
-      "56": "0x9BE705c2E693a4D4547bE512C9B3836C54b42569",
-      "97": "0xB96E2A891e72B9aE5AA822C0Fe3Bd7F5E373eE0a"
     }
   },
   "MetaheroToken": {
@@ -956,6 +728,71 @@ module.exports = {
         "name": "burnFrom",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8858438c",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8858438c",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8897423d",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8897423d",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xd042b2c9",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xd042b2c9",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xe71ef217",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xe71ef217",
+        "outputs": [],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
