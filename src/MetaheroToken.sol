@@ -274,7 +274,7 @@ contract MetaheroToken is Controlled, Owned, ERC20, Initializable {
   {
     require(
       dao_ != address(0),
-      "MetaheroToken#4" // lpm is the zero address
+      "MetaheroToken#4" // dao is the zero address
     );
 
     dao = IMetaheroDAO(dao_);
