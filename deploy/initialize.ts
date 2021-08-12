@@ -12,6 +12,13 @@ const func: DeployFunction = async (hre) => {
 
   // settings
 
+  // dao
+
+  const DAO_SNAPSHOT_WINDOW = getNetworkEnv(
+    'DAO_SNAPSHOT_WINDOW',
+    24 * 60 * 60, // 1 day
+  );
+
   // lpm
 
   const LPM_ENABLE_BURN_LP_AT_VALUE = getNetworkEnv(
@@ -62,7 +69,24 @@ const func: DeployFunction = async (hre) => {
 
   const { from } = await getNamedAccounts();
 
-  // initialize
+  // dao
+
+  if (await read(ContractNames.MetaheroDAO, 'initialized')) {
+    log(`${ContractNames.MetaheroDAO} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroDAO,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+      DAO_SNAPSHOT_WINDOW,
+    );
+  }
 
   // lpm
 
@@ -82,24 +106,6 @@ const func: DeployFunction = async (hre) => {
       knownContracts.getAddress(ContractNames.StableCoin),
       token,
       knownContracts.getAddress(ContractNames.UniswapV2Router),
-    );
-  }
-
-  // time lock registry
-
-  if (await read(ContractNames.MetaheroTimeLockRegistry, 'initialized')) {
-    log(`${ContractNames.MetaheroTimeLockRegistry} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroTimeLockRegistry,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
     );
   }
 

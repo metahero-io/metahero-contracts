@@ -40,6 +40,7 @@ via `env` variables:
 | `<network config prefix>_PROVIDER_URL` | _optional_ |
 | `<network config prefix>_PROVIDER_GAS` | _optional_ |
 | `<network config prefix>_PROVIDER_GAS_PRICE` | _optional_ |
+| `<network config prefix>_DAO_SNAPSHOT_WINDOW` | _default_ `24 * 60 * 60` |
 | `<network config prefix>_LPM_FOR_UNISWAP_V2_ENABLE_BURN_LP_AT_VALUE` | _default_ `10,000,000.000000000000000000` |
 | `<network config prefix>_TOKEN_SENDER_BURN_FEE` | _default_ `1` |
 | `<network config prefix>_TOKEN_RECIPIENT_BURN_FEE` | _default_ `1` |
