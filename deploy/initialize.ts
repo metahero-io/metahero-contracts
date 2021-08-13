@@ -12,13 +12,6 @@ const func: DeployFunction = async (hre) => {
 
   // settings
 
-  // dao
-
-  const DAO_SNAPSHOT_WINDOW = getNetworkEnv(
-    'DAO_SNAPSHOT_WINDOW',
-    24 * 60 * 60, // 1 day
-  );
-
   // lpm
 
   const LPM_ENABLE_BURN_LP_AT_VALUE = getNetworkEnv(
@@ -67,26 +60,19 @@ const func: DeployFunction = async (hre) => {
     BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
   );
 
-  const { from } = await getNamedAccounts();
-
   // dao
 
-  if (await read(ContractNames.MetaheroDAO, 'initialized')) {
-    log(`${ContractNames.MetaheroDAO} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
+  const DAO_MIN_VOTING_PERIOD = getNetworkEnv(
+    'DAO_MIN_VOTING_PERIOD',
+    24 * 60 * 60, // 1 day
+  );
 
-    await execute(
-      ContractNames.MetaheroDAO,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-      DAO_SNAPSHOT_WINDOW,
-    );
-  }
+  const DAO_SNAPSHOT_WINDOW = getNetworkEnv(
+    'DAO_SNAPSHOT_WINDOW',
+    24 * 60 * 60, // 1 day
+  );
+
+  const { from } = await getNamedAccounts();
 
   // lpm
 
@@ -139,6 +125,27 @@ const func: DeployFunction = async (hre) => {
         lpm, //
         uniswapPair,
       ],
+    );
+  }
+
+  // dao
+
+  if (await read(ContractNames.MetaheroDAO, 'initialized')) {
+    log(`${ContractNames.MetaheroDAO} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroDAO,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+      constants.AddressZero, // use token owner
+      DAO_MIN_VOTING_PERIOD,
+      DAO_SNAPSHOT_WINDOW,
     );
   }
 };

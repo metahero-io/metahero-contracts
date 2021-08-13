@@ -19,6 +19,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
   using SafeMathLib for uint256;
 
   struct Settings {
+    uint256 minVotingPeriod;
     uint256 snapshotWindow;
   }
 
@@ -32,6 +33,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     uint256 votesMinWeight;
     uint256 votesYesWeight;
     uint256 votesNoWeight;
+    uint256 votesCount;
     mapping (address => uint8) votes; // 1 - yes, 2 - no
   }
 
@@ -69,14 +71,16 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
 
   /**
    * @dev Emitted the contract is initialized
-   * @param operator operator address
    * @param token token address
+   * @param operator operator address
+   * @param minVotingPeriod min voting period
    * @param snapshotWindow snapshot window
    * @param snapshotBaseTimestamp snapshot base timestamp
    */
   event Initialized(
-    address operator,
     address token,
+    address operator,
+    uint256 minVotingPeriod,
     uint256 snapshotWindow,
     uint256 snapshotBaseTimestamp
   );
@@ -88,13 +92,17 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
    * @param snapshotId snapshot id
    * @param startsAt starts at
    * @param endsAt ends at
+   * @param votesMinPercentage votes min percentage
+   * @param votesMinWeight votes min weight
    */
   event ProposalCreated(
     uint256 proposalId,
     uint256 snapshotId,
     bytes callData,
     uint256 startsAt,
-    uint256 endsAt
+    uint256 endsAt,
+    uint256 votesMinPercentage,
+    uint256 votesMinWeight
   );
 
   /**
@@ -102,13 +110,11 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
    * @param proposalId proposal id
    * @param votesYesWeight votes yes weight
    * @param votesNoWeight votes no weight
-   * @param votesMinWeight votes min weight
    */
   event ProposalProcessed(
     uint256 proposalId,
     uint256 votesYesWeight,
-    uint256 votesNoWeight,
-    uint256 votesMinWeight
+    uint256 votesNoWeight
   );
 
   /**
@@ -164,10 +170,14 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
   /**
    * @dev Initializes the contract
    * @param token_ token address
+   * @param operator_ custom operator address
+   * @param minVotingPeriod min voting period
    * @param snapshotWindow snapshot window
    */
   function initialize(
     address token_,
+    address operator_,
+    uint256 minVotingPeriod,
     uint256 snapshotWindow
   )
     external
@@ -179,20 +189,32 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     );
 
     require(
+      minVotingPeriod != 0,
+      "MetaheroDAO#4" // min voting period is zero
+    );
+
+    require(
       snapshotWindow != 0,
-      "MetaheroDAO#4" // snapshot window is zero
+      "MetaheroDAO#5" // snapshot window is zero
     );
 
     token = MetaheroToken(token_);
-    operator = token.owner();
 
+    if (operator_ == address(0)) {
+      operator_ = token.owner();
+    }
+
+    operator = operator_;
+
+    settings.minVotingPeriod = minVotingPeriod;
     settings.snapshotWindow = snapshotWindow;
 
-    snapshotBaseTimestamp = block.timestamp;
+    snapshotBaseTimestamp = block.timestamp; // solhint-disable-line not-rely-on-time
 
     emit Initialized(
-      operator,
       token_,
+      operator_,
+      minVotingPeriod,
       snapshotWindow,
       snapshotBaseTimestamp
     );
@@ -213,7 +235,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     onlyToken
     override
   {
-    uint256 snapshotId = _getSnapshotIdAt(block.timestamp);
+    uint256 snapshotId = _getSnapshotIdAt(block.timestamp); // solhint-disable-line not-rely-on-time
 
     _setMemberWeight(
       member,
@@ -246,7 +268,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     onlyToken
     override
   {
-    uint256 snapshotId = _getSnapshotIdAt(block.timestamp);
+    uint256 snapshotId = _getSnapshotIdAt(block.timestamp); // solhint-disable-line not-rely-on-time
 
     _setMemberWeight(
       memberA,
@@ -282,7 +304,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     require(
       lpFees.sender != 0 ||
       lpFees.recipient != 0,
-      "MetaheroDAO#5" // already removed
+      "MetaheroDAO#6" // already removed
     );
 
     token.updateFees(
@@ -334,24 +356,29 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
   {
     require(
       endsIn > startsIn,
-      "MetaheroDAO#6" // `ends in` should be higher than `starts in`
+      "MetaheroDAO#7" // `ends in` should be higher than `starts in`
+    );
+
+    require(
+      endsIn.sub(startsIn) >= settings.minVotingPeriod,
+      "MetaheroDAO#8" // voting period is too short
     );
 
     proposalCounter++;
 
     uint256 proposalId = proposalCounter;
-    uint256 snapshotId = _getSnapshotIdAt(block.timestamp);
-    uint256 startsAt = startsIn.add(block.timestamp);
-    uint256 endsAt = endsIn.add(block.timestamp);
+    uint256 snapshotId = _getSnapshotIdAt(block.timestamp); // solhint-disable-line not-rely-on-time
+    uint256 startsAt = startsIn.add(block.timestamp); // solhint-disable-line not-rely-on-time
+    uint256 endsAt = endsIn.add(block.timestamp); // solhint-disable-line not-rely-on-time
     uint256 votesMinWeight;
 
     if (votesMinPercentage != 0) {
       require(
         votesMinPercentage <= MAX_VOTES_MIN_PERCENTAGE,
-        "MetaheroDAO#7" // invalid percentage value
+        "MetaheroDAO#9" // invalid votes min percentage
       );
 
-      votesMinWeight = _getTotalWeightAtSnapshot(
+      votesMinWeight = _getTotalWeightOnSnapshot(
         snapshotId
       ).percent(votesMinPercentage);
     }
@@ -368,7 +395,9 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
       snapshotId,
       callData,
       startsAt,
-      endsAt
+      endsAt,
+      votesMinPercentage,
+      votesMinWeight
     );
   }
 
@@ -385,17 +414,17 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
 
     require(
       proposal.snapshotId != 0,
-      "MetaheroDAO#8" // proposal not found
+      "MetaheroDAO#10" // proposal not found
     );
 
     require(
-      proposal.endsAt >= block.timestamp,
-      "MetaheroDAO#9"
+      proposal.endsAt <= block.timestamp, // solhint-disable-line not-rely-on-time
+      "MetaheroDAO#11"
     );
 
     require(
       !proposal.processed,
-      "MetaheroDAO#10" // already processed
+      "MetaheroDAO#12" // already processed
     );
 
     if (
@@ -403,21 +432,20 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
       proposal.votesYesWeight > proposal.votesNoWeight &&
       proposal.votesYesWeight >= proposal.votesMinWeight
     ) {
-      (bool success, ) = address(token).call(proposal.callData);
+      (bool success, ) = address(token).call(proposal.callData); // solhint-disable-line avoid-low-level-calls
 
       require(
         success,
-        "MetaheroDAO#11" // call failed
+        "MetaheroDAO#13" // call failed
       );
     }
 
-    proposal.processed = true;
+    proposals[proposalId].processed = true;
 
     emit ProposalProcessed(
       proposalId,
       proposal.votesYesWeight,
-      proposal.votesNoWeight,
-      proposal.votesMinWeight
+      proposal.votesNoWeight
     );
   }
 
@@ -436,54 +464,57 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
 
     require(
       proposal.snapshotId != 0,
-      "MetaheroDAO#12" // proposal not found
+      "MetaheroDAO#14" // proposal not found
     );
 
     require(
-      proposal.startsAt >= block.timestamp,
-      "MetaheroDAO#13"
+      proposal.startsAt <= block.timestamp, // solhint-disable-line not-rely-on-time
+      "MetaheroDAO#15"
     );
 
     require(
-      proposal.endsAt < block.timestamp,
-      "MetaheroDAO#14"
+      proposal.endsAt > block.timestamp, // solhint-disable-line not-rely-on-time
+      "MetaheroDAO#16"
     );
 
     require(
       vote == 1 ||
       vote == 2,
-      "MetaheroDAO#15"
+      "MetaheroDAO#17"
     );
 
     require(
       proposals[proposalId].votes[msg.sender] == 0,
-      "MetaheroDAO#16"
+      "MetaheroDAO#18"
     );
 
-    uint256 memberWeight = _getMemberWeightAtSnapshot(
+    uint256 memberWeight = _getMemberWeightOnSnapshot(
       msg.sender,
       proposal.snapshotId
     );
 
     require(
       memberWeight != 0,
-      "MetaheroDAO#17"
+      "MetaheroDAO#19"
     );
 
     if (vote == 1) { // yes vote
-      proposal.votesYesWeight = proposal.votesYesWeight.add(
-        memberWeight
-      );
-    } else if (vote == 2) { // no vote
-      proposal.votesNoWeight = proposal.votesNoWeight.add(
+      proposals[proposalId].votesYesWeight = proposal.votesYesWeight.add(
         memberWeight
       );
     }
 
+    if (vote == 2) { // no vote
+      proposals[proposalId].votesNoWeight = proposal.votesNoWeight.add(
+        memberWeight
+      );
+    }
+
+    proposals[proposalId].votesCount = proposal.votesCount.add(1);
     proposals[proposalId].votes[msg.sender] = vote;
 
     emit VoteSubmitted(
-      proposal.snapshotId,
+      proposalId,
       msg.sender,
       vote
     );
@@ -491,12 +522,68 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
 
   // external functions (views)
 
+  function getProposal(
+    uint256 proposalId
+  )
+    external
+    view
+    returns (
+      uint256 snapshotId,
+      bytes memory callData,
+      uint256 startsAt,
+      uint256 endsAt,
+      bool processed,
+      uint256 votesMinPercentage,
+      uint256 votesMinWeight,
+      uint256 votesYesWeight,
+      uint256 votesNoWeight,
+      uint256 votesCount
+    )
+  {
+    {
+      snapshotId = proposals[proposalId].snapshotId;
+      callData = proposals[proposalId].callData;
+      startsAt = proposals[proposalId].startsAt;
+      endsAt = proposals[proposalId].endsAt;
+      processed = proposals[proposalId].processed;
+      votesMinPercentage = proposals[proposalId].votesMinPercentage;
+      votesMinWeight = proposals[proposalId].votesMinWeight;
+      votesYesWeight = proposals[proposalId].votesYesWeight;
+      votesNoWeight = proposals[proposalId].votesNoWeight;
+      votesCount = proposals[proposalId].votesCount;
+    }
+
+    return (
+      snapshotId,
+      callData,
+      startsAt,
+      endsAt,
+      processed,
+      votesMinPercentage,
+      votesMinWeight,
+      votesYesWeight,
+      votesNoWeight,
+      votesCount
+    );
+  }
+
+  function getMemberProposalVote(
+    address member,
+    uint256 proposalId
+  )
+    external
+    view
+    returns (uint8)
+  {
+    return proposals[proposalId].votes[member];
+  }
+
   function getCurrentSnapshotId()
     external
     view
     returns (uint256)
   {
-    return _getSnapshotIdAt(block.timestamp);
+    return _getSnapshotIdAt(block.timestamp); // solhint-disable-line not-rely-on-time
   }
 
   function getSnapshotIdAt(
@@ -507,6 +594,55 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     returns (uint256)
   {
     return _getSnapshotIdAt(timestamp);
+  }
+
+  function getCurrentMemberWeight(
+    address member
+  )
+    external
+    view
+    returns (uint256)
+  {
+    return _getMemberWeightOnSnapshot(
+      member,
+      _getSnapshotIdAt(block.timestamp) // solhint-disable-line not-rely-on-time
+    );
+  }
+
+  function getMemberWeightOnSnapshot(
+    address member,
+    uint256 snapshotId
+  )
+    external
+    view
+    returns (uint256)
+  {
+    return _getMemberWeightOnSnapshot(
+      member,
+      snapshotId
+    );
+  }
+
+  function getCurrentTotalWeight()
+    external
+    view
+    returns (uint256)
+  {
+    return _getTotalWeightOnSnapshot(
+      _getSnapshotIdAt(block.timestamp) // solhint-disable-line not-rely-on-time
+    );
+  }
+
+  function getTotalWeightOnSnapshot(
+    uint256 snapshotId
+  )
+    external
+    view
+    returns (uint256)
+  {
+    return _getTotalWeightOnSnapshot(
+      snapshotId
+    );
   }
 
   // private functions
@@ -564,14 +700,6 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
 
   // private functions (views)
 
-  function _getCurrentSnapshotId()
-    private
-    view
-    returns (uint256)
-  {
-    return _getSnapshotIdAt(block.timestamp);
-  }
-
   function _getSnapshotIdAt(
     uint256 timestamp
   )
@@ -588,7 +716,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
       ).add(1);
   }
 
-  function _getMemberWeightAtSnapshot(
+  function _getMemberWeightOnSnapshot(
     address member,
     uint256 snapshotId
   )
@@ -599,10 +727,12 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     WeightsHistory memory weightsHistory = membersWeightsHistory[member];
     uint len = weightsHistory.snapshotIds.length;
 
-    if (weightsHistory.snapshotIds.length > 0) {
-      for (uint index = len - 1 ; index >= 0 ; index--) {
+    if (len != 0) {
+      for (uint pos = 1 ; pos <= len ; pos++) {
+        uint index = len - pos;
+
         if (weightsHistory.snapshotIds[index] <= snapshotId) {
-          result = weightsHistory.weights[index];
+          result = membersWeightsHistory[member].weights[index];
           break;
         }
       }
@@ -613,7 +743,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
         uint256 totalRewards
       ) = token.getBalanceSummary(member);
 
-      if (totalRewards > 0) {
+      if (totalRewards != 0) {
         result = holdingBalance;
       }
     }
@@ -621,7 +751,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
     return result;
   }
 
-  function _getTotalWeightAtSnapshot(
+  function _getTotalWeightOnSnapshot(
     uint256 snapshotId
   )
     private
@@ -630,8 +760,10 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
   {
     uint len = totalWeightsHistory.snapshotIds.length;
 
-    if (totalWeightsHistory.snapshotIds.length > 0) {
-      for (uint index = len - 1 ; index >= 0 ; index--) {
+    if (len != 0) {
+      for (uint pos = 1 ; pos <= len ; pos++) {
+        uint index = len - pos;
+
         if (totalWeightsHistory.snapshotIds[index] <= snapshotId) {
           result = totalWeightsHistory.weights[index];
           break;
@@ -644,9 +776,7 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
         ,
       ) = token.summary();
 
-      if (totalHolding > 0) {
-        result = totalHolding;
-      }
+      result = totalHolding;
     }
 
     return result;
