@@ -1,6 +1,580 @@
 /* eslint-disable */
 
 module.exports = {
+  "MetaheroDAO": {
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "minVotingPeriod",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "snapshotWindow",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "snapshotBaseTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "Initialized",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "snapshotId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "callData",
+            "type": "bytes"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "startsAt",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "endsAt",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "votesMinPercentage",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "votesMinWeight",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProposalCreated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "votesYesWeight",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "votesNoWeight",
+            "type": "uint256"
+          }
+        ],
+        "name": "ProposalProcessed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint8",
+            "name": "vote",
+            "type": "uint8"
+          }
+        ],
+        "name": "VoteSubmitted",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes",
+            "name": "callData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startsIn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endsIn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesMinPercentage",
+            "type": "uint256"
+          }
+        ],
+        "name": "createProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "excludeSenderFromFee",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "excludeRecipientFromFee",
+            "type": "bool"
+          }
+        ],
+        "name": "excludeTokenAccount",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          }
+        ],
+        "name": "getCurrentMemberWeight",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getCurrentSnapshotId",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getCurrentTotalWeight",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getMemberProposalVote",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "snapshotId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getMemberWeightOnSnapshot",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getProposal",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "snapshotId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "callData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startsAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endsAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "processed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesMinPercentage",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesMinWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesYesWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesNoWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "votesCount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "name": "getSnapshotIdAt",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "snapshotId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getTotalWeightOnSnapshot",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token_",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator_",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minVotingPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "snapshotWindow",
+            "type": "uint256"
+          }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "initialized",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "operator",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          }
+        ],
+        "name": "processProposal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "removeTokenLPFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "settings",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "minVotingPeriod",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "snapshotWindow",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "proposalId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "vote",
+            "type": "uint8"
+          }
+        ],
+        "name": "submitVote",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "member",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "memberWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalWeight",
+            "type": "uint256"
+          }
+        ],
+        "name": "syncMember",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "memberA",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "memberAWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "memberB",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "memberBWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalWeight",
+            "type": "uint256"
+          }
+        ],
+        "name": "syncMembers",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+          {
+            "internalType": "contract MetaheroToken",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "addresses": {
+      "56": null,
+      "97": "0x575C0d68b3834BE2232C3232BeB9a9905FBA7dA2"
+    }
+  },
   "MetaheroLPMForUniswapV2": {
     "abi": [
       {
@@ -82,71 +656,6 @@ module.exports = {
         "name": "burnLP",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x6e1db2e1",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x6e1db2e1",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x8897423d",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x8897423d",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x90173b82",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x90173b82",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0xd2aa0e28",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0xd2aa0e28",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0xfe89a781",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0xfe89a781",
-        "outputs": [],
-        "stateMutability": "pure",
         "type": "function"
       },
       {
@@ -728,71 +1237,6 @@ module.exports = {
         "name": "burnFrom",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x6e1db2e1",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x6e1db2e1",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x8858438c",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x8858438c",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0x8897423d",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0x8897423d",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0xd042b2c9",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0xd042b2c9",
-        "outputs": [],
-        "stateMutability": "pure",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bytes32",
-            "name": "c__0xe71ef217",
-            "type": "bytes32"
-          }
-        ],
-        "name": "c_0xe71ef217",
-        "outputs": [],
-        "stateMutability": "pure",
         "type": "function"
       },
       {
