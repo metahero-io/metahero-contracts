@@ -4,7 +4,7 @@ import { MetaheroToken__factory as MetaheroTokenFactory } from '../typings';
 
 const { getSigners } = ethers;
 
-function logFee(label: string, fee: BigNumber): void {
+function printFee(label: string, fee: BigNumber): void {
   console.log(`> ${label}:`, `${fee.toString()}%`);
 }
 
@@ -17,12 +17,14 @@ async function main(): Promise<void> {
 
     const tokenSettings = await token.settings();
 
-    logFee('burn fee (sender)', tokenSettings.burnFees.sender);
-    logFee('burn fee (recipient)', tokenSettings.burnFees.recipient);
-    logFee('lp fee (sender)', tokenSettings.lpFees.sender);
-    logFee('lp fee (recipient)', tokenSettings.lpFees.recipient);
-    logFee('lp rewards (sender)', tokenSettings.rewardsFees.sender);
-    logFee('lp rewards (recipient)', tokenSettings.rewardsFees.recipient);
+    printFee('burn fee (sender)', tokenSettings.burnFees.sender);
+    printFee('burn fee (recipient)', tokenSettings.burnFees.recipient);
+    printFee('lp fee (sender)', tokenSettings.lpFees.sender);
+    printFee('lp fee (recipient)', tokenSettings.lpFees.recipient);
+    printFee('lp rewards (sender)', tokenSettings.rewardsFees.sender);
+    printFee('lp rewards (recipient)', tokenSettings.rewardsFees.recipient);
+
+    console.log();
   }
 }
 
