@@ -571,7 +571,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "56": null,
+      "56": "0x8369Feb2198D01a2ed5d78E89ca7507983028B42",
       "97": "0x575C0d68b3834BE2232C3232BeB9a9905FBA7dA2"
     }
   },
