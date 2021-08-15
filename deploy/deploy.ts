@@ -8,12 +8,7 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy(ContractNames.MetaheroLPMForUniswapV2, {
-    from,
-    log: true,
-  });
-
-  await deploy(ContractNames.MetaheroTimeLockRegistry, {
+  await deploy(ContractNames.MetaheroDAO, {
     from,
     log: true,
   });

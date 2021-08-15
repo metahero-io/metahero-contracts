@@ -7,39 +7,25 @@ const func: DeployFunction = async (hre) => {
     deployments: { get, read, execute, log },
     getNamedAccounts,
     getNetworkEnv,
-    knownContracts,
   } = hre;
 
   // settings
-
-  // lpm
-
-  const LPM_ENABLE_BURN_LP_AT_VALUE = getNetworkEnv(
-    'LPM_FOR_UNISWAP_V2_ENABLE_BURN_LP_AT_VALUE',
-    BigNumber.from('10000000000000000000000000'), // 10,000,000.000000000000000000
-  );
 
   // token
 
   const TOKEN_BURN_FEE = {
     sender: getNetworkEnv(
       'TOKEN_SENDER_BURN_FEE', //
-      1,
+      4,
     ),
     recipient: getNetworkEnv(
       'TOKEN_RECIPIENT_BURN_FEE', //
-      1,
+      4,
     ),
   };
   const TOKEN_LP_FEE = {
-    sender: getNetworkEnv(
-      'TOKEN_SENDER_LP_FEE', //
-      3,
-    ),
-    recipient: getNetworkEnv(
-      'TOKEN_RECIPIENT_LP_FEE', //
-      3,
-    ),
+    sender: 0,
+    recipient: 0,
   };
   const TOKEN_REWARDS_FEE = {
     sender: getNetworkEnv(
@@ -60,61 +46,25 @@ const func: DeployFunction = async (hre) => {
     BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
   );
 
+  // dao
+
+  const DAO_MIN_VOTING_PERIOD = getNetworkEnv(
+    'DAO_MIN_VOTING_PERIOD',
+    24 * 60 * 60, // 1 day
+  );
+
+  const DAO_SNAPSHOT_WINDOW = getNetworkEnv(
+    'DAO_SNAPSHOT_WINDOW',
+    24 * 60 * 60, // 1 day
+  );
+
   const { from } = await getNamedAccounts();
-
-  // initialize
-
-  // lpm
-
-  if (await read(ContractNames.MetaheroLPMForUniswapV2, 'initialized')) {
-    log(`${ContractNames.MetaheroLPMForUniswapV2} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroLPMForUniswapV2,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      LPM_ENABLE_BURN_LP_AT_VALUE,
-      knownContracts.getAddress(ContractNames.StableCoin),
-      token,
-      knownContracts.getAddress(ContractNames.UniswapV2Router),
-    );
-  }
-
-  // time lock registry
-
-  if (await read(ContractNames.MetaheroTimeLockRegistry, 'initialized')) {
-    log(`${ContractNames.MetaheroTimeLockRegistry} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroTimeLockRegistry,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-    );
-  }
 
   // token
 
   if (await read(ContractNames.MetaheroToken, 'initialized')) {
     log(`${ContractNames.MetaheroToken} already initialized`);
   } else {
-    const { address: lpm } = await get(ContractNames.MetaheroLPMForUniswapV2);
-
-    const uniswapPair = await read(
-      ContractNames.MetaheroLPMForUniswapV2,
-      'uniswapPair',
-    );
-
     await execute(
       ContractNames.MetaheroToken,
       {
@@ -126,13 +76,31 @@ const func: DeployFunction = async (hre) => {
       TOKEN_LP_FEE,
       TOKEN_REWARDS_FEE,
       TOKEN_MIN_TOTAL_SUPPLY,
-      lpm,
+      constants.AddressZero, // disable lpm
       constants.AddressZero, // disable controller
       TOKEN_TOTAL_SUPPLY,
-      [
-        lpm, //
-        uniswapPair,
-      ],
+      [],
+    );
+  }
+
+  // dao
+
+  if (await read(ContractNames.MetaheroDAO, 'initialized')) {
+    log(`${ContractNames.MetaheroDAO} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroDAO,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+      constants.AddressZero, // use token owner
+      DAO_MIN_VOTING_PERIOD,
+      DAO_SNAPSHOT_WINDOW,
     );
   }
 };

@@ -17,7 +17,7 @@ import {
 
 const {
   HARDHAT_MNEMONIC, //
-  HARDHAT_DISABLE_FORKING,
+  HARDHAT_ENABLE_FORKING,
 } = process.env;
 
 const localNetwork = {
@@ -93,7 +93,7 @@ const config: HardhatUserConfig = {
   },
 };
 
-if (!HARDHAT_DISABLE_FORKING) {
+if (HARDHAT_ENABLE_FORKING) {
   config.networks.hardhat.forking = {
     url: getNetworkProviderUrl(NetworkNames.Bsc),
   };
