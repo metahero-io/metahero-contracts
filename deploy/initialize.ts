@@ -103,6 +103,24 @@ const func: DeployFunction = async (hre) => {
       DAO_SNAPSHOT_WINDOW,
     );
   }
+
+  // wrapped token
+
+  if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
+    log(`${ContractNames.MetaheroWrappedToken} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroWrappedToken,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+    );
+  }
 };
 
 func.tags = ['initialize'];
