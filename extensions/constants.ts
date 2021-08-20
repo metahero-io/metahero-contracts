@@ -2,6 +2,7 @@ export enum ContractNames {
   MetaheroDAO = 'MetaheroDAO',
   MetaheroLPM = 'MetaheroLPM',
   MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
+  MetaheroSwapHelper = 'MetaheroSwapHelper',
   MetaheroToken = 'MetaheroToken',
   MetaheroWrappedToken = 'MetaheroWrappedToken',
   StableCoin = 'StableCoin',

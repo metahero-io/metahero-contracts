@@ -861,6 +861,110 @@ module.exports = {
       "97": "0x7C1E495a45E2aEd13c8a2F8251124A30b13F20Cc"
     }
   },
+  "MetaheroSwapHelper": {
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "name": "Initialized",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address payable",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "tokens",
+            "type": "address[]"
+          }
+        ],
+        "name": "getAccountBalances",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "nativeBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "holdingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRewards",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "tokensBalances",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token_",
+            "type": "address"
+          }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "initialized",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+          {
+            "internalType": "contract MetaheroToken",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "addresses": {
+      "56": "0x2017e5AE9B629F2a43a89440f5E327b2a5b20933",
+      "97": "0xC1CaEECB0732E64655FE2e88A40DC97b44Ba6C4f"
+    }
+  },
   "MetaheroToken": {
     "abi": [
       {
