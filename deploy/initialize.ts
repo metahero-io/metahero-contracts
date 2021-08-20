@@ -104,23 +104,24 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  // wrapped token
-
-  if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
-    log(`${ContractNames.MetaheroWrappedToken} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroWrappedToken,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-    );
-  }
+  // TODO: enable wrapped token
+  // // wrapped token
+  //
+  // if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
+  //   log(`${ContractNames.MetaheroWrappedToken} already initialized`);
+  // } else {
+  //   const { address: token } = await get(ContractNames.MetaheroToken);
+  //
+  //   await execute(
+  //     ContractNames.MetaheroWrappedToken,
+  //     {
+  //       from,
+  //       log: true,
+  //     },
+  //     'initialize',
+  //     token,
+  //   );
+  // }
 };
 
 func.tags = ['initialize'];
