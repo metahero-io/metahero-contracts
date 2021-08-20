@@ -345,18 +345,13 @@ contract MetaheroWrappedToken is ERC20, Initializable {
     private
   {
     require(
-      sender != address(0),
-      "MetaheroWrappedToken#8" // sender is the zero address
-    );
-
-    require(
       recipient != address(0),
-      "MetaheroWrappedToken#9" // recipient is the zero address
+      "MetaheroWrappedToken#8" // recipient is the zero address
     );
 
     require(
       amount != 0,
-      "MetaheroWrappedToken#10" // amount is zero
+      "MetaheroWrappedToken#9" // amount is zero
     );
 
     uint256 tokenBalance = token.balanceOf(address(this));
@@ -364,11 +359,6 @@ contract MetaheroWrappedToken is ERC20, Initializable {
     token.transferFrom(sender, address(this), amount);
 
     amount = token.balanceOf(address(this)).sub(tokenBalance);
-
-    require(
-      amount != 0,
-      "MetaheroWrappedToken#11" // amount is zero
-    );
 
     balances[recipient] = balances[recipient].add(amount);
     totalSupply = totalSupply.add(amount);
@@ -388,23 +378,18 @@ contract MetaheroWrappedToken is ERC20, Initializable {
     private
   {
     require(
-      sender != address(0),
-      "MetaheroWrappedToken#12" // sender is the zero address
-    );
-
-    require(
       recipient != address(0),
-      "MetaheroWrappedToken#13" // recipient is the zero address
+      "MetaheroWrappedToken#10" // recipient is the zero address
     );
 
     require(
       amount != 0,
-      "MetaheroWrappedToken#14" // amount is zero
+      "MetaheroWrappedToken#11" // amount is zero
     );
 
     require(
       balances[sender] >= amount,
-      "MetaheroWrappedToken#15" // amount exceeds sender balance
+      "MetaheroWrappedToken#12" // amount exceeds sender balance
     );
 
     balances[sender] = balances[sender].sub(amount);
