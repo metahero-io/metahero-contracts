@@ -104,6 +104,24 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
+  // swap helper
+
+  if (await read(ContractNames.MetaheroSwapHelper, 'initialized')) {
+    log(`${ContractNames.MetaheroSwapHelper} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroSwapHelper,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+    );
+  }
+
   // TODO: enable wrapped token
   // // wrapped token
   //

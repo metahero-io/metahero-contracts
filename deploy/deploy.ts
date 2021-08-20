@@ -18,6 +18,11 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
+  await deploy(ContractNames.MetaheroSwapHelper, {
+    from,
+    log: true,
+  });
+
   // TODO: enable wrapped token
   // await deploy(ContractNames.MetaheroWrappedToken, {
   //   from,
