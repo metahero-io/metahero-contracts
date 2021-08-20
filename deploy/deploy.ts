@@ -17,6 +17,11 @@ const func: DeployFunction = async (hre) => {
     from,
     log: true,
   });
+
+  await deploy(ContractNames.MetaheroWrappedToken, {
+    from,
+    log: true,
+  });
 };
 
 func.tags = ['deploy'];
