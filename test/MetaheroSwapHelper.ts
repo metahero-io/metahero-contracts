@@ -108,12 +108,84 @@ describe('MetaheroSwapHelper', () => {
     });
   });
 
-  context('getAccountBalances()', () => {
+  context('getAllowances()', () => {
+    const spender = randomAddress();
+    const expectedAllowances = {
+      token: 1000000,
+      tokenA: 2000,
+      tokenB: 4000,
+    };
+    let account: Signer;
+
+    createBeforeHook({
+      postBefore: async () => {
+        account = signers.pop();
+
+        await token.connect(account).approve(spender, expectedAllowances.token);
+        await tokenA
+          .connect(account)
+          .approve(spender, expectedAllowances.tokenA);
+        await tokenB
+          .connect(account)
+          .approve(spender, expectedAllowances.tokenB);
+      },
+    });
+
+    it('expect to return zero for not erc20 token', async () => {
+      const output = await swapHelper.getAllowances(
+        account.address,
+        [tokenInvalid],
+        [randomAddress()],
+      );
+
+      expect(output[0]).to.equal(0);
+    });
+
+    it('expect to return zero for not contract', async () => {
+      const output = await swapHelper.getAllowances(
+        account.address,
+        [randomAddress()],
+        [randomAddress()],
+      );
+
+      expect(output[0]).to.equal(0);
+    });
+
+    it('expect to return empty result for no tokens', async () => {
+      const output = await swapHelper.getAllowances(account.address, [], []);
+
+      expect(output).to.empty;
+    });
+
+    it('expect to return empty result on invalid spenders and tokens arrays length', async () => {
+      const output = await swapHelper.getAllowances(
+        account.address,
+        [randomAddress()],
+        [],
+      );
+
+      expect(output).to.empty;
+    });
+
+    it('expect to return correct allowances', async () => {
+      const result = await swapHelper.getAllowances(
+        account.address,
+        [token.address, tokenA.address, tokenB.address],
+        [spender, spender, spender],
+      );
+
+      expect(result[0]).to.equal(expectedAllowances.token);
+      expect(result[1]).to.equal(expectedAllowances.tokenA);
+      expect(result[2]).to.equal(expectedAllowances.tokenB);
+    });
+  });
+
+  context('getBalances()', () => {
     let account: Signer;
     let expectedBalances: {
       nativeBalance?: BigNumber;
-      holdingBalance?: BigNumber;
-      totalRewards?: BigNumber;
+      tokenHoldingBalance?: BigNumber;
+      tokenTotalRewards?: BigNumber;
       tokenA: BigNumberish;
       tokenB: BigNumberish;
     } = {
@@ -133,39 +205,38 @@ describe('MetaheroSwapHelper', () => {
 
         await tokenB.setBalance(account.address, expectedBalances.tokenB);
 
-        const { totalRewards, holdingBalance } = await token.getBalanceSummary(
-          account.address,
-        );
+        const {
+          totalRewards: tokenTotalRewards,
+          holdingBalance: tokenHoldingBalance,
+        } = await token.getBalanceSummary(account.address);
 
         expectedBalances = {
           ...expectedBalances,
           nativeBalance: await account.getBalance(),
-          totalRewards,
-          holdingBalance,
+          tokenTotalRewards,
+          tokenHoldingBalance,
         };
       },
     });
 
     it('expect to return zero for not erc20 token', async () => {
-      const { tokensBalances } = await swapHelper.getAccountBalances(
-        account.address,
-        [tokenInvalid],
-      );
+      const { tokensBalances } = await swapHelper.getBalances(account.address, [
+        tokenInvalid,
+      ]);
 
       expect(tokensBalances[0]).to.equal(0);
     });
 
     it('expect to return zero for not contract', async () => {
-      const { tokensBalances } = await swapHelper.getAccountBalances(
-        account.address,
-        [randomAddress()],
-      );
+      const { tokensBalances } = await swapHelper.getBalances(account.address, [
+        randomAddress(),
+      ]);
 
       expect(tokensBalances[0]).to.equal(0);
     });
 
     it('expect to return empty tokens balances for no tokens in call', async () => {
-      const { tokensBalances } = await swapHelper.getAccountBalances(
+      const { tokensBalances } = await swapHelper.getBalances(
         account.address,
         [],
       );
@@ -174,15 +245,21 @@ describe('MetaheroSwapHelper', () => {
     });
 
     it('expect to return correct balances', async () => {
-      const { nativeBalance, holdingBalance, totalRewards, tokensBalances } =
-        await swapHelper.getAccountBalances(account.address, [
-          tokenA.address,
-          tokenB.address,
-        ]);
+      const {
+        nativeBalance,
+        tokenHoldingBalance,
+        tokenTotalRewards,
+        tokensBalances,
+      } = await swapHelper.getBalances(account.address, [
+        tokenA.address,
+        tokenB.address,
+      ]);
 
       expect(nativeBalance).to.equal(expectedBalances.nativeBalance);
-      expect(holdingBalance).to.equal(expectedBalances.holdingBalance);
-      expect(totalRewards).to.equal(expectedBalances.totalRewards);
+      expect(tokenHoldingBalance).to.equal(
+        expectedBalances.tokenHoldingBalance,
+      );
+      expect(tokenTotalRewards).to.equal(expectedBalances.tokenTotalRewards);
       expect(tokensBalances[0]).to.equal(expectedBalances.tokenA);
       expect(tokensBalances[1]).to.equal(expectedBalances.tokenB);
     });

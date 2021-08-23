@@ -64,7 +64,48 @@ contract MetaheroSwapHelper is Initializable {
 
   // external functions (views)
 
-  function getAccountBalances(
+  function getAllowances(
+    address payable account,
+    address[] calldata tokens,
+    address[] calldata spenders
+  )
+    external
+    view
+    returns (uint256[] memory result)
+  {
+    uint256 len = tokens.length;
+
+    if (len == spenders.length) {
+      result = new uint256[](len);
+
+      for (uint256 index ; index < len ; index++) {
+        address token_ = tokens[index];
+        address spender = spenders[index];
+
+        uint256 tokenCode;
+
+        // solhint-disable-next-line no-inline-assembly
+        assembly { tokenCode := extcodesize(token_) } // contract code size
+
+        if (tokenCode != 0) {
+          // solhint-disable-next-line avoid-low-level-calls
+          (bool methodExists,) = token_.staticcall(abi.encodeWithSelector(
+            IERC20(token_).allowance.selector,
+            account,
+            spender
+          ));
+
+          if (methodExists) {
+            result[index] = IERC20(token_).allowance(account, spender);
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  function getBalances(
     address payable account,
     address[] calldata tokens
   )
@@ -72,8 +113,8 @@ contract MetaheroSwapHelper is Initializable {
     view
     returns (
       uint256 nativeBalance,
-      uint256 holdingBalance,
-      uint256 totalRewards,
+      uint256 tokenHoldingBalance,
+      uint256 tokenTotalRewards,
       uint256[] memory tokensBalances
     )
   {
@@ -81,8 +122,8 @@ contract MetaheroSwapHelper is Initializable {
 
     (
       ,
-      holdingBalance,
-      totalRewards
+      tokenHoldingBalance,
+      tokenTotalRewards
     ) = token.getBalanceSummary(account);
 
     uint256 len = tokens.length;
@@ -97,12 +138,12 @@ contract MetaheroSwapHelper is Initializable {
         // solhint-disable-next-line no-inline-assembly
         assembly { tokenCode := extcodesize(token_) } // contract code size
 
-        if (tokenCode > 0) {
+        if (tokenCode != 0) {
           // solhint-disable-next-line avoid-low-level-calls
           (bool methodExists,) = token_.staticcall(abi.encodeWithSelector(
-              IERC20(token_).balanceOf.selector,
-              account
-            ));
+            IERC20(token_).balanceOf.selector,
+            account
+          ));
 
           if (methodExists) {
             tokensBalances[index] = IERC20(token_).balanceOf(account);
@@ -113,8 +154,8 @@ contract MetaheroSwapHelper is Initializable {
 
     return (
       nativeBalance,
-      holdingBalance,
-      totalRewards,
+      tokenHoldingBalance,
+      tokenTotalRewards,
       tokensBalances
     );
   }

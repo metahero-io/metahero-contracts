@@ -892,9 +892,38 @@ module.exports = {
             "internalType": "address[]",
             "name": "tokens",
             "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "spenders",
+            "type": "address[]"
           }
         ],
-        "name": "getAccountBalances",
+        "name": "getAllowances",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "result",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address payable",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "tokens",
+            "type": "address[]"
+          }
+        ],
+        "name": "getBalances",
         "outputs": [
           {
             "internalType": "uint256",
@@ -903,12 +932,12 @@ module.exports = {
           },
           {
             "internalType": "uint256",
-            "name": "holdingBalance",
+            "name": "tokenHoldingBalance",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalRewards",
+            "name": "tokenTotalRewards",
             "type": "uint256"
           },
           {
@@ -961,8 +990,8 @@ module.exports = {
       }
     ],
     "addresses": {
-      "56": "0x2017e5AE9B629F2a43a89440f5E327b2a5b20933",
-      "97": "0xC1CaEECB0732E64655FE2e88A40DC97b44Ba6C4f"
+      "56": "0xD853461e96BCe6c66513e0EDD56eE1d9B56DdB2D",
+      "97": "0xC1a3bC1dAAd0aA9433986199672380541aeB6C7E"
     }
   },
   "MetaheroToken": {
