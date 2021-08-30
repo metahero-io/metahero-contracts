@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+/* solhint-disable */
 pragma solidity ^0.6.12;
 
 import '../core/erc20/IERC20.sol';

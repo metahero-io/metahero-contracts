@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ethers, waffle } from 'hardhat';
 import { expect } from 'chai';
 import { constants } from 'ethers';
