@@ -9,12 +9,7 @@ extendEnvironment((hre) => {
       name,
       config: { chainId },
     },
-    config: {
-      networks: {
-        hardhat: { forking },
-      },
-      knownContractsAddresses,
-    },
+    config: { knownContractsAddresses },
   } = hre;
 
   hre.knownContracts = {
@@ -31,12 +26,6 @@ extendEnvironment((hre) => {
 
       return result;
     },
-  };
-
-  hre.onlyWhileForking = (inner) => {
-    if (forking) {
-      inner();
-    }
   };
 
   hre.getNetworkEnv = (envName, defaultValue) => {

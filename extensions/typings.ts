@@ -6,7 +6,6 @@ declare module 'hardhat/types/runtime' {
     knownContracts?: {
       getAddress(contractName: string): string;
     };
-    onlyWhileForking?(inner: () => void): void;
     getNetworkEnv?<T>(envName: string, defaultValue: T): T;
   }
 }
