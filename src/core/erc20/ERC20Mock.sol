@@ -15,7 +15,7 @@ contract ERC20Mock is ERC20 {
 
   // metadata
 
-  string private constant TOKEN_NAME = "ERC20Mock";
+  string private constant TOKEN_NAME = "Mocked token";
   string private constant TOKEN_SYMBOL = "MOCK";
   uint8 private constant TOKEN_DECIMALS = 18; // 0.000000000000000000
 
@@ -57,7 +57,7 @@ contract ERC20Mock is ERC20 {
       emit Transfer(
         address(0),
         account,
-          diff
+        diff
       );
     } else {
       diff = balanceOf[account].sub(balance);
