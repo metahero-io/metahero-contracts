@@ -59,6 +59,8 @@ contract WrappedNativeMock is IWrappedNative, ERC20Mock {
     totalSupply = totalSupply.sub(amount);
     balanceOf[msg.sender] = balanceOf[msg.sender].sub(amount);
 
+    msg.sender.transfer(amount);
+
     emit Transfer(
       msg.sender,
       address(0),
