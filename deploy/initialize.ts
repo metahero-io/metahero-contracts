@@ -5,6 +5,7 @@ import { ContractNames } from '../extensions';
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
+    knownContracts,
     getNamedAccounts,
     getNetworkEnv,
   } = hre;
@@ -122,24 +123,42 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  // TODO: enable wrapped token
-  // // wrapped token
-  //
-  // if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
-  //   log(`${ContractNames.MetaheroWrappedToken} already initialized`);
-  // } else {
-  //   const { address: token } = await get(ContractNames.MetaheroToken);
-  //
-  //   await execute(
-  //     ContractNames.MetaheroWrappedToken,
-  //     {
-  //       from,
-  //       log: true,
-  //     },
-  //     'initialize',
-  //     token,
-  //   );
-  // }
+  // swap router
+
+  if (await read(ContractNames.MetaheroSwapRouter, 'initialized')) {
+    log(`${ContractNames.MetaheroSwapRouter} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroSwapRouter,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+      knownContracts.getAddress(ContractNames.UniswapV2Router),
+    );
+  }
+
+  // wrapped token
+
+  if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
+    log(`${ContractNames.MetaheroWrappedToken} already initialized`);
+  } else {
+    const { address: token } = await get(ContractNames.MetaheroToken);
+
+    await execute(
+      ContractNames.MetaheroWrappedToken,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+    );
+  }
 };
 
 func.tags = ['initialize'];

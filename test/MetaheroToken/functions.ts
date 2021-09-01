@@ -520,4 +520,15 @@ describe('MetaheroToken', () => {
       expect(excludeRecipientFromFee).to.be.false;
     });
   });
+
+  context('totalSupply()', () => {
+    const totalSupply = 1000;
+
+    createBeforeHook({
+      totalSupply,
+    });
+    it('expect to return correct total supply', async () => {
+      expect(await token.totalSupply()).to.equal(totalSupply);
+    });
+  });
 });
