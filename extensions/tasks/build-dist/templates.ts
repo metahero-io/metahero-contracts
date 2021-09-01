@@ -48,7 +48,7 @@ function deploymentsMd(data: ContractsMD): string {
       );
 
       result = `${result}
-| \`${contractName}\` | [${address}](${addressUrl}) | [${transactionHash}](${transactionUrl}) |`;
+| \`${contractName}\` | [${address}](${addressUrl}#code) | [${transactionHash}](${transactionUrl}) |`;
     }
 
     result = `${result}\n\n`;

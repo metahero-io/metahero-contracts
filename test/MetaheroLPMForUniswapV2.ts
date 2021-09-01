@@ -291,7 +291,7 @@ describe('MetaheroLPMForUniswapV2', () => {
 
       await token.transfer(owner.address, 0);
 
-      expect(await token.balanceOf(uniswapPair.address)).to.gt(
+      expect(await token.balanceOf(uniswapPair.address)).to.gte(
         pairTokenBalance,
       );
     });

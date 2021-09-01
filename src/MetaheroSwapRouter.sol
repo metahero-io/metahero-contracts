@@ -5,8 +5,8 @@ import "./core/access/Owned.sol";
 import "./core/erc20/IERC20.sol";
 import "./core/lifecycle/Initializable.sol";
 import "./core/math/SafeMathLib.sol";
-import "./pancakeswap/PancakeLibrary.sol";
 import "./pancakeswap/PancakeTransferHelper.sol";
+import "./uniswapV2/IUniswapV2Factory.sol";
 import "./uniswapV2/IUniswapV2Pair.sol";
 import "./uniswapV2/IUniswapV2Router02.sol";
 
@@ -249,7 +249,7 @@ contract MetaheroSwapRouter is Owned, Initializable {
     private
   {
     PancakeTransferHelper.safeTransferFrom(
-      path[0], msg.sender, PancakeLibrary.pairFor(factory, path[0], path[1]), amountIn
+      path[0], msg.sender, _pairFor(path[0], path[1]), amountIn
     );
 
     uint balanceBefore = IERC20(path[path.length - 1]).balanceOf(to);
@@ -271,9 +271,9 @@ contract MetaheroSwapRouter is Owned, Initializable {
     for (uint i; i < path.length - 1; i++) {
       (address input, address output) = (path[i], path[i + 1]);
 
-      (address token0,) = PancakeLibrary.sortTokens(input, output);
+      (address token0,) = _sortTokens(input, output);
 
-      IUniswapV2Pair pair = IUniswapV2Pair(PancakeLibrary.pairFor(factory, input, output));
+      IUniswapV2Pair pair = IUniswapV2Pair(_pairFor(input, output));
 
       uint amountInput;
       uint amountOutput;
@@ -282,14 +282,69 @@ contract MetaheroSwapRouter is Owned, Initializable {
         (uint reserve0, uint reserve1,) = pair.getReserves();
         (uint reserveInput, uint reserveOutput) = input == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
         amountInput = IERC20(input).balanceOf(address(pair)).sub(reserveInput);
-        amountOutput = PancakeLibrary.getAmountOut(amountInput, reserveInput, reserveOutput);
+        amountOutput = _getAmountOut(amountInput, reserveInput, reserveOutput);
       }
 
       (uint amount0Out, uint amount1Out) = input == token0 ? (uint(0), amountOutput) : (amountOutput, uint(0));
 
-      address to = i < path.length - 2 ? PancakeLibrary.pairFor(factory, output, path[i + 2]) : _to;
+      address to = i < path.length - 2 ? _pairFor(output, path[i + 2]) : _to;
 
       pair.swap(amount0Out, amount1Out, to, new bytes(0));
     }
+  }
+
+  // private functions (views)
+
+  function _pairFor(
+    address tokenA,
+    address tokenB
+  )
+    private
+    view
+    returns (address)
+  {
+    (address token0, address token1) = _sortTokens(tokenA, tokenB);
+
+    return IUniswapV2Factory(factory).getPair(token0, token1);
+  }
+
+  // private functions (pure)
+
+  function _sortTokens(
+    address tokenA,
+    address tokenB
+  )
+    private
+    pure
+    returns (address, address)
+  {
+    return tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+  }
+
+  function _getAmountOut(
+    uint amountIn,
+    uint reserveIn,
+    uint reserveOut
+  )
+    private
+    pure
+    returns (uint)
+  {
+    require(
+      amountIn > 0,
+      "MetaheroSwapRouter#10" // insufficient input amount
+    );
+
+    require(
+      reserveIn > 0 &&
+      reserveOut > 0,
+      "MetaheroSwapRouter#11" // insufficient liquidity
+    );
+
+    uint amountInWithFee = amountIn.mul(998);
+    uint numerator = amountInWithFee.mul(reserveOut);
+    uint denominator = reserveIn.mul(1000).add(amountInWithFee);
+
+    return numerator / denominator;
   }
 }

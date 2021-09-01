@@ -22,7 +22,6 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "local:start": "hardhat node",
     "local:addExcludedAccounts": "hardhat run --no-compile --network localhost ./scripts/addExcludedAccounts.ts",
     "local:addInitialTokenHolders": "hardhat run --no-compile --network localhost ./scripts/addInitialTokenHolders.ts",
     "local:printTokenFees": "hardhat run --no-compile --network localhost ./scripts/printTokenFees.ts",
@@ -38,7 +37,6 @@
     "bscTest:addInitialTokenHolders": "hardhat run --no-compile --network bscTest ./scripts/addInitialTokenHolders.ts",
     "bscTest:printTokenFees": "hardhat run --no-compile --network bscTest ./scripts/printTokenFees.ts",
     "postbscTest:deploy": "npm run bscTest:verify",
-    "start": "npm run local:start",
     "compile": "hardhat compile",
     "build": "hardhat build-dist",
     "format": "prettier --write \"{deploy,extensions,scripts,test}/**/*.ts\"",

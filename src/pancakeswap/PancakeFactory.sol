@@ -13,8 +13,6 @@ import './PancakePair.sol';
  * @notice Based on https://github.com/pancakeswap/pancake-swap-core/blob/3b214306770e86bc3a64e67c2b5bdb566b4e94a7/contracts/PancakeFactory.sol
  */
 contract PancakeFactory is IUniswapV2Factory {
-  bytes32 public constant INIT_CODE_PAIR_HASH = keccak256(abi.encodePacked(type(PancakePair).creationCode));
-
   address public override feeTo;
   address public override feeToSetter;
 
@@ -44,11 +42,10 @@ contract PancakeFactory is IUniswapV2Factory {
     require(token0 != address(0), 'Pancake: ZERO_ADDRESS');
     require(getPair[token0][token1] == address(0), 'Pancake: PAIR_EXISTS');
     // single check is sufficient
-    bytes memory bytecode = type(PancakePair).creationCode;
     bytes32 salt = keccak256(abi.encodePacked(token0, token1));
-    assembly {
-      pair := create2(0, add(bytecode, 32), mload(bytecode), salt)
-    }
+
+    pair = address(new PancakePair{salt: salt}());
+
     IUniswapV2Pair(pair).initialize(token0, token1);
     getPair[token0][token1] = pair;
     getPair[token1][token0] = pair;
