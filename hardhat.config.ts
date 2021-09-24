@@ -27,7 +27,7 @@ const localNetwork = {
       'test test test test test test test test test test test junk',
     count: 32,
   },
-  chainId: NetworkChainIds.Bsc,
+  chainId: NetworkChainIds.BscTest,
   gasPrice: 10 * 1000000000,
 };
 

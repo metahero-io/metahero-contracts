@@ -13,14 +13,10 @@ import "./MetaheroToken.sol";
  * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract MetaheroAirDrop is Owned, Initializable {
-  using SafeMathLib for uint256;
-
   /**
    * @return settings object
    */
   MetaheroToken public token;
-
-  mapping (address => uint256) private amounts;
 
   // events
 
@@ -60,8 +56,42 @@ contract MetaheroAirDrop is Owned, Initializable {
       "MetaheroAirdrop#1" // token is the zero address
     );
 
+    token = MetaheroToken(token_);
+
     emit Initialized(
       token_
     );
+  }
+
+  function batchTransfer(
+    address[] calldata recipients,
+    uint256[] calldata amounts
+  )
+    external
+    onlyOwner
+  {
+    require(
+      recipients.length != 0,
+      "MetaheroAirdrop#1"
+    );
+
+    require(
+      recipients.length == amounts.length,
+      "MetaheroAirdrop#2"
+    );
+
+    uint256 len = recipients.length;
+
+    for (uint256 index; index < len; index++) {
+      address recipient = recipients[index];
+      uint256 amount = amounts[index];
+
+      if (
+        recipient != address(0) &&
+        amount != 0
+      ) {
+        token.transfer(recipient, amount);
+      }
+    }
   }
 }
