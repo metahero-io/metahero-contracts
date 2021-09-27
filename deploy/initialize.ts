@@ -39,6 +39,7 @@ const func: DeployFunction = async (hre) => {
   );
 
   const { from } = await getNamedAccounts();
+  const { address: token } = await get(ContractNames.MetaheroToken);
 
   // token
 
@@ -68,8 +69,6 @@ const func: DeployFunction = async (hre) => {
   if (await read(ContractNames.MetaheroAirDrop, 'initialized')) {
     log(`${ContractNames.MetaheroAirDrop} already initialized`);
   } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
     await execute(
       ContractNames.MetaheroAirDrop,
       {
@@ -86,8 +85,6 @@ const func: DeployFunction = async (hre) => {
   if (await read(ContractNames.MetaheroDAO, 'initialized')) {
     log(`${ContractNames.MetaheroDAO} already initialized`);
   } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
     await execute(
       ContractNames.MetaheroDAO,
       {
@@ -99,6 +96,22 @@ const func: DeployFunction = async (hre) => {
       constants.AddressZero, // use token owner
       DAO_MIN_VOTING_PERIOD,
       DAO_SNAPSHOT_WINDOW,
+    );
+  }
+
+  // swap helper
+
+  if (await read(ContractNames.MetaheroSwapHelper, 'initialized')) {
+    log(`${ContractNames.MetaheroSwapHelper} already initialized`);
+  } else {
+    await execute(
+      ContractNames.MetaheroSwapHelper,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
     );
   }
 };

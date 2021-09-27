@@ -18,6 +18,11 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
+  await deploy(ContractNames.MetaheroSwapHelper, {
+    from,
+    log: true,
+  });
+
   await deploy(ContractNames.MetaheroDAO, {
     from,
     log: true,
