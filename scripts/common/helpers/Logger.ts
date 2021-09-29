@@ -17,7 +17,7 @@ export class Logger {
     //
   }
 
-  log(label?: string, data?: any, postfix?: string): void {
+  log<T>(label?: string, data?: T, postfix?: string): void {
     const args: any[] = ['[LOG]'];
 
     if (typeof data == 'undefined') {
@@ -53,7 +53,7 @@ export class Logger {
 
   logPercents(data: BigNumberish): void;
   logPercents(label: string, data: BigNumberish): void;
-  logPercents(...args: any[]) {
+  logPercents(...args: any[]): void {
     let label: string;
     let data: BigNumber;
 

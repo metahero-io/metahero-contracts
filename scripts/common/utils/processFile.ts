@@ -22,7 +22,7 @@ export async function processFile(
 
   let index = 0;
 
-  for await (let line of rl) {
+  for await (const line of rl) {
     if (line && index >= skipLines) {
       let parts: string[] = null;
 
