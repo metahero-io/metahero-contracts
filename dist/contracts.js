@@ -55,6 +55,45 @@ module.exports = {
       {
         "inputs": [
           {
+            "internalType": "bytes32",
+            "name": "c__0x19aa7d0b",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x19aa7d0b",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8897423d",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8897423d",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "token_",
             "type": "address"
@@ -119,7 +158,7 @@ module.exports = {
       }
     ],
     "addresses": {
-      "56": null,
+      "56": "0x17253eB7026ADB00E1B7E9015e15DCca1790C741",
       "97": "0x0C3F5d746f192205A6b7ef6501e39b319B49C18f"
     }
   },
@@ -265,6 +304,32 @@ module.exports = {
         ],
         "name": "VoteSubmitted",
         "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xe54017f8",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xe54017f8",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
       },
       {
         "inputs": [
@@ -783,6 +848,71 @@ module.exports = {
       {
         "inputs": [
           {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8897423d",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8897423d",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x90173b82",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x90173b82",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xd2aa0e28",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xd2aa0e28",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xfe89a781",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xfe89a781",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "sender",
             "type": "address"
@@ -1002,6 +1132,32 @@ module.exports = {
         ],
         "name": "Initialized",
         "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x48876e53",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x48876e53",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
       },
       {
         "inputs": [
@@ -1492,6 +1648,71 @@ module.exports = {
         "name": "burnFrom",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x6e1db2e1",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x6e1db2e1",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8858438c",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8858438c",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0x8897423d",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0x8897423d",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xd042b2c9",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xd042b2c9",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "c__0xe71ef217",
+            "type": "bytes32"
+          }
+        ],
+        "name": "c_0xe71ef217",
+        "outputs": [],
+        "stateMutability": "pure",
         "type": "function"
       },
       {
