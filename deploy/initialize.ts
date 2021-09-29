@@ -64,13 +64,13 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  // air drop
+  // airdrop
 
-  if (await read(ContractNames.MetaheroAirDrop, 'initialized')) {
-    log(`${ContractNames.MetaheroAirDrop} already initialized`);
+  if (await read(ContractNames.MetaheroAirdrop, 'initialized')) {
+    log(`${ContractNames.MetaheroAirdrop} already initialized`);
   } else {
     await execute(
-      ContractNames.MetaheroAirDrop,
+      ContractNames.MetaheroAirdrop,
       {
         from,
         log: true,

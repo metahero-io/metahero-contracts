@@ -1,9 +1,10 @@
 import { ethers } from 'hardhat';
-import { connectToken, logger } from './common';
+import { connectToken, Logger } from '../common';
 
 async function main(): Promise<void> {
   const [owner] = await ethers.getSigners();
 
+  const logger = new Logger();
   const token = await connectToken(owner);
 
   const { burnFees, lpFees, rewardsFees } = await token.settings();

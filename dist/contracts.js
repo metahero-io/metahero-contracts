@@ -1,6 +1,128 @@
 /* eslint-disable */
 
 module.exports = {
+  "MetaheroAirdrop": {
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "name": "Initialized",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "name": "OwnerUpdated",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "recipients",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "amounts",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "batchTransfer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "token_",
+            "type": "address"
+          }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "initialized",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "owner_",
+            "type": "address"
+          }
+        ],
+        "name": "setOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+          {
+            "internalType": "contract MetaheroToken",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "addresses": {
+      "56": null,
+      "97": "0x0C3F5d746f192205A6b7ef6501e39b319B49C18f"
+    }
+  },
   "MetaheroDAO": {
     "abi": [
       {
@@ -572,7 +694,7 @@ module.exports = {
     ],
     "addresses": {
       "56": "0x8369Feb2198D01a2ed5d78E89ca7507983028B42",
-      "97": "0x575C0d68b3834BE2232C3232BeB9a9905FBA7dA2"
+      "97": "0xA7f1e243109394E739Fbc72959561ce99f308d9C"
     }
   },
   "MetaheroLPMForUniswapV2": {
@@ -858,7 +980,7 @@ module.exports = {
     ],
     "addresses": {
       "56": "0x5DA5b71B88C42544b642D4AB781B30831EDAC341",
-      "97": "0x7C1E495a45E2aEd13c8a2F8251124A30b13F20Cc"
+      "97": null
     }
   },
   "MetaheroSwapHelper": {
@@ -991,7 +1113,7 @@ module.exports = {
     ],
     "addresses": {
       "56": "0xD853461e96BCe6c66513e0EDD56eE1d9B56DdB2D",
-      "97": "0xC1a3bC1dAAd0aA9433986199672380541aeB6C7E"
+      "97": "0x91A7347B72e9AAE5942814C47a385100E2b9904C"
     }
   },
   "MetaheroToken": {
@@ -1925,7 +2047,7 @@ module.exports = {
     ],
     "addresses": {
       "56": "0xD40bEDb44C081D2935eebA6eF5a3c8A31A1bBE13",
-      "97": "0xd50DA1B93F7a9253BCbc07b8A05D94B522567BF7"
+      "97": "0xDA9fCA16FeCb61F84BA65A096bCEd97c902Dad56"
     }
   }
 };

@@ -1,9 +1,8 @@
 import { createReadStream } from 'fs';
 import { createInterface } from 'readline';
-import { getDataPath } from './getDataPath';
 
 export async function processFile(
-  fileName: string,
+  filePath: string,
   processor: (line: string, index: number, parts?: string[]) => Promise<void>,
   options: {
     skipLines?: number;
@@ -14,7 +13,6 @@ export async function processFile(
     skipLines: 0,
     ...options,
   };
-  const filePath = getDataPath(fileName);
 
   const input = createReadStream(filePath);
   const rl = createInterface({

@@ -13,7 +13,7 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
-  await deploy(ContractNames.MetaheroAirDrop, {
+  await deploy(ContractNames.MetaheroAirdrop, {
     from,
     log: true,
   });

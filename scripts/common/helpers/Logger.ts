@@ -6,23 +6,18 @@ import {
   utils,
 } from 'ethers';
 
-export const logger: {
-  log(label?: string, data?: any, postfix?: string): void;
-  logPercents(data: BigNumberish): void;
-  logPercents(label: string, data: BigNumberish): void;
-  logTx(
-    label: string,
-    txP: Promise<ContractTransaction>,
-  ): Promise<{
-    tx: ContractTransaction;
-    receipt: ContractReceipt;
-    cost: BigNumber;
-  }>;
-  error(...args: any[]): void;
-  info(...args: any[]): void;
-  br(): void;
-} = {
-  log(label?, data?, postfix?) {
+export enum LoggerLevels {
+  Log,
+  Error,
+  None,
+}
+
+export class Logger {
+  constructor(public readonly level: LoggerLevels = LoggerLevels.Log) {
+    //
+  }
+
+  log(label?: string, data?: any, postfix?: string): void {
     const args: any[] = ['[LOG]'];
 
     if (typeof data == 'undefined') {
@@ -51,12 +46,17 @@ export const logger: {
       args.push(postfix);
     }
 
-    console.log(...args);
-  },
+    if (this.level === LoggerLevels.Log) {
+      console.log(...args);
+    }
+  }
 
+  logPercents(data: BigNumberish): void;
+  logPercents(label: string, data: BigNumberish): void;
   logPercents(...args: any[]) {
     let label: string;
     let data: BigNumber;
+
     switch (args.length) {
       case 1:
         data = BigNumber.from(args[0]);
@@ -68,9 +68,17 @@ export const logger: {
     }
 
     this.log(label, `${data.toString()}%`);
-  },
+  }
 
-  async logTx(label, txP) {
+  async logTx(
+    label: string,
+    txP: Promise<ContractTransaction>,
+    onHash?: (hash: string) => Promise<void>,
+  ): Promise<{
+    tx: ContractTransaction;
+    receipt: ContractReceipt;
+    cost: BigNumber;
+  }> {
     this.info(`sending ${label} ...`);
 
     const tx = await txP;
@@ -78,6 +86,10 @@ export const logger: {
     const { hash, gasPrice } = tx;
 
     this.log('hash', hash);
+
+    if (onHash) {
+      await onHash(hash);
+    }
 
     const receipt = await tx.wait();
     const { gasUsed } = receipt;
@@ -92,17 +104,23 @@ export const logger: {
       receipt,
       cost,
     };
-  },
+  }
 
-  error(...args: any[]) {
-    console.error('[ERROR]', ...args);
-  },
+  error(...args: any[]): any {
+    if (this.level <= LoggerLevels.Error) {
+      console.error('[ERROR]', ...args);
+    }
+  }
 
-  info(...args: any[]) {
-    console.info('[INFO]', ...args);
-  },
+  info(...args: any[]): void {
+    if (this.level === LoggerLevels.Log) {
+      console.info('[INFO]', ...args);
+    }
+  }
 
-  br() {
-    console.log();
-  },
-};
+  br(): void {
+    if (this.level === LoggerLevels.Log) {
+      console.log();
+    }
+  }
+}

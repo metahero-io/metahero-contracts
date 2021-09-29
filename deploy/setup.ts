@@ -14,23 +14,23 @@ const func: DeployFunction = async (hre) => {
     return;
   }
 
-  const AIR_DROP_BALANCE = getNetworkEnv(
-    'AIR_DROP_BALANCE',
+  const AIRDROP_BALANCE = getNetworkEnv(
+    'AIRDROP_BALANCE',
     BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
   );
 
   const { from } = await getNamedAccounts();
 
   const { address: dao } = await get(ContractNames.MetaheroDAO);
-  const { address: airDrop } = await get(ContractNames.MetaheroAirDrop);
+  const { address: airdrop } = await get(ContractNames.MetaheroAirdrop);
 
-  const airDropBalance = await read(
+  const airdropBalance = await read(
     ContractNames.MetaheroToken,
     'balanceOf',
-    airDrop,
+    airdrop,
   );
 
-  if (airDropBalance.lt(AIR_DROP_BALANCE)) {
+  if (airdropBalance.lt(AIRDROP_BALANCE)) {
     await execute(
       ContractNames.MetaheroToken,
       {
@@ -38,8 +38,8 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'transfer',
-      airDrop,
-      AIR_DROP_BALANCE.sub(airDropBalance),
+      airdrop,
+      AIRDROP_BALANCE.sub(airdropBalance),
     );
   }
 

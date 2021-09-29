@@ -1,6 +1,6 @@
 import { network } from 'hardhat';
 import { resolve, join } from 'path';
-import { NETWORK_CHAIN_ID_NAMES } from '../../extensions';
+import { NETWORK_CHAIN_ID_NAMES } from '../../../extensions';
 
 const DATA_ROOT_PATH = resolve(__dirname, '../data');
 

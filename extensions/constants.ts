@@ -1,5 +1,5 @@
 export enum ContractNames {
-  MetaheroAirDrop = 'MetaheroAirDrop',
+  MetaheroAirdrop = 'MetaheroAirdrop',
   MetaheroDAO = 'MetaheroDAO',
   MetaheroLPM = 'MetaheroLPM',
   MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
@@ -12,16 +12,19 @@ export enum ContractNames {
 export enum NetworkNames {
   Bsc = 'bsc',
   BscTest = 'bscTest',
+  Local = 'local',
 }
 
 export enum NetworkChainIds {
   Bsc = 56,
   BscTest = 97,
+  Local = 9999,
 }
 
 export const NETWORK_CHAIN_ID_NAMES: { [key: number]: string } = {
   [NetworkChainIds.Bsc]: NetworkNames.Bsc,
   [NetworkChainIds.BscTest]: NetworkNames.BscTest,
+  [NetworkChainIds.Local]: NetworkNames.Local,
 };
 
 export const NETWORK_CONFIGS: {

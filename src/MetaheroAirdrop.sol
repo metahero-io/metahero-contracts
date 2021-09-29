@@ -8,11 +8,11 @@ import "./MetaheroToken.sol";
 
 
 /**
- * @title Metahero air drop
+ * @title Metahero airdrop
  *
  * @author Stanisław Głogowski <stan@metahero.io>
  */
-contract MetaheroAirDrop is Owned, Initializable {
+contract MetaheroAirdrop is Owned, Initializable {
   /**
    * @return settings object
    */

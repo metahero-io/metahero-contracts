@@ -43,7 +43,7 @@ task(TASK_BUILD_DIST, 'Build dist', async (args, hre) => {
     const networks: { name: string; chainId: string; path: string }[] = [];
 
     for (const name of networkNames) {
-      if (name !== 'hardhat' && name !== 'localhost') {
+      if (name !== 'hardhat' && name !== 'local' && name !== 'localhost') {
         const path = join(deploymentsPath, name);
 
         const chainFilePath = join(path, '.chainId');
