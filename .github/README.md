@@ -13,8 +13,9 @@
   * initial - `10,000,000,000 HERO` _(configurable)_
   * minimal - `100,000,000 HERO` _(configurable)_
 * Transaction Fees _(from each holder participant balance)_:
-  * burn fee - `4%` _(configurable)_
-  * rewards fee - `1%` _(configurable)_
+  * burn fee - `0%` _(configurable)_
+  * lp fee - `0%` _(configurable)_
+  * rewards fee - `0%` _(configurable)_
 
 ## [NPM](../README.md)
 
@@ -41,10 +42,6 @@ via `env` variables:
 | `<network config prefix>_PROVIDER_GAS_PRICE` | _optional_ |
 | `<network config prefix>_DAO_MIN_VOTING_PERIOD` | _default_ `24 * 60 * 60` |
 | `<network config prefix>_DAO_SNAPSHOT_WINDOW` | _default_ `24 * 60 * 60` |
-| `<network config prefix>_TOKEN_SENDER_BURN_FEE` | _default_ `4` |
-| `<network config prefix>_TOKEN_RECIPIENT_BURN_FEE` | _default_ `4` |
-| `<network config prefix>_TOKEN_SENDER_REWARDS_FEE` | _default_ `1` |
-| `<network config prefix>_TOKEN_RECIPIENT_REWARDS_FEE` | _default_ `1`  |
 | `<network config prefix>_TOKEN_TOTAL_SUPPLY` | _default_ `10,000,000,000.000000000000000000` |
 | `<network config prefix>_TOKEN_MIN_TOTAL_SUPPLY` | _default_ `100,000,000.000000000000000000` |
 

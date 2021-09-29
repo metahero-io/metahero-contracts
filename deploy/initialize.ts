@@ -5,7 +5,6 @@ import { ContractNames } from '../extensions';
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
-    knownContracts,
     getNamedAccounts,
     getNetworkEnv,
   } = hre;
@@ -14,29 +13,9 @@ const func: DeployFunction = async (hre) => {
 
   // token
 
-  const TOKEN_BURN_FEE = {
-    sender: getNetworkEnv(
-      'TOKEN_SENDER_BURN_FEE', //
-      4,
-    ),
-    recipient: getNetworkEnv(
-      'TOKEN_RECIPIENT_BURN_FEE', //
-      4,
-    ),
-  };
-  const TOKEN_LP_FEE = {
+  const TOKEN_ZERO_FEE = {
     sender: 0,
     recipient: 0,
-  };
-  const TOKEN_REWARDS_FEE = {
-    sender: getNetworkEnv(
-      'TOKEN_SENDER_REWARDS_FEE', //
-      1,
-    ),
-    recipient: getNetworkEnv(
-      'TOKEN_RECIPIENT_REWARDS_FEE', //
-      1,
-    ),
   };
   const TOKEN_TOTAL_SUPPLY = getNetworkEnv(
     'TOKEN_TOTAL_SUPPLY',
@@ -60,6 +39,7 @@ const func: DeployFunction = async (hre) => {
   );
 
   const { from } = await getNamedAccounts();
+  const { address: token } = await get(ContractNames.MetaheroToken);
 
   // token
 
@@ -73,9 +53,9 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'initialize',
-      TOKEN_BURN_FEE,
-      TOKEN_LP_FEE,
-      TOKEN_REWARDS_FEE,
+      TOKEN_ZERO_FEE,
+      TOKEN_ZERO_FEE,
+      TOKEN_ZERO_FEE,
       TOKEN_MIN_TOTAL_SUPPLY,
       constants.AddressZero, // disable lpm
       constants.AddressZero, // disable controller
@@ -84,13 +64,27 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
+  // airdrop
+
+  if (await read(ContractNames.MetaheroAirdrop, 'initialized')) {
+    log(`${ContractNames.MetaheroAirdrop} already initialized`);
+  } else {
+    await execute(
+      ContractNames.MetaheroAirdrop,
+      {
+        from,
+        log: true,
+      },
+      'initialize',
+      token,
+    );
+  }
+
   // dao
 
   if (await read(ContractNames.MetaheroDAO, 'initialized')) {
     log(`${ContractNames.MetaheroDAO} already initialized`);
   } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
     await execute(
       ContractNames.MetaheroDAO,
       {
@@ -110,47 +104,8 @@ const func: DeployFunction = async (hre) => {
   if (await read(ContractNames.MetaheroSwapHelper, 'initialized')) {
     log(`${ContractNames.MetaheroSwapHelper} already initialized`);
   } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
     await execute(
       ContractNames.MetaheroSwapHelper,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-    );
-  }
-
-  // swap router
-
-  if (await read(ContractNames.MetaheroSwapRouter, 'initialized')) {
-    log(`${ContractNames.MetaheroSwapRouter} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroSwapRouter,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-      knownContracts.getAddress(ContractNames.UniswapV2Router),
-    );
-  }
-
-  // wrapped token
-
-  if (await read(ContractNames.MetaheroWrappedToken, 'initialized')) {
-    log(`${ContractNames.MetaheroWrappedToken} already initialized`);
-  } else {
-    const { address: token } = await get(ContractNames.MetaheroToken);
-
-    await execute(
-      ContractNames.MetaheroWrappedToken,
       {
         from,
         log: true,

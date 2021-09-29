@@ -18,6 +18,7 @@ import {
 const {
   HARDHAT_MNEMONIC, //
   HARDHAT_ENABLE_FORKING,
+  LOCAL_PROVIDER_URL,
 } = process.env;
 
 const localNetwork = {
@@ -27,7 +28,7 @@ const localNetwork = {
       'test test test test test test test test test test test junk',
     count: 32,
   },
-  chainId: NetworkChainIds.Bsc,
+  chainId: NetworkChainIds.Local,
   gasPrice: 10 * 1000000000,
 };
 
@@ -43,6 +44,10 @@ const config: HardhatUserConfig = {
     localhost: {
       ...localNetwork,
       url: 'http://localhost:8545',
+    },
+    [NetworkNames.Local]: {
+      ...localNetwork,
+      url: LOCAL_PROVIDER_URL || 'http://localhost:8545',
     },
     ...createConfigNetworks(),
   },
