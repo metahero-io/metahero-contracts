@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "incremental": false,
+    "module": "commonjs",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": false,
+    "target": "es2017",
+    "lib": [
+      "ES7"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+  ]
+}

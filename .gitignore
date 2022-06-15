@@ -19,6 +19,7 @@
 node_modules
 
 # develop
+.env
 .envrc
 .test*
 coverage
@@ -26,5 +27,4 @@ coverage.json
 
 # hardhat
 .hardhat
-/artifacts
-/typings
+typechain

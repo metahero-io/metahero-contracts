@@ -1,20 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "sourceMap": false,
-    "incremental": false,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "lib": [
-      "ES7"
-    ]
-  },
-  "exclude": [
-    "node_modules",
-  ]
+    "module": "commonjs",
+    "outDir": "dist",
+    "strict": false,
+    "target": "es2018",
+    "paths": {
+      "@abridged/collabland-common-contracts": ["./packages/common/**/*.ts"]
+    }
+  }
 }

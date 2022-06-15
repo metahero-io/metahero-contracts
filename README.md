@@ -1,46 +1,45 @@
 # Metahero contracts
 
-[![NPM version][npm-image]][npm-url]
 [![License MIT][license-image]][license-url]
+[![Coverage workflow][coverage-image]][coverage-url]
+[![Linter and tests workflow][linter-and-tests-image]][linter-and-tests-url]
 
 ## Installation
 
 ```bash
-$ npm i @metahero/contracts -S
+$ git clone https://github.com/metahero-io/metahero-contracts.git
+$ cd ./metahero-contracts
+$ npm i
+$ npm run bootstrap
+$ npm run link
 ```
 
-## Usage
+## Packages
 
-### Javascript
+* [@metahero/token-contracts](./packages/token) - Metahero token contracts 
 
-```javascript
-import {
-  ContractNames, 
-  getContractAbi, 
-  getContractAddress, 
-} from '@metahero/contracts'; 
+## Development
 
-console.log(
-  'MetaheroToken ABI:',
-  getContractAbi(ContractNames.MetaheroToken),
-);
+### NPM scripts 
 
-console.log(
-  'MetaheroToken BSC address:', 
-  getContractAddress(ContractNames.MetaheroToken, '56'), // chainId: 56
-);
-
-console.log(
-  'MetaheroToken BSC testnet address:', 
-  getContractAddress(ContractNames.MetaheroToken, 97), // chainId: 97
-);
+```bash
+$ npm run bootstrap   # bootstraps lerna project
+$ npm run link        # links all packages dependencies
+$ npm run compile     # compiles all contracts in all packages
+$ npm run coverage    # runs coverage tests in all packages
+$ npm run test        # runs unit tests in all packages
+$ npm run build       # builds `./dist`
 ```
 
 ## License
 
-MIT
+[MIT][license-url]
 
-[npm-image]: https://badge.fury.io/js/%40metahero%2Fcontracts.svg
-[npm-url]: https://npmjs.org/package/@metahero/contracts
 [license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
-[license-url]: https://github.com/metahero-token/metahero-contracts/blob/master/LICENSE
+[license-url]: https://github.com/metahero-io/metahero-contracts/blob/master/LICENSE
+
+[coverage-image]: https://github.com/metahero-io//metahero-contracts/actions/workflows/coverage.yml/badge.svg
+[coverage-url]: https://github.com/metahero-io//metahero-contracts/actions/workflows/coverage.yml
+
+[linter-and-tests-image]: https://github.com/metahero-io/metahero-contracts/actions/workflows/linter-and-tests.yml/badge.svg
+[linter-and-tests-url]: https://github.com/metahero-io//metahero-contracts/actions/workflows/linter-and-tests.yml
