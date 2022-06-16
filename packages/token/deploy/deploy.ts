@@ -8,22 +8,23 @@ const func: DeployFunction = async (hre) => {
   } = hre;
   const { from } = await getNamedAccounts();
 
-  await deploy(ContractNames.MetaheroToken, {
-    from,
-    log: true,
-  });
-
-  await deploy(ContractNames.MetaheroAirdrop, {
-    from,
-    log: true,
-  });
-
-  await deploy(ContractNames.MetaheroSwapHelper, {
-    from,
-    log: true,
-  });
+  // dao
 
   await deploy(ContractNames.MetaheroDAO, {
+    from,
+    log: true,
+  });
+
+  // lpm
+
+  await deploy(ContractNames.MetaheroLPMForUniswapV2, {
+    from,
+    log: true,
+  });
+
+  // token
+
+  await deploy(ContractNames.MetaheroToken, {
     from,
     log: true,
   });

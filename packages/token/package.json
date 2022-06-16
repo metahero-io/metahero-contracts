@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "exit 0",
+    "clean": "hardhat clean",
     "compile": "hardhat compile",
-    "test": "hardhat test",
     "coverage": "hardhat coverage",
+    "test": "hardhat test",
     "deploy:bsc": "exit 0",
     "deploy:bsc-test": "hardhat deploy --reset --network bsc-test",
     "verify:bsc": "exit 0",

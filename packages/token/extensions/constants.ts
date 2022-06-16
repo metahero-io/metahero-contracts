@@ -1,11 +1,9 @@
 /* eslint-disable no-unused-vars */
 
 export enum ContractNames {
-  MetaheroAirdrop = 'MetaheroAirdrop',
   MetaheroDAO = 'MetaheroDAO',
   MetaheroLPM = 'MetaheroLPM',
   MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
-  MetaheroSwapHelper = 'MetaheroSwapHelper',
   MetaheroToken = 'MetaheroToken',
   StableCoin = 'StableCoin',
   UniswapV2Router = 'UniswapV2Router',

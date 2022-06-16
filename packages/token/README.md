@@ -4,8 +4,20 @@
 
 ## Development
 
-(TODO)
+### NPM scripts
 
+```bash
+$ npm run <command>         # runs hardhat command
+                            # 
+                            # supported commands:
+                            # clean, compile, coverage, test
+
+$ npm run deploy:<network>  # deploys contracts to <network>
+$ npm run verify:<network>  # verifies contracts on <network>
+                            # 
+                            # supported networks:
+                            # bsc, bsc-test
+```
 ## License
 
 [MIT][license-url]

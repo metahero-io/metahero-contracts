@@ -5,9 +5,7 @@ export enum NetworkChainIds {
 }
 
 export enum ContractNames {
-  MetaheroAirdrop = 'MetaheroAirdrop',
   MetaheroDAO = 'MetaheroDAO',
   MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
-  MetaheroSwapHelper = 'MetaheroSwapHelper',
   MetaheroToken = 'MetaheroToken',
 }

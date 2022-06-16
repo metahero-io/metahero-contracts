@@ -9,35 +9,6 @@ const func: DeployFunction = async (hre) => {
     getNetworkEnv,
   } = hre;
 
-  // settings
-
-  // token
-
-  const TOKEN_ZERO_FEE = {
-    sender: 0,
-    recipient: 0,
-  };
-  const TOKEN_TOTAL_SUPPLY = getNetworkEnv(
-    'TOKEN_TOTAL_SUPPLY',
-    BigNumber.from('10000000000000000000000000000'), // 10,000,000,000.000000000000000000
-  );
-  const TOKEN_MIN_TOTAL_SUPPLY = getNetworkEnv(
-    'TOKEN_MIN_TOTAL_SUPPLY',
-    BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
-  );
-
-  // dao
-
-  const DAO_MIN_VOTING_PERIOD = getNetworkEnv(
-    'DAO_MIN_VOTING_PERIOD',
-    24 * 60 * 60, // 1 day
-  );
-
-  const DAO_SNAPSHOT_WINDOW = getNetworkEnv(
-    'DAO_SNAPSHOT_WINDOW',
-    24 * 60 * 60, // 1 day
-  );
-
   const { from } = await getNamedAccounts();
   const { address: token } = await get(ContractNames.MetaheroToken);
 
@@ -46,6 +17,31 @@ const func: DeployFunction = async (hre) => {
   if (await read(ContractNames.MetaheroToken, 'initialized')) {
     log(`${ContractNames.MetaheroToken} already initialized`);
   } else {
+    const { address: lpm } = await get(ContractNames.MetaheroLPMForUniswapV2);
+
+    const uniswapPair = await read(
+      ContractNames.MetaheroLPMForUniswapV2,
+      'uniswapPair',
+    );
+
+    const ZERO_FEE = {
+      sender: 0,
+      recipient: 0,
+    };
+    const LP_FEE = {
+      sender: 1,
+      recipient: 1,
+    };
+
+    const TOTAL_SUPPLY = getNetworkEnv(
+      'TOKEN_TOTAL_SUPPLY',
+      BigNumber.from('9766213274195872160839915066'), // 9,766,213,274.195872160839915066
+    );
+    const MIN_TOTAL_SUPPLY = getNetworkEnv(
+      'TOKEN_MIN_TOTAL_SUPPLY',
+      BigNumber.from('100000000000000000000000000'), // 100,000,000.000000000000000000
+    );
+
     await execute(
       ContractNames.MetaheroToken,
       {
@@ -53,30 +49,17 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'initialize',
-      TOKEN_ZERO_FEE,
-      TOKEN_ZERO_FEE,
-      TOKEN_ZERO_FEE,
-      TOKEN_MIN_TOTAL_SUPPLY,
-      constants.AddressZero, // disable lpm
+      ZERO_FEE,
+      LP_FEE,
+      ZERO_FEE,
+      MIN_TOTAL_SUPPLY,
+      lpm,
       constants.AddressZero, // disable controller
-      TOKEN_TOTAL_SUPPLY,
-      [],
-    );
-  }
-
-  // airdrop
-
-  if (await read(ContractNames.MetaheroAirdrop, 'initialized')) {
-    log(`${ContractNames.MetaheroAirdrop} already initialized`);
-  } else {
-    await execute(
-      ContractNames.MetaheroAirdrop,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
+      TOTAL_SUPPLY,
+      [
+        lpm, //
+        uniswapPair,
+      ],
     );
   }
 
@@ -85,6 +68,16 @@ const func: DeployFunction = async (hre) => {
   if (await read(ContractNames.MetaheroDAO, 'initialized')) {
     log(`${ContractNames.MetaheroDAO} already initialized`);
   } else {
+    const MIN_VOTING_PERIOD = getNetworkEnv(
+      'DAO_MIN_VOTING_PERIOD',
+      24 * 60 * 60, // 1 day
+    );
+
+    const SNAPSHOT_WINDOW = getNetworkEnv(
+      'DAO_SNAPSHOT_WINDOW',
+      24 * 60 * 60, // 1 day
+    );
+
     await execute(
       ContractNames.MetaheroDAO,
       {
@@ -94,26 +87,26 @@ const func: DeployFunction = async (hre) => {
       'initialize',
       token,
       constants.AddressZero, // use token owner
-      DAO_MIN_VOTING_PERIOD,
-      DAO_SNAPSHOT_WINDOW,
+      MIN_VOTING_PERIOD,
+      SNAPSHOT_WINDOW,
     );
   }
 
-  // swap helper
-
-  if (await read(ContractNames.MetaheroSwapHelper, 'initialized')) {
-    log(`${ContractNames.MetaheroSwapHelper} already initialized`);
-  } else {
-    await execute(
-      ContractNames.MetaheroSwapHelper,
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-    );
-  }
+  // TODO: lpm
+  //
+  // if (await read(ContractNames.MetaheroLPMForUniswapV2, 'initialized')) {
+  //   log(`${ContractNames.MetaheroLPMForUniswapV2} already initialized`);
+  // } else {
+  //   await execute(
+  //     ContractNames.MetaheroLPMForUniswapV2,
+  //     {
+  //       from,
+  //       log: true,
+  //     },
+  //     'initialize',
+  //     token,
+  //   );
+  // }
 };
 
 func.tags = ['initialize'];

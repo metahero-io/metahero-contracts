@@ -13,8 +13,11 @@ extendEnvironment((hre) => {
   } = hre;
 
   hre.knownContracts = {
-    getAddress(contractName: ContractNames): string {
-      let result = constants.AddressZero;
+    getAddress(
+      contractName: ContractNames,
+      defaultValue = constants.AddressZero,
+    ): string {
+      let result = defaultValue;
 
       if (
         knownContractsAddresses &&
