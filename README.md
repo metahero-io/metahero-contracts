@@ -22,7 +22,9 @@ $ npm run link
 
 ### Packages
 
-* [Metahero token contracts](./packages/token)  
+* [token contracts](./packages/token)  
+* [staking contracts](./packages/staking)  
+* [common contracts](./packages/common)  
 
 #### NPM scripts 
 
