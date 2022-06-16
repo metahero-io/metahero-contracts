@@ -8,16 +8,20 @@ const func: DeployFunction = async (hre) => {
     processNetworkEnvs: {
       getEnvAsAmount, //
       getEnvAsNumber,
+      getEnvAsAddress,
     },
   } = hre;
 
   const [from] = await getAccounts();
   const { address: token } = await get('MetaheroToken');
 
+  const UNISWAP_V2_ROUTER = getEnvAsAddress('UNISWAP_V2_ROUTER', null);
+  const STABLE_COIN = getEnvAsAddress('STABLE_COIN', null);
+
   // dao
 
   if (await read('MetaheroDAO', 'initialized')) {
-    log(`${'MetaheroDAO'} already initialized`);
+    log('MetaheroDAO already initialized');
   } else {
     const MIN_VOTING_PERIOD = getEnvAsNumber(
       'dao.MIN_VOTING_PERIOD',
@@ -43,41 +47,57 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  // TODO: lpm
-  //
-  // if (await read('MetaheroLPMForUniswapV2', 'initialized')) {
-  //   log(`${'MetaheroLPMForUniswapV2'} already initialized`);
-  // } else {
-  //   await execute(
-  //     'MetaheroLPMForUniswapV2',
-  //     {
-  //       from,
-  //       log: true,
-  //     },
-  //     'initialize',
-  //     token,
-  //   );
-  // }
+  // lpm
+
+  if (UNISWAP_V2_ROUTER && STABLE_COIN) {
+    if (await read('MetaheroLPMForUniswapV2', 'initialized')) {
+      log('MetaheroLPMForUniswapV2 already initialized');
+    } else {
+      const ENABLE_BURN_LP_AT_VALUE = getEnvAsAmount(
+        'lpm.ENABLE_BURN_LP_AT_VALUE',
+        '10000000',
+      );
+
+      await execute(
+        'MetaheroLPMForUniswapV2',
+        {
+          from,
+          log: true,
+        },
+        'initialize',
+        ENABLE_BURN_LP_AT_VALUE,
+        STABLE_COIN,
+        token,
+        UNISWAP_V2_ROUTER,
+      );
+    }
+  }
 
   // token
 
   if (await read('MetaheroToken', 'initialized')) {
     log('MetaheroToken  already initialized');
   } else {
-    const { address: lpm } = await get('MetaheroLPMForUniswapV2');
+    let lpm: string = constants.AddressZero;
+    let uniswapPair: string;
 
-    const uniswapPair = await read('MetaheroLPMForUniswapV2', 'uniswapPair');
+    if (UNISWAP_V2_ROUTER && STABLE_COIN) {
+      ({ address: lpm } = await get('MetaheroLPMForUniswapV2'));
+
+      uniswapPair = await read('MetaheroLPMForUniswapV2', 'uniswapPair');
+    }
 
     const ZERO_FEE = {
       sender: 0,
       recipient: 0,
     };
-    // const LP_FEE = {
-    //   sender: 1,
-    //   recipient: 1,
-    // };
 
-    const TOTAL_SUPPLY = getEnvAsAmount('token.TOTAL_SUPPLY', '9766213274');
+    const LP_FEE = {
+      sender: 1,
+      recipient: 1,
+    };
+
+    const TOTAL_SUPPLY = getEnvAsAmount('token.TOTAL_SUPPLY', '10000000000');
     const MIN_TOTAL_SUPPLY = getEnvAsAmount(
       'token.MIN_TOTAL_SUPPLY',
       '100000000',
@@ -91,16 +111,18 @@ const func: DeployFunction = async (hre) => {
       },
       'initialize',
       ZERO_FEE,
-      ZERO_FEE, // LP_FEE,
+      lpm ? LP_FEE : ZERO_FEE,
       ZERO_FEE,
       MIN_TOTAL_SUPPLY,
-      constants.AddressZero, // disable lpm
+      lpm,
       constants.AddressZero, // disable controller
       TOTAL_SUPPLY,
-      [
-        lpm, //
-        uniswapPair,
-      ],
+      lpm
+        ? [
+            lpm, //
+            uniswapPair,
+          ]
+        : [],
     );
   }
 };
