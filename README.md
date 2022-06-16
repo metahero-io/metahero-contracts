@@ -1,6 +1,7 @@
 # Metahero contracts
 
 [![License MIT][license-image]][license-url]
+[![NPM version][npm-image]][npm-url]
 [![Coverage workflow][coverage-image]][coverage-url]
 [![Linter and tests workflow][linter-and-tests-image]][linter-and-tests-url]
 
@@ -16,7 +17,7 @@ $ npm run link
 
 ## Packages
 
-* [@metahero/token-contracts](./packages/token) - Metahero token contracts 
+* [Metahero token contracts](./packages/token)  
 
 ## Development
 
@@ -28,7 +29,7 @@ $ npm run link        # links all packages dependencies
 $ npm run compile     # compiles all contracts in all packages
 $ npm run coverage    # runs coverage tests in all packages
 $ npm run test        # runs unit tests in all packages
-$ npm run build       # builds `./dist`
+$ npm run build       # builds npm packages into `./release`
 ```
 
 ## License
@@ -37,9 +38,9 @@ $ npm run build       # builds `./dist`
 
 [license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-url]: https://github.com/metahero-io/metahero-contracts/blob/master/LICENSE
-
+[npm-image]: https://badge.fury.io/js/%40metahero%2Fcontracts.svg
+[npm-url]: https://npmjs.org/package/@metahero/contracts
 [coverage-image]: https://github.com/metahero-io//metahero-contracts/actions/workflows/coverage.yml/badge.svg
 [coverage-url]: https://github.com/metahero-io//metahero-contracts/actions/workflows/coverage.yml
-
 [linter-and-tests-image]: https://github.com/metahero-io/metahero-contracts/actions/workflows/linter-and-tests.yml/badge.svg
 [linter-and-tests-url]: https://github.com/metahero-io//metahero-contracts/actions/workflows/linter-and-tests.yml
