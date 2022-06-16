@@ -1,20 +1,19 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import { constants } from 'ethers';
-import { ContractNames } from '../extensions';
 
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
-    getNamedAccounts,
+    helpers: { getAccounts },
   } = hre;
 
-  const { from } = await getNamedAccounts();
+  const [from] = await getAccounts();
 
-  if (await read(ContractNames.MetaheroToken, 'presaleFinished')) {
-    log(`${ContractNames.MetaheroToken} presale already finished`);
+  if (await read('MetaheroToken', 'presaleFinished')) {
+    log('MetaheroToken presale already finished');
   } else {
     await execute(
-      ContractNames.MetaheroToken,
+      'MetaheroToken',
       {
         from,
         log: true,
@@ -23,15 +22,13 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  if (
-    (await read(ContractNames.MetaheroToken, 'dao')) !== constants.AddressZero
-  ) {
-    log(`${ContractNames.MetaheroToken} dao already set`);
+  if ((await read('MetaheroToken', 'dao')) !== constants.AddressZero) {
+    log('MetaheroToken dao already set');
   } else {
-    const { address: dao } = await get(ContractNames.MetaheroDAO);
+    const { address: dao } = await get('MetaheroDAO');
 
     await execute(
-      ContractNames.MetaheroToken,
+      'MetaheroToken',
       {
         from,
         log: true,

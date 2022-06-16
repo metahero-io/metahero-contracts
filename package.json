@@ -6,7 +6,7 @@
   "scripts": {
     "start": "exit 0",
     "bootstrap": "lerna bootstrap",
-    "clean": "lerna run clean && lerna clean",
+    "clean": "lerna clean",
     "compile": "lerna run compile",
     "coverage": "lerna run coverage",
     "link": "lerna link",

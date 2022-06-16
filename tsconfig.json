@@ -7,7 +7,7 @@
     "strict": false,
     "target": "es2018",
     "paths": {
-      "@abridged/collabland-common-contracts": ["./packages/common/**/*.ts"]
+      "@metahero/common-contracts": ["./packages/common/**/*.ts"]
     }
   }
 }

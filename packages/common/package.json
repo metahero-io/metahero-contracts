@@ -1,22 +1,15 @@
 {
-  "name": "@metahero/token-contracts",
+  "name": "@metahero/common-contracts",
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "exit 0",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
-    "test": "hardhat test",
-    "deploy:bsc": "exit 0",
-    "deploy:bsc-test": "hardhat deploy --reset --network bsc-test",
-    "verify:bsc": "exit 0",
-    "verify:bsc-test": "hardhat verify --all --network bsc-test"
+    "test": "hardhat test"
   },
-  "dependencies": {
-    "@metahero/common-contracts": "1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.6",
     "@nomiclabs/hardhat-etherscan": "3.1.0",
@@ -25,14 +18,17 @@
     "@typechain/hardhat": "2.3.1",
     "@types/mocha": "8.2.2",
     "@types/node": "15.6.1",
+    "@types/prompts": "2.0.14",
     "chai": "4.3.6",
+    "dotenv": "16.0.1",
     "ethereum-waffle": "3.4.4",
     "ethers": "5.6.6",
     "hardhat": "2.9.5",
     "hardhat-deploy": "0.11.5",
-    "hardhat-deploy-ethers": "0.3.0-beta.13",
     "hardhat-gas-reporter": "1.0.8",
-    "solidity-coverage": "0.7.16",
+    "kleur": "3.0.3",
+    "prompts": "2.4.2",
+    "solidity-coverage": "0.7.21",
     "ts-node": "10.8.1",
     "typechain": "5.2.0",
     "typescript": "4.6.4"

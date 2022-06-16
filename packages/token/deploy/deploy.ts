@@ -1,30 +1,30 @@
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ContractNames } from '../extensions';
 
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { deploy },
-    getNamedAccounts,
+    helpers: { getAccounts },
   } = hre;
-  const { from } = await getNamedAccounts();
+
+  const [from] = await getAccounts();
 
   // dao
 
-  await deploy(ContractNames.MetaheroDAO, {
+  await deploy('MetaheroDAO', {
     from,
     log: true,
   });
 
   // lpm
 
-  await deploy(ContractNames.MetaheroLPMForUniswapV2, {
+  await deploy('MetaheroLPMForUniswapV2', {
     from,
     log: true,
   });
 
   // token
 
-  await deploy(ContractNames.MetaheroToken, {
+  await deploy('MetaheroToken', {
     from,
     log: true,
   });
