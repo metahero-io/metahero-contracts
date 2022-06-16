@@ -32,7 +32,7 @@ $ npm run link        # links all packages dependencies
 $ npm run compile     # compiles all contracts in all packages
 $ npm run coverage    # runs coverage tests in all packages
 $ npm run test        # runs unit tests in all packages
-$ npm run build       # builds npm packages into `./release`
+$ npm run build       # builds into `./release`
 ```
 
 ## License
