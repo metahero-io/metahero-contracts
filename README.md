@@ -1,11 +1,16 @@
 # Metahero contracts
 
 [![License MIT][license-image]][license-url]
-[![NPM version][npm-image]][npm-url]
 [![Coverage workflow][coverage-image]][coverage-url]
 [![Linter and tests workflow][linter-and-tests-image]][linter-and-tests-url]
 
-## Installation
+## [Release](./release)
+
+[![NPM version][npm-image]][npm-url]
+
+## Development
+
+### Installation
 
 ```bash
 $ git clone https://github.com/metahero-io/metahero-contracts.git
@@ -15,13 +20,11 @@ $ npm run bootstrap
 $ npm run link
 ```
 
-## Packages
+### Packages
 
 * [Metahero token contracts](./packages/token)  
 
-## Development
-
-### NPM scripts 
+#### NPM scripts 
 
 ```bash
 $ npm run bootstrap   # bootstraps lerna project
