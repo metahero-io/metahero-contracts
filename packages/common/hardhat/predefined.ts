@@ -13,10 +13,10 @@ export const SUPPORTED_NETWORKS: Record<
   },
   [NetworkNames.Bsc]: {
     chainId: 56,
-    url: 'http://localhost:8545',
+    url: 'https://bsc-dataseed1.binance.org',
   },
   [NetworkNames.BscTest]: {
     chainId: 97,
-    url: 'https://kovan.infura.io/v3',
+    url: 'https://data-seed-prebsc-1-s2.binance.org:8545',
   },
 };

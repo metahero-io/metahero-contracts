@@ -9,6 +9,8 @@ const func: DeployFunction = async (hre) => {
 
   const [from] = await getAccounts();
 
+  log();
+
   if (await read('MetaheroToken', 'presaleFinished')) {
     log('MetaheroToken presale already finished');
   } else {
@@ -21,6 +23,8 @@ const func: DeployFunction = async (hre) => {
       'setPresaleAsFinished',
     );
   }
+
+  log();
 
   if ((await read('MetaheroToken', 'dao')) !== constants.AddressZero) {
     log('MetaheroToken dao already set');

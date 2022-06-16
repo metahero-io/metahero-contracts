@@ -1,11 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import { SUPPORTED_NETWORKS } from './predefined';
-import {
-  Envs,
-  NetworkNames,
-  ProcessEnvNames,
-  HARDHAT_MNEMONIC,
-} from './shared';
+import { Envs, ProcessEnvNames, HARDHAT_MNEMONIC } from './shared';
 
 export const DEFAULT_HARDHAT_SOLIDITY_CONFIG: HardhatUserConfig['solidity'] = {
   version: '0.8.9',
@@ -34,7 +29,6 @@ export const DEFAULT_HARDHAT_NETWORKS_CONFIG: HardhatUserConfig['networks'] = {
       count: 32,
     },
     allowUnlimitedContractSize: true,
-    chainId: SUPPORTED_NETWORKS[NetworkNames.Local].chainId,
     gasPrice: 10 * 1000000000,
     initialBaseFeePerGas: 0,
     saveDeployments: false,

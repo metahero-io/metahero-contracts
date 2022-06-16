@@ -2,11 +2,13 @@ import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async (hre) => {
   const {
-    deployments: { deploy },
+    deployments: { deploy, log },
     helpers: { getAccounts },
   } = hre;
 
   const [from] = await getAccounts();
+
+  log();
 
   // dao
 
@@ -15,12 +17,16 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
+  log();
+
   // lpm
 
   await deploy('MetaheroLPMForUniswapV2', {
     from,
     log: true,
   });
+
+  log();
 
   // token
 

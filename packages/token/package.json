@@ -9,8 +9,9 @@
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
     "test": "hardhat test",
+    "deploy": "hardhat deploy",
     "deploy:bsc": "exit 0",
-    "deploy:bsc-test": "hardhat deploy --reset --network bsc-test",
+    "deploy:bsc-test": "hardhat deploy --network bsc-test",
     "verify:bsc": "exit 0",
     "verify:bsc-test": "hardhat verify --all --network bsc-test"
   },

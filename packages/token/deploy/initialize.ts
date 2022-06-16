@@ -17,6 +17,9 @@ const func: DeployFunction = async (hre) => {
 
   const UNISWAP_V2_ROUTER = getEnvAsAddress('UNISWAP_V2_ROUTER', null);
   const STABLE_COIN = getEnvAsAddress('STABLE_COIN', null);
+  const useLPM = !!(UNISWAP_V2_ROUTER && STABLE_COIN);
+
+  log();
 
   // dao
 
@@ -49,7 +52,9 @@ const func: DeployFunction = async (hre) => {
 
   // lpm
 
-  if (UNISWAP_V2_ROUTER && STABLE_COIN) {
+  if (useLPM) {
+    log();
+
     if (await read('MetaheroLPMForUniswapV2', 'initialized')) {
       log('MetaheroLPMForUniswapV2 already initialized');
     } else {
@@ -73,6 +78,8 @@ const func: DeployFunction = async (hre) => {
     }
   }
 
+  log();
+
   // token
 
   if (await read('MetaheroToken', 'initialized')) {
@@ -81,7 +88,7 @@ const func: DeployFunction = async (hre) => {
     let lpm: string = constants.AddressZero;
     let uniswapPair: string;
 
-    if (UNISWAP_V2_ROUTER && STABLE_COIN) {
+    if (useLPM) {
       ({ address: lpm } = await get('MetaheroLPMForUniswapV2'));
 
       uniswapPair = await read('MetaheroLPMForUniswapV2', 'uniswapPair');
@@ -111,13 +118,13 @@ const func: DeployFunction = async (hre) => {
       },
       'initialize',
       ZERO_FEE,
-      lpm ? LP_FEE : ZERO_FEE,
+      useLPM ? LP_FEE : ZERO_FEE,
       ZERO_FEE,
       MIN_TOTAL_SUPPLY,
       lpm,
       constants.AddressZero, // disable controller
       TOTAL_SUPPLY,
-      lpm
+      useLPM
         ? [
             lpm, //
             uniswapPair,
