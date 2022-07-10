@@ -1,7 +1,7 @@
 const { NetworkChainIds } = require('./constants');
 const contracts = require('./contracts');
 
-function getContractAddress(contractName, chainId) {
+function getContractAddress(contractName, chainId = null) {
   let result;
 
   try {

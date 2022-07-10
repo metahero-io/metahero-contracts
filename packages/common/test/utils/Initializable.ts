@@ -16,7 +16,7 @@ describe('Initializable (using mock)', () => {
   });
 
   describe('initialize()', () => {
-    it('expect to revert when msg.sender is not a deployer', async () => {
+    it('expect to revert when msg.sender is not the deployer', async () => {
       await expect(initializable.connect(account).initialize()).revertedWith(
         'MsgSenderIsNotTheDeployer()',
       );

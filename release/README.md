@@ -1,7 +1,6 @@
 # Metahero contracts
 
 [![License MIT][license-image]][license-url]
-[![NPM version][npm-image]][npm-url]
 
 ## Installation
 
@@ -69,5 +68,3 @@ console.log(
 
 [license-image]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-url]: https://github.com/metahero-io/metahero-contracts/blob/master/LICENSE
-[npm-image]: https://badge.fury.io/js/%40metahero%2Fcontracts.svg
-[npm-url]: https://npmjs.org/package/@metahero/contracts
