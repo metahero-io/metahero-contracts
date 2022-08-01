@@ -13,6 +13,7 @@ function getContractAddress(contractName, chainId = null) {
 
   return result || null;
 }
+
 function getContractABI(contractName) {
   let result;
 

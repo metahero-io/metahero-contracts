@@ -10,8 +10,6 @@ $ npm i @metahero/contracts
 
 ## Usage
 
-### TypeScript
-
 ```typescript
 import { 
   ContractNames, 
@@ -19,32 +17,6 @@ import {
   getContractAddress, 
   getContractABI,
 } from '@metahero/contracts';
-
-console.log(
-  'MetaheroToken bsc address:',
-  getContractAddress(
-    ContractNames.MetaheroToken,  // or 'MetaheroToken'
-    NetworkChainIds.Bsc,          // or 56
-  ),
-);
-
-console.log(
-  'MetaheroToken abi:',
-  getContractABI(
-    ContractNames.MetaheroToken,  // or 'MetaheroToken'
-  ),
-);
-```
-
-### JavaScript
-
-```javascript
-const {
-  ContractNames,
-  NetworkChainIds,
-  getContractAddress, 
-  getContractABI,
-} = require('@metahero/contracts');
 
 console.log(
   'MetaheroToken bsc address:',

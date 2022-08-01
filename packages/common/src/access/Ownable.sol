@@ -17,7 +17,7 @@ abstract contract Ownable {
   // modifiers
 
   modifier onlyOwner() {
-    if (_owner != msg.sender) {
+    if (msg.sender != _owner) {
       revert MsgSenderIsNotTheOwner();
     }
 

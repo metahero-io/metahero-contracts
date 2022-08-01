@@ -5,4 +5,4 @@ export function getContractAddress(
   chainId?: string | number,
 ): string;
 
-export function getContractABI(contractName: ContractNames): any;
+export function getContractABI<T = any>(contractName: ContractNames): T[];
