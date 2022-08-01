@@ -67,16 +67,15 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
 
   // errors
 
+  error InvalidEarlyWithdrawalTax();
+  error InvalidSnapshotWindowMinLength();
+  error InvalidTokenState();
   error MsgSenderIsNotTheTokenAuction();
   error MsgSenderIsNotTheTokenDistributor();
-
+  error MsgSenderIsNotTheTokenOwner();
   error PaymentTokenIsTheZeroAddress();
   error TokenAuctionIsTheZeroAddress();
   error TokenDistributorIsTheZeroAddress();
-  error InvalidSnapshotWindowMinLength();
-  error InvalidEarlyWithdrawalTax();
-  error TokenAlreadyExists();
-  error MsgSenderIsNotTheTokenOwner();
 
   // events
 
@@ -209,12 +208,33 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     return _snapshots[snapshotId];
   }
 
-  function getTokenDetails(uint256 tokenId)
+  function getTokenSummary(uint256 tokenId)
     external
     view
-    returns (TokenDetails memory)
+    returns (
+      address owner,
+      uint256 deposit,
+      uint256 rewards,
+      uint256 unlockWithdrawalAt
+    )
   {
-    return _tokenDetails[tokenId];
+    TokenDetails memory tokenDetails = _tokenDetails[tokenId];
+
+    if (tokenDetails.state == TokenStates.Minted) {
+      owner = ownerOf(tokenId);
+
+      deposit = tokenDetails.deposit;
+
+      unchecked {
+        rewards =
+          tokenDetails.rewards +
+          _calcTokenSnapshotRewards(tokenDetails);
+      }
+
+      unlockWithdrawalAt = tokenDetails.unlockWithdrawalAt;
+    }
+
+    return (owner, deposit, rewards, unlockWithdrawalAt);
   }
 
   function getRequiredTokenResurrectionDeposit(uint256 tokenId)
@@ -229,35 +249,6 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     }
 
     return result;
-  }
-
-  function getTokenSummary(uint256 tokenId)
-    external
-    view
-    returns (
-      address owner,
-      uint256 deposit,
-      uint256 rewards,
-      uint256 unlockWithdrawalAt
-    )
-  {
-    owner = ownerOf(tokenId);
-
-    if (owner != address(0)) {
-      TokenDetails memory tokenDetails = _tokenDetails[tokenId];
-
-      deposit = tokenDetails.deposit;
-
-      unchecked {
-        rewards =
-          tokenDetails.rewards +
-          _calcTokenSnapshotRewards(tokenDetails);
-      }
-
-      unlockWithdrawalAt = tokenDetails.unlockWithdrawalAt;
-    }
-
-    return (owner, deposit, rewards, unlockWithdrawalAt);
   }
 
   // external functions
@@ -309,23 +300,23 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
   function burnToken(uint256 tokenId) external {
     address sender = _msgSender();
 
+    TokenDetails storage tokenDetails = _tokenDetails[tokenId];
+
+    if (tokenDetails.state != TokenStates.Minted) {
+      revert InvalidTokenState();
+    }
+
     if (sender != ownerOf(tokenId)) {
       revert MsgSenderIsNotTheTokenOwner();
     }
 
-    TokenDetails storage tokenDetails = _tokenDetails[tokenId];
-
     uint256 withdrawal;
 
     if (tokenDetails.unlockWithdrawalAt > block.timestamp) {
-      if (_earlyWithdrawalTax == 0) {
-        withdrawal = tokenDetails.deposit;
-      } else {
-        unchecked {
-          withdrawal =
-            ((MAX_PERCENTAGE - _earlyWithdrawalTax) * tokenDetails.deposit) /
-            MAX_PERCENTAGE;
-        }
+      unchecked {
+        withdrawal =
+          ((MAX_PERCENTAGE - _earlyWithdrawalTax) * tokenDetails.deposit) /
+          MAX_PERCENTAGE;
       }
     } else {
       uint256 snapshotRewards = _calcTokenSnapshotRewards(tokenDetails);
@@ -367,14 +358,12 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     TokenDetails storage tokenDetails = _tokenDetails[tokenId];
 
     if (tokenDetails.state != TokenStates.Unknown) {
-      revert TokenAlreadyExists();
+      revert InvalidTokenState();
     }
 
     tokenDetails.state = TokenStates.Burned;
     tokenDetails.deposit = deposit;
     tokenDetails.weight = weight;
-
-    _burn(tokenId);
 
     emit TokenMarkedAsBurned(tokenId, deposit, weight);
   }
@@ -387,6 +376,10 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     uint256 snapshotId = _computeSnapshotId(block.timestamp);
 
     TokenDetails storage tokenDetails = _tokenDetails[tokenId];
+
+    if (tokenDetails.state != TokenStates.Burned) {
+      revert InvalidTokenState();
+    }
 
     tokenDetails.state = TokenStates.Minted;
     tokenDetails.snapshotId = snapshotId;
@@ -440,12 +433,12 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
       uint256 index = _snapshots[tokenDetails.snapshotId].index;
       uint256 lastIndex = len - 1;
 
-      for (; index < lastIndex; ) {
-        Snapshot memory snapshot = _snapshots[index];
-
-        result += (tokenDetails.weight * snapshot.rewards) / snapshot.weights;
+      for (; index <= lastIndex; ) {
+        Snapshot memory snapshot = _snapshots[_snapshotIds[index]];
 
         unchecked {
+          result += (tokenDetails.weight * snapshot.rewards) / snapshot.weights;
+
           ++index;
         }
       }
@@ -471,7 +464,7 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
         temp -= _totalTokensRewards;
       }
 
-      if (_totalSnapshotsRewards != temp) {
+      if (temp != _totalSnapshotsRewards) {
         unchecked {
           rewards = temp - _totalSnapshotsRewards;
         }
@@ -505,7 +498,10 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     Snapshot storage latestSnapshot = _snapshots[latestSnapshotId];
 
     latestSnapshot.weights = _totalTokensWeights;
-    latestSnapshot.rewards += rewards;
+
+    unchecked {
+      latestSnapshot.rewards += rewards;
+    }
 
     if (
       latestSnapshot.rewards != 0 && //

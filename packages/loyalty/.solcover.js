@@ -1,4 +1,4 @@
 module.exports = {
-  skipFiles: ['imports.sol'],
+  skipFiles: ['constants.sol', 'imports.sol'],
   configureYulOptimizer: true,
 };
