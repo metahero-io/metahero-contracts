@@ -39,6 +39,9 @@ If after, all collected rewards and deposit are send to token owner.
 
 Burned token is automatically send to auction.
 
+![Burning](./images/burning.png)
+
+
 ## Modules
 
 ![Modules](./images/modules.png)
