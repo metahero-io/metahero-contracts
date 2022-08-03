@@ -1,4 +1,4 @@
-# Metahero Loyalty Token
+# Metahero loyalty token
 
 * Standard - [ERC-721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)
 * Name - `Metahero Loyalty`
@@ -66,6 +66,3 @@ After winning the auction, the difference between the deposit and the offer goes
 
 The withdrawal lock time is predefined. It is reduced in proportion to the deposit surplus (if the offer exceeds twice the deposit, it is zero)
 
-### Lender
-
-(TODO)

@@ -411,21 +411,17 @@ describe('MetaheroLoyaltyTokenAuction', () => {
         // id: 1
         {
           const tokenId = 1;
-          const bid = initialAuctionsDeposits[tokenId - 1];
+          const bid = initialAuctionsDeposits[tokenId - 1] * 1.5;
 
-          await processTransaction(
-            loyaltyTokenAuction.placeBid(tokenId, bid * 1.5),
-          );
+          await processTransaction(loyaltyTokenAuction.placeBid(tokenId, bid));
         }
 
         // id: 2
         {
           const tokenId = 2;
-          const bid = initialAuctionsDeposits[tokenId - 1];
+          const bid = initialAuctionsDeposits[tokenId - 1] * 2;
 
-          await processTransaction(
-            loyaltyTokenAuction.placeBid(tokenId, bid * 2),
-          );
+          await processTransaction(loyaltyTokenAuction.placeBid(tokenId, bid));
         }
 
         await increaseNextBlockTimestamp(auctionTime + 1);
@@ -449,6 +445,26 @@ describe('MetaheroLoyaltyTokenAuction', () => {
         await expect(loyaltyTokenAuction.claimToken(3)).revertedWith(
           'AuctionInProgress()',
         );
+      });
+
+      it('expect to claim token #1 ', async () => {
+        const tokenId = 1;
+
+        const { tx } = await processTransaction(
+          loyaltyTokenAuction.claimToken(tokenId),
+        );
+
+        await expect(tx).to.emit(loyaltyTokenAuction, 'TokenClaimed');
+      });
+
+      it('expect to claim token #2 ', async () => {
+        const tokenId = 2;
+
+        const { tx } = await processTransaction(
+          loyaltyTokenAuction.claimToken(tokenId),
+        );
+
+        await expect(tx).to.emit(loyaltyTokenAuction, 'TokenClaimed');
       });
     });
   });

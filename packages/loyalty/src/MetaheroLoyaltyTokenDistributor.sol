@@ -67,11 +67,14 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
   error InvitationAlreadyUsed();
   error InvitationDoesntExist();
   error LoyaltyTokenIsTheZeroAddress();
+  error NoRewardsToRelease();
   error PaymentTokenIsTheZeroAddress();
 
   // events
 
   event Initialized(address loyaltyToken, address paymentToken);
+
+  event RewardsReleased(uint256 rewards);
 
   event InvitationAdded(
     uint256 invitationId,
@@ -118,18 +121,24 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   // external functions
 
-  function releaseRewards() external onlyOwner {
-    uint256 availableRewards = _paymentToken.balanceOf(address(this));
-
-    _paymentToken.transfer(_owner, availableRewards);
-  }
-
   function togglePaused() external onlyOwner {
     if (paused()) {
       _unpause();
     } else {
       _pause();
     }
+  }
+
+  function releaseRewards() external onlyOwner {
+    uint256 rewards = _paymentToken.balanceOf(address(this));
+
+    if (rewards == 0) {
+      revert NoRewardsToRelease();
+    }
+
+    _paymentToken.transfer(_owner, rewards);
+
+    emit RewardsReleased(rewards);
   }
 
   function addInvitation(
@@ -248,10 +257,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     address sender = _msgSender();
 
     if (
-      !proof.verify(
-        invitation.treeRoot,
-        keccak256(abi.encodePacked(invitationId, sender))
-      )
+      !proof.verify(invitation.treeRoot, keccak256(abi.encodePacked(sender)))
     ) {
       revert InvalidInvitationProof();
     }
@@ -282,7 +288,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
             ((invitation.maxRewardsAPY - invitation.minRewardsAPY) *
               (withdrawalLockTime - invitation.minWithdrawalLockTime)) /
             (invitation.maxWithdrawalLockTime -
-              invitation.maxWithdrawalLockTime);
+              invitation.minWithdrawalLockTime);
         }
       }
 

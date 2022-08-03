@@ -8,6 +8,11 @@
 
 [![NPM version][npm-image]][npm-url]
 
+## Docs
+
+- [Metahero token](./packages/token/docs/metahero-token.md)
+- [Metahero loyalty token](./packages/loyalty/docs/metahero-loyalty-token.md)
+
 ## Development
 
 ### Installation
@@ -24,7 +29,7 @@ $ npm run link
 
 * [@metahero/token-contracts](./packages/token)  
 * [@metahero/loyalty-contracts](./packages/loyalty)  
-* [@metahero/common-contracts](./packages/common)  
+* [@metahero/common-contracts](./packages/common)
 
 #### NPM scripts 
 
