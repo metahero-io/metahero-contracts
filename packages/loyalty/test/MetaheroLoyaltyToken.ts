@@ -245,7 +245,7 @@ describe('MetaheroLoyaltyToken', () => {
         ).eq(0);
       });
 
-      it('expect to return correct snapshot id', async () => {
+      it('expect to return a snapshot id', async () => {
         const expected = 14;
 
         expect(
@@ -259,7 +259,7 @@ describe('MetaheroLoyaltyToken', () => {
     });
 
     describe('getSnapshot()', () => {
-      it('expect to return snapshot', async () => {
+      it('expect to return the snapshot', async () => {
         const output = await loyaltyToken.getSnapshot(1);
 
         expect(output.index).to.eq(0);
@@ -271,7 +271,7 @@ describe('MetaheroLoyaltyToken', () => {
     });
 
     describe('getTokenSummary()', () => {
-      it('expect to return token summary', async () => {
+      it('expect to return the token summary', async () => {
         const output = await loyaltyToken.getTokenSummary(1);
 
         expect(output.owner).to.eq(account.address);

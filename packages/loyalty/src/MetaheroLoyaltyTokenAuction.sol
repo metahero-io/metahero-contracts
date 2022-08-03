@@ -4,13 +4,18 @@ pragma solidity ^0.8.0;
 
 import "@metahero/common-contracts/src/access/Ownable.sol";
 import "@metahero/common-contracts/src/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
 import "./MetaheroLoyaltyToken.sol";
 
-contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
+/**
+ * @title Metahero Loyalty Token (auction manager)
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
+ */
+contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Pausable {
   struct Auction {
-    address highestBidder;
+    address topBidder;
     uint256 highestBid;
     uint256 requiredDeposit;
     uint256 endsAt;
@@ -28,13 +33,16 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
 
   // errors
 
-  error LoyaltyTokenIsTheZeroAddress();
-  error PaymentTokenIsTheZeroAddress();
-  error InvalidAuctionTime();
-  error AuctionNotFound();
   error AuctionEnds();
   error AuctionInProgress();
+  error AuctionNotFound();
+  error InvalidAuctionTime();
   error InvalidBid();
+  error InvalidInitialAuctionDeposit();
+  error InvalidInitialAuctionsWeightsLength();
+  error LoyaltyTokenIsTheZeroAddress();
+  error PaymentTokenIsTheZeroAddress();
+  error PlaceBidPaused();
 
   // events
 
@@ -61,7 +69,7 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
 
   // constructor
 
-  constructor() Ownable() Initializable() {
+  constructor() Ownable() Initializable() Pausable() {
     //
   }
 
@@ -71,7 +79,9 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
     address loyaltyToken,
     address paymentToken,
     uint256 auctionTime,
-    uint256 unlockWithdrawalMaxTime
+    uint256 unlockWithdrawalMaxTime,
+    uint256[] calldata initialAuctionsDeposits,
+    uint256[] calldata initialAuctionsWeights
   ) external initializer {
     if (loyaltyToken == address(0)) {
       revert LoyaltyTokenIsTheZeroAddress();
@@ -99,6 +109,57 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
       auctionTime,
       unlockWithdrawalMaxTime
     );
+
+    // import initial auctions
+    {
+      uint256 depositsLen = initialAuctionsDeposits.length;
+      uint256 weightsLen = initialAuctionsWeights.length;
+
+      for (uint256 index; index < depositsLen; ) {
+        uint256 tokenId;
+
+        unchecked {
+          tokenId = index + 1;
+        }
+
+        uint256 deposit = initialAuctionsDeposits[index];
+        uint256 weight;
+
+        if (deposit == 0) {
+          revert InvalidInitialAuctionDeposit();
+        }
+
+        if (weightsLen > index) {
+          weight = initialAuctionsWeights[index];
+        }
+
+        if (weight == 0) {
+          weight = deposit;
+        }
+
+        _loyaltyToken.markTokenAsBurned(tokenId, deposit, weight);
+
+        unchecked {
+          ++index;
+        }
+      }
+    }
+  }
+
+  // external functions (views)
+
+  function getAuction(uint256 tokenId) external view returns (Auction memory) {
+    return _auctions[tokenId];
+  }
+
+  // external functions
+
+  function togglePaused() external onlyOwner {
+    if (paused()) {
+      _unpause();
+    } else {
+      _pause();
+    }
   }
 
   function placeBid(uint256 tokenId, uint256 bid) external {
@@ -107,6 +168,10 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
     Auction storage auction = _auctions[tokenId];
 
     if (auction.highestBid == 0) {
+      if (paused()) {
+        revert PlaceBidPaused();
+      }
+
       uint256 requiredDeposit = _loyaltyToken
         .getRequiredTokenResurrectionDeposit(tokenId);
 
@@ -118,25 +183,32 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
         revert InvalidBid();
       }
 
+      _paymentToken.transferFrom(bidder, address(this), bid);
+
       auction.requiredDeposit = requiredDeposit;
-      auction.highestBidder = bidder;
+      auction.topBidder = bidder;
 
       unchecked {
         auction.endsAt = block.timestamp + _auctionTime;
       }
-    } else if (auction.endsAt >= block.timestamp) {
+    } else if (auction.endsAt <= block.timestamp) {
       revert AuctionEnds();
     } else if (auction.highestBid >= bid) {
       revert InvalidBid();
-    } else if (bidder == auction.highestBidder) {
-      _paymentToken.transferFrom(
-        bidder,
-        address(this),
-        bid - auction.highestBid
-      );
+    } else if (bidder == auction.topBidder) {
+      uint256 value;
+
+      unchecked {
+        value = bid - auction.highestBid;
+      }
+
+      _paymentToken.transferFrom(bidder, address(this), value);
     } else {
+      _paymentToken.transfer(auction.topBidder, auction.highestBid);
+
       _paymentToken.transferFrom(bidder, address(this), bid);
-      auction.highestBidder = bidder;
+
+      auction.topBidder = bidder;
     }
 
     auction.highestBid = bid;
@@ -151,11 +223,11 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
       revert AuctionNotFound();
     }
 
-    if (auction.endsAt < block.timestamp) {
+    if (auction.endsAt > block.timestamp) {
       revert AuctionInProgress();
     }
 
-    address highestBidder = auction.highestBidder;
+    address topBidder = auction.topBidder;
     uint256 highestBid = auction.highestBid;
     uint256 requiredDeposit = auction.requiredDeposit;
     uint256 unlockWithdrawalAt = block.timestamp;
@@ -163,22 +235,22 @@ contract MetaheroLoyaltyTokenAuction is Ownable, Initializable, Context {
     unchecked {
       uint256 bidDiff = highestBid - requiredDeposit;
 
-      if (bidDiff == 0) {
-        unlockWithdrawalAt += _unlockWithdrawalMaxTime;
-      } else if (bidDiff < requiredDeposit) {
+      if (bidDiff < requiredDeposit) {
         unlockWithdrawalAt += (_unlockWithdrawalMaxTime -
           (bidDiff * _unlockWithdrawalMaxTime) /
           requiredDeposit);
       }
     }
 
-    _loyaltyToken.resurrectToken(highestBidder, tokenId, unlockWithdrawalAt);
+    _paymentToken.transfer(address(_loyaltyToken), highestBid);
+
+    _loyaltyToken.resurrectToken(topBidder, tokenId, unlockWithdrawalAt);
 
     delete _auctions[tokenId];
 
     emit TokenClaimed(
       tokenId,
-      highestBidder,
+      topBidder,
       highestBid,
       requiredDeposit,
       unlockWithdrawalAt

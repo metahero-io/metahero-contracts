@@ -9,6 +9,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./constants.sol";
 
+/**
+ * @title Metahero Loyalty Token
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
+ */
 contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
   enum TokenStates {
     Unknown,

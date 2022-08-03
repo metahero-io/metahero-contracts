@@ -4,13 +4,18 @@ pragma solidity ^0.8.0;
 
 import "@metahero/common-contracts/src/access/Ownable.sol";
 import "@metahero/common-contracts/src/utils/Initializable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
 import "./MetaheroLoyaltyToken.sol";
 import "./constants.sol";
 
-contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
+/**
+ * @title Metahero Loyalty Token (distributor)
+ *
+ * @author Stanisław Głogowski <stan@metahero.io>
+ */
+contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
   using MerkleProof for bytes32[];
 
   enum InvitationStates {
@@ -47,20 +52,22 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
 
   // errors
 
+  error InvalidDeposit();
+  error InvalidDepositPower();
+  error InvalidInvitationId();
+  error InvalidInvitationProof();
+  error InvalidMaxDeposit();
+  error InvalidMaxRewardsAPY();
+  error InvalidMaxWithdrawalLockTime();
+  error InvalidMinDeposit();
+  error InvalidMinRewardsAPY();
+  error InvalidMinWithdrawalLockTime();
+  error InvalidWithdrawalLockTime();
+  error InvitationAlreadyExists();
+  error InvitationAlreadyUsed();
+  error InvitationDoesntExist();
   error LoyaltyTokenIsTheZeroAddress();
   error PaymentTokenIsTheZeroAddress();
-  error InvalidInvitationId();
-  error InvitationAlreadyExists();
-  error InvitationDoesntExist();
-  error InvalidDepositPower();
-  error InvalidMinDeposit();
-  error InvalidMaxDeposit();
-  error InvalidMinRewardsAPY();
-  error InvalidMaxRewardsAPY();
-  error InvalidMinWithdrawalLockTime();
-  error InvalidMaxWithdrawalLockTime();
-  error InvalidInvitationProof();
-  error InvitationAlreadyUsed();
 
   // events
 
@@ -84,7 +91,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
 
   // constructor
 
-  constructor() Ownable() Initializable() {
+  constructor() Ownable() Initializable() Pausable() {
     //
   }
 
@@ -115,6 +122,14 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
     uint256 availableRewards = _paymentToken.balanceOf(address(this));
 
     _paymentToken.transfer(_owner, availableRewards);
+  }
+
+  function togglePaused() external onlyOwner {
+    if (paused()) {
+      _unpause();
+    } else {
+      _pause();
+    }
   }
 
   function addInvitation(
@@ -208,7 +223,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
     uint256 deposit,
     uint256 withdrawalLockTime,
     bytes32[] memory proof
-  ) external {
+  ) external whenNotPaused {
     if (invitationId == 0) {
       revert InvalidInvitationId();
     }
@@ -217,6 +232,17 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
 
     if (invitation.state != InvitationStates.Added) {
       revert InvitationDoesntExist();
+    }
+
+    if (deposit < invitation.minDeposit || deposit > invitation.maxDeposit) {
+      revert InvalidDeposit();
+    }
+
+    if (
+      withdrawalLockTime < invitation.minWithdrawalLockTime ||
+      withdrawalLockTime > invitation.maxWithdrawalLockTime
+    ) {
+      revert InvalidWithdrawalLockTime();
     }
 
     address sender = _msgSender();
