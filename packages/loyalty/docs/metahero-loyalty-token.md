@@ -30,6 +30,8 @@ Both rewards can be withdrawn after `unlock withdrawal timestamp`.
 
 ## Burning
 
+![Burning](./images/burning.png)
+
 If token burring is requested before `unlock withdrawal timestamp`:
 
 * all collected rewards are removed from the token and goes to current snapshot rewards,
@@ -38,8 +40,6 @@ If token burring is requested before `unlock withdrawal timestamp`:
 If after, all collected rewards and deposit are send to token owner.
 
 Burned token is automatically send to auction.
-
-![Burning](./images/burning.png)
 
 ## Modules
 
