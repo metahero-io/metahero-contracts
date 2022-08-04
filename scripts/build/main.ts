@@ -34,6 +34,10 @@ export async function main(): Promise<void> {
       for (let networkName of networkNames) {
         const networkPath = join(packageRoot, networkName);
 
+        if (networkName === 'local') {
+          continue;
+        }
+
         let fileNames: string[];
 
         try {
