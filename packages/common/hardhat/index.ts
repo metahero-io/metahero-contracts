@@ -4,4 +4,4 @@ import './environment';
 import './tasks';
 import './typings';
 
-export * from './defaults';
+export * from './buildConfig';

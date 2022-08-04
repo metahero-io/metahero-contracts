@@ -6,36 +6,34 @@ const func: DeployFunction = async (hre) => {
     helpers: { getAccounts },
   } = hre;
 
+  log();
+  log('# create');
+  log();
+
   const [from] = await getAccounts();
-
-  log();
-
-  // dao
-
-  await deploy('MetaheroDAO', {
-    from,
-    log: true,
-  });
-
-  log();
-
-  // lpm
-
-  await deploy('MetaheroLPMForUniswapV2', {
-    from,
-    log: true,
-  });
-
-  log();
 
   // token
 
-  await deploy('MetaheroToken', {
+  await deploy('MetaheroLoyaltyToken', {
+    from,
+    log: true,
+  });
+
+  // auction
+
+  await deploy('MetaheroLoyaltyTokenAuction', {
+    from,
+    log: true,
+  });
+
+  // distributor
+
+  await deploy('MetaheroLoyaltyTokenDistributor', {
     from,
     log: true,
   });
 };
 
-func.tags = ['deploy'];
+func.tags = ['create'];
 
 module.exports = func;

@@ -13,11 +13,16 @@ $ npm run <command>         # runs hardhat command
                             # clean, compile, coverage, test
 
 $ npm run deploy:<network>  # deploys contracts to <network>
+                            # 
+                            # supported networks:
+                            # local, bsc, bsc-test
+                            
 $ npm run verify:<network>  # verifies contracts on <network>
                             # 
                             # supported networks:
                             # bsc, bsc-test
 ```
+
 ## License
 
 [MIT][license-url]

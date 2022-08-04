@@ -4,9 +4,6 @@ import '@typechain/hardhat';
 import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
+import { buildConfig } from './hardhat';
 
-export {
-  DEFAULT_HARDHAT_NETWORKS_CONFIG,
-  DEFAULT_HARDHAT_SOLIDITY_CONFIG,
-  DEFAULT_HARDHAT_CONFIG as default,
-} from './hardhat';
+export default buildConfig();

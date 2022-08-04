@@ -2,25 +2,37 @@ import { HardhatUserConfig } from 'hardhat/config';
 import { SUPPORTED_NETWORKS } from './predefined';
 import { Envs, ProcessEnvNames, HARDHAT_MNEMONIC } from './shared';
 
-export const DEFAULT_HARDHAT_SOLIDITY_CONFIG: HardhatUserConfig['solidity'] = {
-  version: '0.8.9',
-  settings: {
-    metadata: { bytecodeHash: 'none' },
-    optimizer: { enabled: true, runs: 100 },
-    outputSelection: {
-      '*': {
-        '*': [
-          'abi',
-          'evm.bytecode',
-          'evm.deployedBytecode',
-          'evm.methodIdentifiers',
-          'metadata',
-        ],
-        '': ['ast'],
+export const DEFAULT_HARDHAT_SOLIDITY_CONFIG_0_8: HardhatUserConfig['solidity'] =
+  {
+    version: '0.8.9',
+    settings: {
+      metadata: { bytecodeHash: 'none' },
+      optimizer: { enabled: true, runs: 100 },
+      outputSelection: {
+        '*': {
+          '*': [
+            'abi',
+            'evm.bytecode',
+            'evm.deployedBytecode',
+            'evm.methodIdentifiers',
+            'metadata',
+          ],
+          '': ['ast'],
+        },
       },
     },
-  },
-};
+  };
+
+export const DEFAULT_HARDHAT_SOLIDITY_CONFIG_0_6: HardhatUserConfig['solidity'] =
+  {
+    version: '0.6.12',
+    settings: {
+      evmVersion: 'istanbul',
+      metadata: {
+        bytecodeHash: 'none',
+      },
+    },
+  };
 
 export const DEFAULT_HARDHAT_NETWORKS_CONFIG: HardhatUserConfig['networks'] = {
   hardhat: {
@@ -33,13 +45,11 @@ export const DEFAULT_HARDHAT_NETWORKS_CONFIG: HardhatUserConfig['networks'] = {
     initialBaseFeePerGas: 0,
     saveDeployments: false,
   },
-
   ...Object.entries(SUPPORTED_NETWORKS)
     .map(([name, network]) => ({ name, ...network }))
     .reduce((result, { url, name, chainId }) => {
       const { useNamespace } = Envs.processEnvs;
-      const { getEnvAsHex32, getEnvAsURL, getEnvAsBool, getEnvAsNumber } =
-        useNamespace(name);
+      const { getEnvAsHex32, getEnvAsURL, getEnvAsNumber } = useNamespace(name);
 
       const defaultGasPrice = getEnvAsNumber(
         ProcessEnvNames.DefaultGasPrice,
@@ -54,16 +64,9 @@ export const DEFAULT_HARDHAT_NETWORKS_CONFIG: HardhatUserConfig['networks'] = {
           defaultGasPrice,
           url: getEnvAsURL(ProcessEnvNames.Url, url),
           accounts: privateKey ? [privateKey] : [],
-          saveDeployments: getEnvAsBool(
-            ProcessEnvNames.SaveLocalDeployments,
-            true,
-          ),
+          allowUnlimitedContractSize: true,
+          saveDeployments: true,
         },
       };
     }, {}),
-};
-
-export const DEFAULT_HARDHAT_CONFIG: HardhatUserConfig = {
-  solidity: DEFAULT_HARDHAT_SOLIDITY_CONFIG,
-  networks: DEFAULT_HARDHAT_NETWORKS_CONFIG,
 };

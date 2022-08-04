@@ -249,6 +249,29 @@ describe('MetaheroDAO', () => {
     });
   });
 
+  context('removeAllTokenFees()', () => {
+    createBeforeHook();
+
+    it('expect to revert when sender is not the operator', async () => {
+      await expect(
+        dao.connect(signers[0]).removeAllTokenFees(),
+      ).to.be.revertedWith('MetaheroDAO#1');
+    });
+
+    it('expect to remove all fees', async () => {
+      await dao.connect(operator).removeAllTokenFees();
+
+      const { burnFees, lpFees, rewardsFees } = await token.settings();
+
+      expect(burnFees.sender).to.equal(0);
+      expect(burnFees.recipient).to.equal(0);
+      expect(lpFees.sender).to.equal(0);
+      expect(lpFees.recipient).to.equal(0);
+      expect(rewardsFees.sender).to.equal(0);
+      expect(rewardsFees.recipient).to.equal(0);
+    });
+  });
+
   context('removeTokenLPFees()', () => {
     createBeforeHook();
 

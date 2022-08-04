@@ -252,6 +252,17 @@ contract MetaheroDAO is Initializable, IMetaheroDAO {
   }
 
   /**
+   * @dev Removes all token fees
+   */
+  function removeAllTokenFees() external onlyOperator {
+    token.updateFees(
+      MetaheroToken.Fees(0, 0),
+      MetaheroToken.Fees(0, 0),
+      MetaheroToken.Fees(0, 0)
+    );
+  }
+
+  /**
    * @dev Removes token lp fees
    */
   function removeTokenLPFees() external onlyOperator {

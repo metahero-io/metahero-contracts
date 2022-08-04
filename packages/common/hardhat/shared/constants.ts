@@ -12,7 +12,6 @@ export enum NetworkNames {
 }
 
 export enum ProcessEnvNames {
-  SaveLocalDeployments = 'SAVE_LOCAL_DEPLOYMENTS',
   PrivateKey = 'PRIVATE_KEY',
   DefaultGasPrice = 'DEFAULT_GAS_PRICE',
   Url = 'URL',

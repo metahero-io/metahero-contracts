@@ -1,5 +1,5 @@
 import { DeployFunction } from 'hardhat-deploy/types';
-import { constants } from 'ethers';
+import { BigNumber, constants } from 'ethers';
 
 const func: DeployFunction = async (hre) => {
   const {
@@ -7,9 +7,13 @@ const func: DeployFunction = async (hre) => {
     helpers: { getAccounts },
   } = hre;
 
+  log();
+  log('# setup');
+  log();
+
   const [from] = await getAccounts();
 
-  log();
+  // finish presale
 
   if (await read('MetaheroToken', 'presaleFinished')) {
     log('MetaheroToken presale already finished');
@@ -26,6 +30,8 @@ const func: DeployFunction = async (hre) => {
 
   log();
 
+  // set DAO
+
   if ((await read('MetaheroToken', 'dao')) !== constants.AddressZero) {
     log('MetaheroToken dao already set');
   } else {
@@ -39,6 +45,29 @@ const func: DeployFunction = async (hre) => {
       },
       'setDAO',
       dao,
+    );
+  }
+
+  log();
+
+  // set token lp fees
+
+  const {
+    lpFees,
+  }: {
+    lpFees: { sender: BigNumber; recipient: BigNumber };
+  } = await read('MetaheroToken', 'settings');
+
+  if (lpFees.sender.eq(0) && lpFees.sender.eq(0)) {
+    log('MetaheroToken lp fees already removed');
+  } else {
+    await execute(
+      'MetaheroDAO',
+      {
+        from,
+        log: true,
+      },
+      'removeAllTokenFees',
     );
   }
 };
