@@ -1,6 +1,6 @@
 # Metahero loyalty token
 
-* Standard - [ERC-721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)
+* Standard - [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)
 * Name - `Metahero Loyalty`
 * Symbol - `LOYAL-HERO`
 

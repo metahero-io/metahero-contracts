@@ -311,12 +311,6 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
       unlockWithdrawalAt = block.timestamp + withdrawalLockTime;
     }
 
-    _paymentToken.transferFrom(sender, address(_loyaltyToken), deposit);
-
-    if (rewards != 0) {
-      _paymentToken.transfer(address(_loyaltyToken), rewards);
-    }
-
     uint256 tokenId = _loyaltyToken.mintToken(
       sender,
       deposit,
@@ -326,6 +320,12 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     );
 
     _usedInvitation[invitationId][sender] = true;
+
+    _paymentToken.transferFrom(sender, address(_loyaltyToken), deposit);
+
+    if (rewards != 0) {
+      _paymentToken.transfer(address(_loyaltyToken), rewards);
+    }
 
     emit InvitationUsed(invitationId, tokenId);
   }

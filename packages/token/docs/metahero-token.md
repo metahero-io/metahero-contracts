@@ -1,6 +1,6 @@
 # Metahero token
 
-* Standard - [ERC-20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)
+* Standard - [BEP20](https://github.com/bnb-chain/BEPs/blob/master/BEP20.md)
 * Name - `Metahero`
 * Symbol - `HERO`
 * Decimals - `18`
