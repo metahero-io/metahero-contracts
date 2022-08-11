@@ -1,7 +1,11 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { helpers } from 'hardhat';
+import { helpers, ethers } from 'hardhat';
 import { expect } from 'chai';
 import { ERC20Helper, ERC20PresetFixedSupply } from '../typechain';
+
+const {
+  constants: { AddressZero },
+} = ethers;
 
 const { deployContract, getSigners, processTransaction, randomAddress } =
   helpers;
@@ -100,10 +104,14 @@ describe('ERC20Helper', () => {
       });
 
       it('expect to return balances', async () => {
-        const output = await helper.getBalances(tokens, account.address);
+        const output = await helper.getBalances(
+          [...tokens, AddressZero],
+          account.address,
+        );
 
         expect(output[0]).to.eq(tokenABalance);
         expect(output[1]).to.eq(tokenBBalance);
+        expect(output[2]).to.eq(await account.getBalance());
       });
     });
   });

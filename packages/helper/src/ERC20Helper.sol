@@ -68,7 +68,9 @@ contract ERC20Helper {
     for (uint256 index; index < len; index) {
       address token = tokens[index];
 
-      if (token.isContract()) {
+      if (token == address(0)) {
+        result[index] = payable(account).balance;
+      } else if (token.isContract()) {
         // solhint-disable-next-line avoid-low-level-calls
         (bool methodExists, bytes memory methodResponse) = token.staticcall(
           abi.encodeWithSelector(IERC20(token).balanceOf.selector, account)

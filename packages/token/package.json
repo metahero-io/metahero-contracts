@@ -9,7 +9,7 @@
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
     "test": "hardhat test",
-    "deploy:local": "hardhat deploy --reset --network local",
+    "deploy:local": "hardhat deploy --network local",
     "deploy:bsc": "exit 0",
     "deploy:bsc-test": "hardhat deploy --network bsc-test",
     "verify:bsc": "exit 0",
