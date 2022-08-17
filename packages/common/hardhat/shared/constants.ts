@@ -9,6 +9,7 @@ export enum NetworkNames {
   Bsc = 'bsc',
   BscTest = 'bsc-test',
   Local = 'local',
+  Hardhat = 'hardhat',
 }
 
 export enum ProcessEnvNames {

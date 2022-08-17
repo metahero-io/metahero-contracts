@@ -12,9 +12,32 @@ import {
 export class Helpers {
   private signers: SignerWithAddress[];
   private snapshotIds: string[] = [];
+  private addresses = new Map<string, string>();
 
   constructor(private readonly hre: HardhatRuntimeEnvironment) {
     bindObjectMethods(this);
+  }
+
+  async getKnownAddress(name: string): Promise<string> {
+    let result = this.addresses.get(name);
+
+    if (!result) {
+      const {
+        deployments: { get },
+      } = this.hre;
+
+      try {
+        ({ address: result } = await get(name));
+      } catch (err) {
+        //
+      }
+    }
+
+    return result || null;
+  }
+
+  setKnownAddress(name: string, address: string): void {
+    this.addresses.set(name, address);
   }
 
   createSigner(mnemonic?: string, index = 0): Signer & { address?: string } {

@@ -5,7 +5,8 @@ const func: DeployFunction = async (hre) => {
   const {
     network: { name },
     deployments: { deploy, log },
-    helpers: { getAccounts },
+    processNetworkEnvs: { getEnvAsAddress },
+    helpers: { getAccounts, setKnownAddress },
   } = hre;
 
   log();
@@ -41,7 +42,7 @@ const func: DeployFunction = async (hre) => {
 
   // local swap
 
-  if (name === NetworkNames.Local) {
+  if (name === NetworkNames.Hardhat || name === NetworkNames.Local) {
     log();
 
     const { address: factory } = await deploy('SwapFactory', {
@@ -61,7 +62,7 @@ const func: DeployFunction = async (hre) => {
 
     log();
 
-    await deploy('SwapRouter', {
+    const { address: router } = await deploy('SwapRouter', {
       contract: 'PancakeRouter',
       from,
       log: true,
@@ -70,11 +71,22 @@ const func: DeployFunction = async (hre) => {
 
     log();
 
-    await deploy('SwapStableCoin', {
+    const { address: stableCoin } = await deploy('SwapStableCoin', {
       contract: 'ERC20Mock',
       from,
       log: true,
     });
+
+    setKnownAddress('SwapRouter', router);
+    setKnownAddress('SwapStableCoin', stableCoin);
+    setKnownAddress('SwapWrappedNative', wrappedNative);
+  } else {
+    setKnownAddress('SwapRouter', getEnvAsAddress('SWAP_ROUTER'));
+    setKnownAddress('SwapStableCoin', getEnvAsAddress('SWAP_STABLE_COIN'));
+    setKnownAddress(
+      'SwapWrappedNative',
+      getEnvAsAddress('SWAP_WRAPPED_NATIVE'),
+    );
   }
 };
 

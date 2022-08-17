@@ -1,16 +1,13 @@
 import { constants } from 'ethers';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { NetworkNames } from '@metahero/common-contracts/hardhat/shared';
 
 const func: DeployFunction = async (hre) => {
   const {
-    network: { name },
     deployments: { get, read, execute, log },
-    helpers: { getAccounts },
+    helpers: { getAccounts, getKnownAddress },
     processNetworkEnvs: {
       getEnvAsAmount, //
       getEnvAsNumber,
-      getEnvAsAddress,
     },
   } = hre;
 
@@ -21,21 +18,10 @@ const func: DeployFunction = async (hre) => {
   const [from] = await getAccounts();
   const { address: token } = await get('MetaheroToken');
 
-  let defaultSwapRouter: string = null;
-  let defaultSwapStableCoin: string = null;
+  const swapRouter = await getKnownAddress('SwapRouter');
+  const swapStableCoin = await getKnownAddress('SwapStableCoin');
 
-  if (name === NetworkNames.Local) {
-    ({ address: defaultSwapRouter } = await get('SwapRouter'));
-    ({ address: defaultSwapStableCoin } = await get('SwapStableCoin'));
-  }
-
-  const SWAP_ROUTER = getEnvAsAddress('SWAP_ROUTER', defaultSwapRouter);
-  const SWAP_STABLE_COIN = getEnvAsAddress(
-    'SWAP_STABLE_COIN',
-    defaultSwapStableCoin,
-  );
-
-  const useLPM = !!(SWAP_ROUTER && SWAP_STABLE_COIN);
+  const useLPM = !!(swapRouter && swapStableCoin);
 
   // dao
 
@@ -87,9 +73,9 @@ const func: DeployFunction = async (hre) => {
         },
         'initialize',
         ENABLE_BURN_LP_AT_VALUE,
-        SWAP_STABLE_COIN,
+        swapStableCoin,
         token,
-        SWAP_ROUTER,
+        swapRouter,
       );
     }
   }

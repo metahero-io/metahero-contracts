@@ -1,10 +1,13 @@
+import { NetworkNames } from '@metahero/common-contracts/hardhat/shared';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { BigNumber, constants } from 'ethers';
 
 const func: DeployFunction = async (hre) => {
   const {
+    network: { name },
     deployments: { get, read, execute, log },
-    helpers: { getAccounts },
+    helpers: { getAccounts, getKnownAddress },
+    ethers: { utils, provider },
   } = hre;
 
   log();
@@ -68,6 +71,112 @@ const func: DeployFunction = async (hre) => {
         log: true,
       },
       'removeAllTokenFees',
+    );
+  }
+
+  if (name === NetworkNames.Hardhat || name === NetworkNames.Local) {
+    log();
+
+    const { timestamp } = await provider.getBlock('latest');
+    const deadline = timestamp + 10;
+    const token = await getKnownAddress('MetaheroToken');
+    const swapRouter = await getKnownAddress('SwapRouter');
+    const swapStableCoin = await getKnownAddress('SwapStableCoin');
+    const swapWrappedNative = await getKnownAddress('SwapWrappedNative');
+
+    const allPairsLength = (
+      await read('SwapFactory', 'allPairsLength')
+    ).toNumber();
+
+    if (allPairsLength < 1) {
+      await execute(
+        'SwapFactory',
+        {
+          from,
+          log: true,
+        },
+        'createPair',
+        token,
+        swapWrappedNative,
+      );
+    }
+
+    if (allPairsLength < 2) {
+      await execute(
+        'SwapFactory',
+        {
+          from,
+          log: true,
+        },
+        'createPair',
+        swapWrappedNative,
+        swapStableCoin,
+      );
+    }
+
+    await execute(
+      'MetaheroToken',
+      {
+        from,
+        log: true,
+      },
+      'approve',
+      swapRouter,
+      constants.MaxUint256,
+    );
+
+    await execute(
+      'SwapStableCoin',
+      {
+        from,
+        log: true,
+      },
+      'approve',
+      swapRouter,
+      constants.MaxUint256,
+    );
+
+    await execute(
+      'SwapStableCoin',
+      {
+        from,
+        log: true,
+      },
+      'setBalance',
+      from,
+      utils.parseEther('1000000'),
+    );
+
+    await execute(
+      'SwapRouter',
+      {
+        from,
+        log: true,
+        value: utils.parseEther('10'),
+      },
+      'addLiquidityETH',
+      token,
+      utils.parseEther('100000'),
+      utils.parseEther('100000'),
+      utils.parseEther('10'),
+      from,
+      deadline,
+    );
+
+    await execute(
+      'SwapRouter',
+      {
+        from,
+        log: true,
+        value: utils.parseEther('10'),
+      },
+      'addLiquidityETH',
+      swapStableCoin,
+      utils.parseEther('100000'),
+      utils.parseEther('100000'),
+      utils.parseEther('10'),
+      from,
+      deadline,
     );
   }
 };
