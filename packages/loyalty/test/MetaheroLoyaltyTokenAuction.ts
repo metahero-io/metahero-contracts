@@ -74,6 +74,7 @@ describe('MetaheroLoyaltyTokenAuction', () => {
           randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          '',
         ),
       );
 

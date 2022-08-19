@@ -4,7 +4,7 @@ const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
     helpers: { getAccounts },
-    processNetworkEnvs: { getEnvAsNumber },
+    processNetworkEnvs: { getEnvAsNumber, getEnvAsURL },
   } = hre;
 
   log();
@@ -33,6 +33,8 @@ const func: DeployFunction = async (hre) => {
       5_000, // 5 %
     );
 
+    const TOKEN_BASE_URL = getEnvAsURL('TOKEN_BASE_URL', '');
+
     await execute(
       'MetaheroLoyaltyToken',
       {
@@ -45,6 +47,7 @@ const func: DeployFunction = async (hre) => {
       distributor,
       SNAPSHOT_WINDOW_MIN_LENGTH,
       EARLY_WITHDRAWAL_TAX,
+      TOKEN_BASE_URL,
     );
   }
 

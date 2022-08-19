@@ -83,6 +83,7 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
           loyaltyTokenDistributor.address,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          '',
         ),
       );
 
@@ -150,6 +151,99 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
           paymentToken.address,
         ),
       ).revertedWith('AlreadyInitialized()');
+    });
+  });
+
+  describe('# external functions (views)', () => {
+    const invitationId = 2;
+    const depositPower = 3;
+    const minDeposit = 200;
+    const maxDeposit = 2000;
+    const minRewardsAPY = 2_000;
+    const maxRewardsAPY = 20_000;
+    const minWithdrawalLockTime = 2;
+    const maxWithdrawalLockTime = 20;
+
+    let treeRoot: string;
+    let sender: SignerWithAddress;
+
+    createBeforeHook();
+
+    before(async () => {
+      treeRoot = merkleTree.getHexRoot();
+      sender = signers[0];
+
+      await processTransaction(
+        loyaltyTokenDistributor.addInvitation(
+          invitationId,
+          treeRoot,
+          depositPower,
+          minDeposit,
+          maxDeposit,
+          minRewardsAPY,
+          maxRewardsAPY,
+          minWithdrawalLockTime,
+          maxWithdrawalLockTime,
+        ),
+      );
+
+      await processTransaction(
+        paymentToken
+          .connect(sender)
+          .approve(loyaltyTokenDistributor.address, minDeposit),
+      );
+
+      await processTransaction(
+        paymentToken.transfer(sender.address, minDeposit),
+      );
+
+      await processTransaction(
+        loyaltyTokenDistributor
+          .connect(sender)
+          .useInvitation(
+            invitationId,
+            minDeposit,
+            minWithdrawalLockTime,
+            merkleTree.getHexProof(utils.keccak256(sender.address)),
+          ),
+      );
+    });
+
+    describe('getInvitation()', () => {
+      it('expect return correct invitation', async () => {
+        const output = await loyaltyTokenDistributor.getInvitation(
+          invitationId,
+        );
+
+        expect(output.treeRoot).eq(treeRoot);
+        expect(output.depositPower).eq(depositPower);
+        expect(output.minDeposit).eq(minDeposit);
+        expect(output.maxDeposit).eq(maxDeposit);
+        expect(output.minRewardsAPY).eq(minRewardsAPY);
+        expect(output.maxRewardsAPY).eq(maxRewardsAPY);
+        expect(output.minWithdrawalLockTime).eq(minWithdrawalLockTime);
+        expect(output.maxWithdrawalLockTime).eq(maxWithdrawalLockTime);
+      });
+    });
+
+    describe('isInvitationInUse()', () => {
+      it('expect return true when is in use', async () => {
+        expect(
+          await loyaltyTokenDistributor.isInvitationInUse(
+            invitationId,
+            sender.address,
+          ),
+        ).eq(true);
+      });
+
+      it('expect return false when is not in use', async () => {
+        expect(
+          await loyaltyTokenDistributor.isInvitationInUse(
+            invitationId,
+            randomAddress(),
+          ),
+        ).eq(false);
+      });
     });
   });
 

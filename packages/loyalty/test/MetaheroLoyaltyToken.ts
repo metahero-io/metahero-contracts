@@ -23,6 +23,7 @@ describe('MetaheroLoyaltyToken', () => {
   const paymentTokenTotalSupply = 1_000_000;
   const snapshotWindowMinLength = 10;
   const earlyWithdrawalTax = 5_000;
+  const tokenBaseURI = 'http://test';
 
   let paymentToken: ERC20PresetFixedSupply;
   let loyaltyToken: MetaheroLoyaltyToken;
@@ -69,6 +70,7 @@ describe('MetaheroLoyaltyToken', () => {
             tokenDistributor.address,
             snapshotWindowMinLength,
             earlyWithdrawalTax,
+            tokenBaseURI,
           ),
         );
       }
@@ -94,6 +96,7 @@ describe('MetaheroLoyaltyToken', () => {
             randomAddress(),
             snapshotWindowMinLength,
             earlyWithdrawalTax,
+            tokenBaseURI,
           ),
       ).revertedWith('MsgSenderIsNotTheDeployer()');
     });
@@ -106,6 +109,7 @@ describe('MetaheroLoyaltyToken', () => {
           randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       ).revertedWith('PaymentTokenIsTheZeroAddress()');
     });
@@ -118,6 +122,7 @@ describe('MetaheroLoyaltyToken', () => {
           randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       ).revertedWith('TokenAuctionIsTheZeroAddress()');
     });
@@ -130,6 +135,7 @@ describe('MetaheroLoyaltyToken', () => {
           AddressZero,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       ).revertedWith('TokenDistributorIsTheZeroAddress()');
     });
@@ -142,6 +148,7 @@ describe('MetaheroLoyaltyToken', () => {
           randomAddress(),
           0,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       ).revertedWith('InvalidSnapshotWindowMinLength()');
     });
@@ -154,6 +161,7 @@ describe('MetaheroLoyaltyToken', () => {
           randomAddress(),
           snapshotWindowMinLength,
           EARLY_WITHDRAWAL_MAX_TAX + 1,
+          tokenBaseURI,
         ),
       ).revertedWith('InvalidEarlyWithdrawalTax()');
     });
@@ -170,6 +178,7 @@ describe('MetaheroLoyaltyToken', () => {
           tokenDistributor.address,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       );
 
@@ -182,6 +191,7 @@ describe('MetaheroLoyaltyToken', () => {
           snapshotBaseTimestamp,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         );
 
       expect(await loyaltyToken.initialized()).to.eq(true);
@@ -195,12 +205,13 @@ describe('MetaheroLoyaltyToken', () => {
           randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
+          tokenBaseURI,
         ),
       ).revertedWith('AlreadyInitialized()');
     });
   });
 
-  describe('# external functions (views)', () => {
+  describe('# public / external functions (views)', () => {
     const totalBalance = 1_000_000;
     const accountDeposit = 25_000;
     const accountWeight = 40_000;
@@ -238,6 +249,16 @@ describe('MetaheroLoyaltyToken', () => {
       );
     });
 
+    describe('tokenURI()', () => {
+      it('expect to correct token URI', async () => {
+        expect(await loyaltyToken.tokenURI(1)).eq(`${tokenBaseURI}${1}.json`);
+      });
+
+      it('expect to empty URI for non-existing token', async () => {
+        expect(await loyaltyToken.tokenURI(100)).eq('');
+      });
+    });
+
     describe('computeSnapshotId()', () => {
       it('expect to return 0 for invalid timestamp', async () => {
         expect(
@@ -267,6 +288,16 @@ describe('MetaheroLoyaltyToken', () => {
         expect(output.rewards).to.eq(
           totalBalance - accountDeposit - accountRewards,
         );
+      });
+    });
+
+    describe('getSummary()', () => {
+      it('expect to return the summary', async () => {
+        const output = await loyaltyToken.getSummary();
+
+        expect(output.earlyWithdrawalTax).to.eq(earlyWithdrawalTax);
+        expect(output.totalDeposits).to.eq(accountDeposit);
+        expect(output.totalRewards).to.eq(accountRewards + snapshotsRewards);
       });
     });
 
@@ -306,6 +337,26 @@ describe('MetaheroLoyaltyToken', () => {
   });
 
   describe('# external functions (views)', () => {
+    describe('setTokenBaseURI()', () => {
+      const tokenBaseURI = 'test';
+
+      it('expect to revert when msg.sender is not the token owner', async () => {
+        await expect(
+          loyaltyToken.connect(account).setTokenBaseURI(tokenBaseURI),
+        ).revertedWith('MsgSenderIsNotTheOwner()');
+      });
+
+      it('expect to set token base URI', async () => {
+        const { tx } = await processTransaction(
+          loyaltyToken.setTokenBaseURI(tokenBaseURI),
+        );
+
+        await expect(tx)
+          .to.emit(loyaltyToken, 'TokenBaseURIUpdated')
+          .withArgs(tokenBaseURI);
+      });
+    });
+
     describe('mintToken()', () => {
       const snapshotId = 1;
       const owner = randomAddress();

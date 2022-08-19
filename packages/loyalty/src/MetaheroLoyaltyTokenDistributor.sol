@@ -119,6 +119,24 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     emit Initialized(loyaltyToken, paymentToken);
   }
 
+  // external functions (views)
+
+  function getInvitation(uint256 invitationId)
+    external
+    view
+    returns (Invitation memory)
+  {
+    return _invitations[invitationId];
+  }
+
+  function isInvitationInUse(uint256 invitationId, address account)
+    external
+    view
+    returns (bool)
+  {
+    return _usedInvitation[invitationId][account];
+  }
+
   // external functions
 
   function togglePaused() external onlyOwner {

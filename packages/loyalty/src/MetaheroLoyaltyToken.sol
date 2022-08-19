@@ -7,6 +7,7 @@ import "@metahero/common-contracts/src/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./constants.sol";
 
 /**
@@ -15,6 +16,8 @@ import "./constants.sol";
  * @author Stanisław Głogowski <stan@metahero.io>
  */
 contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
+  using Strings for uint256;
+
   enum TokenStates {
     Unknown,
     Minted,
@@ -64,6 +67,8 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
 
   uint256 private _tokenIdCounter;
 
+  string private _tokenBaseURI;
+
   uint256[] private _snapshotIds;
 
   mapping(uint256 => Snapshot) private _snapshots;
@@ -90,8 +95,11 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     address tokenDistributor,
     uint256 snapshotBaseTimestamp,
     uint256 snapshotWindowMinLength,
-    uint256 earlyWithdrawalTax
+    uint256 earlyWithdrawalTax,
+    string tokenBaseURI
   );
+
+  event TokenBaseURIUpdated(string tokenBaseURI);
 
   event TokenMinted(
     uint256 tokenId,
@@ -149,7 +157,8 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     address tokenAuction,
     address tokenDistributor,
     uint256 snapshotWindowMinLength,
-    uint256 earlyWithdrawalTax
+    uint256 earlyWithdrawalTax,
+    string calldata tokenBaseURI
   ) external initializer {
     if (paymentToken == address(0)) {
       revert PaymentTokenIsTheZeroAddress();
@@ -185,14 +194,34 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
 
     _earlyWithdrawalTax = earlyWithdrawalTax;
 
+    _tokenBaseURI = tokenBaseURI;
+
     emit Initialized(
       paymentToken,
       tokenAuction,
       tokenDistributor,
       snapshotBaseTimestamp,
       snapshotWindowMinLength,
-      earlyWithdrawalTax
+      earlyWithdrawalTax,
+      tokenBaseURI
     );
+  }
+
+  // public functions (views)
+
+  function tokenURI(uint256 tokenId)
+    public
+    view
+    override
+    returns (string memory result)
+  {
+    if (_exists(tokenId) && bytes(_tokenBaseURI).length > 0) {
+      result = string(
+        abi.encodePacked(_tokenBaseURI, tokenId.toString(), ".json")
+      );
+    }
+
+    return result;
   }
 
   // external functions (views)
@@ -211,6 +240,22 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     returns (Snapshot memory)
   {
     return _snapshots[snapshotId];
+  }
+
+  function getSummary()
+    external
+    view
+    returns (
+      uint256 totalDeposits,
+      uint256 totalRewards,
+      uint256 earlyWithdrawalTax
+    )
+  {
+    unchecked {
+      totalRewards = _totalTokensRewards + _totalSnapshotsRewards;
+    }
+
+    return (_totalTokensDeposits, totalRewards, _earlyWithdrawalTax);
   }
 
   function getTokenSummary(uint256 tokenId)
@@ -257,6 +302,12 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
   }
 
   // external functions
+
+  function setTokenBaseURI(string calldata tokenBaseURI) external onlyOwner {
+    _tokenBaseURI = tokenBaseURI;
+
+    emit TokenBaseURIUpdated(tokenBaseURI);
+  }
 
   function mintToken(
     address owner,
