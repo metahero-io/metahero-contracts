@@ -114,5 +114,22 @@ describe('ERC20Helper', () => {
         expect(output[2]).to.eq(await account.getBalance());
       });
     });
+
+    describe('getAllowancesAndBalances()', () => {
+      it('expect to return allowances and balances', async () => {
+        const output = await helper.getAllowancesAndBalances(
+          tokens,
+          [...tokens, AddressZero],
+          account.address,
+          spender,
+        );
+
+        expect(output[0][0]).to.eq(tokenAAllowance);
+        expect(output[0][1]).to.eq(tokenBAllowance);
+        expect(output[1][0]).to.eq(tokenABalance);
+        expect(output[1][1]).to.eq(tokenBBalance);
+        expect(output[1][2]).to.eq(await account.getBalance());
+      });
+    });
   });
 });

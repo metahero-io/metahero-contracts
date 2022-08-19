@@ -25,7 +25,37 @@ contract ERC20Helper {
     address[] calldata tokens,
     address account,
     address spender
-  ) external view returns (uint256[] memory result) {
+  ) external view returns (uint256[] memory) {
+    return _getAllowances(tokens, account, spender);
+  }
+
+  function getBalances(address[] calldata tokens, address account)
+    external
+    view
+    returns (uint256[] memory)
+  {
+    return _getBalances(tokens, account);
+  }
+
+  function getAllowancesAndBalances(
+    address[] calldata allowancesTokens,
+    address[] calldata balancesTokens,
+    address account,
+    address spender
+  ) external view returns (uint256[] memory, uint256[] memory) {
+    return (
+      _getAllowances(allowancesTokens, account, spender),
+      _getBalances(balancesTokens, account)
+    );
+  }
+
+  // private functions (views)
+
+  function _getAllowances(
+    address[] memory tokens,
+    address account,
+    address spender
+  ) private view returns (uint256[] memory result) {
     uint256 len = tokens.length;
 
     result = new uint256[](len);
@@ -56,8 +86,8 @@ contract ERC20Helper {
     return result;
   }
 
-  function getBalances(address[] calldata tokens, address account)
-    external
+  function _getBalances(address[] memory tokens, address account)
+    private
     view
     returns (uint256[] memory result)
   {
