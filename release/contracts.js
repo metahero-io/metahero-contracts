@@ -1,9 +1,114 @@
 /* eslint-disable */
 
 module.exports = {
+  "ERC20Helper": {
+    "addresses": {
+      "97": "0x7e1B6566b3EC8c5ACB6fF57387f194314C4929e8"
+    },
+    "abi": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "tokens",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          }
+        ],
+        "name": "getAllowances",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "allowancesTokens",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "balancesTokens",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "spender",
+            "type": "address"
+          }
+        ],
+        "name": "getAllowancesAndBalances",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "tokens",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getBalances",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  },
   "MetaheroDAO": {
     "addresses": {
-      "56": "0x8369Feb2198D01a2ed5d78E89ca7507983028B42"
+      "56": "0x8369Feb2198D01a2ed5d78E89ca7507983028B42",
+      "97": "0xA146493f136e87C6ecF4Fc4cF99DC7aCB2a2f3d7"
     },
     "abi": [
       {
@@ -576,7 +681,8 @@ module.exports = {
   },
   "MetaheroLPMForUniswapV2": {
     "addresses": {
-      "56": "0x5DA5b71B88C42544b642D4AB781B30831EDAC341"
+      "56": "0x5DA5b71B88C42544b642D4AB781B30831EDAC341",
+      "97": "0xB188DD31468fa0895cf6CcA37c1848d1b7Dab646"
     },
     "abi": [
       {
@@ -861,7 +967,8 @@ module.exports = {
   },
   "MetaheroToken": {
     "addresses": {
-      "56": "0xD40bEDb44C081D2935eebA6eF5a3c8A31A1bBE13"
+      "56": "0xD40bEDb44C081D2935eebA6eF5a3c8A31A1bBE13",
+      "97": "0x3978bc306E4F585F4d939548d89CcEa293936c5d"
     },
     "abi": [
       {

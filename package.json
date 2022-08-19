@@ -12,7 +12,8 @@
     "link": "lerna link",
     "linter": "solhint \"packages/*/src/**/*.sol\"",
     "test": "lerna run test",
-    "build": "ts-node scripts/build/run.ts"
+    "build": "ts-node scripts/build/run.ts",
+    "print": "ts-node scripts/print/run.ts"
   },
   "dependencies": {},
   "devDependencies": {
