@@ -95,7 +95,7 @@ export class Helpers {
       } = this.hre;
       const { address, abi } = await get(alias);
 
-      result = new Contract(address, abi, signer || provider) as any;
+      result = new Contract(address, abi, (signer || provider) as any) as any;
       result.alias = alias;
     } catch (err) {
       //
