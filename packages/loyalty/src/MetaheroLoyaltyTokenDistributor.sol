@@ -60,7 +60,6 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
   error InvalidMaxRewardsAPY();
   error InvalidMaxWithdrawalLockTime();
   error InvalidMinDeposit();
-  error InvalidMinRewardsAPY();
   error InvalidMinWithdrawalLockTime();
   error InvalidWithdrawalLockTime();
   error InvitationAlreadyExists();
@@ -191,19 +190,25 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     }
 
     if (minRewardsAPY == 0) {
-      revert InvalidMinRewardsAPY();
-    }
+      if (maxRewardsAPY != 0) {
+        revert InvalidMaxRewardsAPY();
+      }
 
-    if (maxRewardsAPY < minRewardsAPY) {
-      revert InvalidMaxRewardsAPY();
-    }
+      if (maxWithdrawalLockTime != minWithdrawalLockTime) {
+        revert InvalidMaxWithdrawalLockTime();
+      }
+    } else {
+      if (maxRewardsAPY < minRewardsAPY) {
+        revert InvalidMaxRewardsAPY();
+      }
 
-    if (minWithdrawalLockTime == 0) {
-      revert InvalidMinWithdrawalLockTime();
-    }
+      if (minWithdrawalLockTime == 0) {
+        revert InvalidMinWithdrawalLockTime();
+      }
 
-    if (maxWithdrawalLockTime < minWithdrawalLockTime) {
-      revert InvalidMaxWithdrawalLockTime();
+      if (maxWithdrawalLockTime < minWithdrawalLockTime) {
+        revert InvalidMaxWithdrawalLockTime();
+      }
     }
 
     _invitations[invitationId].state = InvitationStates.Added;

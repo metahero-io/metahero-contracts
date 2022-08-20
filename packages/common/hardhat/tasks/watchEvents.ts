@@ -12,7 +12,7 @@ task(TASK_NAME, 'Watch for contract events').setAction(async (args, hre) => {
     deployments: { all },
   } = hre;
 
-  let contractName: string;
+  let contractName: string = null;
   let contractNames: string[] = [];
 
   try {

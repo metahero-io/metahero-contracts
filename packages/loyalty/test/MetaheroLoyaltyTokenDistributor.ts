@@ -448,22 +448,6 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
         ).revertedWith('InvalidMaxDeposit()');
       });
 
-      it('expect to revert on invalid min rewards APY', async () => {
-        await expect(
-          loyaltyTokenDistributor.addInvitation(
-            invitationId,
-            treeRoot,
-            depositPower,
-            minDeposit,
-            maxDeposit,
-            0,
-            maxRewardsAPY,
-            minWithdrawalLockTime,
-            maxWithdrawalLockTime,
-          ),
-        ).revertedWith('InvalidMinRewardsAPY()');
-      });
-
       it('expect to revert on invalid max rewards APY', async () => {
         await expect(
           loyaltyTokenDistributor.addInvitation(
@@ -474,6 +458,22 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
             maxDeposit,
             minRewardsAPY,
             0,
+            minWithdrawalLockTime,
+            maxWithdrawalLockTime,
+          ),
+        ).revertedWith('InvalidMaxRewardsAPY()');
+      });
+
+      it('expect to revert on invalid max rewards APY (when min rewards APY is zero)', async () => {
+        await expect(
+          loyaltyTokenDistributor.addInvitation(
+            invitationId,
+            treeRoot,
+            depositPower,
+            minDeposit,
+            maxDeposit,
+            0,
+            maxRewardsAPY,
             minWithdrawalLockTime,
             maxWithdrawalLockTime,
           ),
@@ -512,6 +512,22 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
         ).revertedWith('InvalidMaxWithdrawalLockTime()');
       });
 
+      it('expect to revert on invalid max withdrawal lock time (when min rewards APY is zero)', async () => {
+        await expect(
+          loyaltyTokenDistributor.addInvitation(
+            invitationId,
+            treeRoot,
+            depositPower,
+            minDeposit,
+            maxDeposit,
+            0,
+            0,
+            minWithdrawalLockTime,
+            0,
+          ),
+        ).revertedWith('InvalidMaxWithdrawalLockTime()');
+      });
+
       it('expect to add new invitation', async () => {
         const { tx } = await processTransaction(
           loyaltyTokenDistributor.addInvitation(
@@ -539,6 +555,38 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
             maxRewardsAPY,
             minWithdrawalLockTime,
             maxWithdrawalLockTime,
+          );
+      });
+
+      it('expect to add new invitation (with min rewards APY is zero)', async () => {
+        const nextInvitationId = invitationId + 1;
+
+        const { tx } = await processTransaction(
+          loyaltyTokenDistributor.addInvitation(
+            nextInvitationId,
+            treeRoot,
+            depositPower,
+            minDeposit,
+            maxDeposit,
+            0,
+            0,
+            minWithdrawalLockTime,
+            minWithdrawalLockTime,
+          ),
+        );
+
+        await expect(tx)
+          .to.emit(loyaltyTokenDistributor, 'InvitationAdded')
+          .withArgs(
+            nextInvitationId,
+            treeRoot,
+            depositPower,
+            minDeposit,
+            maxDeposit,
+            0,
+            0,
+            minWithdrawalLockTime,
+            minWithdrawalLockTime,
           );
       });
     });

@@ -36,6 +36,7 @@ $ npm run compile     # compiles all contracts in all packages
 $ npm run coverage    # runs coverage tests in all packages
 $ npm run test        # runs unit tests in all packages
 $ npm run build       # builds into `./release`
+$ npm run print       # prints frontend and backend envs
 ```
 
 ## License

@@ -5,15 +5,13 @@
   "license": "MIT",
   "scripts": {
     "start": "exit 0",
+    "hardhat": "hardhat",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
     "test": "hardhat test",
-    "deploy:local": "hardhat deploy --network local",
-    "deploy:bsc": "hardhat deploy --network bsc",
-    "deploy:bsc-test": "hardhat deploy --network bsc-test",
-    "verify:bsc": "hardhat verify --all --network bsc",
-    "verify:bsc-test": "hardhat verify --all --network bsc-test"
+    "deploy": "hardhat deploy",
+    "verify": "hardhat verify --all"
   },
   "dependencies": {
     "@metahero/common-contracts": "1.0.0",

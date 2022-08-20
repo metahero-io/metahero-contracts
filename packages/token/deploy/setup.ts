@@ -1,12 +1,10 @@
-import { NetworkNames } from '@metahero/common-contracts/hardhat/shared';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { BigNumber, constants } from 'ethers';
 
 const func: DeployFunction = async (hre) => {
   const {
-    network: { name },
     deployments: { get, read, execute, log },
-    helpers: { getAccounts, getKnownAddress },
+    helpers: { getAccounts, getKnownAddress, isLocalNetwork },
     ethers: { utils, provider },
   } = hre;
 
@@ -74,7 +72,7 @@ const func: DeployFunction = async (hre) => {
     );
   }
 
-  if (name === NetworkNames.Hardhat || name === NetworkNames.Local) {
+  if (isLocalNetwork()) {
     log();
 
     const { timestamp } = await provider.getBlock('latest');

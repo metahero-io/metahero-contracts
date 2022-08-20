@@ -1,12 +1,10 @@
-import { NetworkNames } from '@metahero/common-contracts/hardhat/shared/constants';
 import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async (hre) => {
   const {
-    network: { name },
     deployments: { deploy, log },
     processNetworkEnvs: { getEnvAsAddress },
-    helpers: { getAccounts, setKnownAddress },
+    helpers: { getAccounts, setKnownAddress, isLocalNetwork },
   } = hre;
 
   log();
@@ -42,7 +40,7 @@ const func: DeployFunction = async (hre) => {
 
   // local swap
 
-  if (name === NetworkNames.Hardhat || name === NetworkNames.Local) {
+  if (isLocalNetwork()) {
     log();
 
     const { address: factory } = await deploy('SwapFactory', {
@@ -83,10 +81,6 @@ const func: DeployFunction = async (hre) => {
   } else {
     setKnownAddress('SwapRouter', getEnvAsAddress('SWAP_ROUTER'));
     setKnownAddress('SwapStableCoin', getEnvAsAddress('SWAP_STABLE_COIN'));
-    setKnownAddress(
-      'SwapWrappedNative',
-      getEnvAsAddress('SWAP_WRAPPED_NATIVE'),
-    );
   }
 };
 

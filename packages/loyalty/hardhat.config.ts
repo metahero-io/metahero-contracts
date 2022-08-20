@@ -5,6 +5,7 @@ import 'hardhat-deploy';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
 import { buildConfig } from '@metahero/common-contracts/hardhat';
+import './tasks';
 
 export default buildConfig({
   externalDeployments: ['token'],

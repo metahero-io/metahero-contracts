@@ -7,10 +7,10 @@
 ### NPM scripts
 
 ```bash
-$ npm run <command>  # runs hardhat command
-                     # 
-                     # supported commands:
-                     # clean, compile, coverage, test
+$ npm run <command> # runs hardhat command
+                    # 
+                    # supported commands:
+                    # clean, compile, coverage, test
 ```
 ## License
 

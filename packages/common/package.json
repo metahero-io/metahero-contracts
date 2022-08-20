@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "exit 0",
+    "hardhat": "hardhat",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",

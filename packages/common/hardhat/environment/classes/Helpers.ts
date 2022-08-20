@@ -7,6 +7,7 @@ import {
   ProcessEnvNames,
   HARDHAT_MNEMONIC,
   HARDHAT_PATH_PREFIX,
+  NetworkNames,
 } from '../../shared';
 
 export class Helpers {
@@ -16,6 +17,14 @@ export class Helpers {
 
   constructor(private readonly hre: HardhatRuntimeEnvironment) {
     bindObjectMethods(this);
+  }
+
+  isLocalNetwork(): boolean {
+    const {
+      network: { name },
+    } = this.hre;
+
+    return name === NetworkNames.Local || name === NetworkNames.Hardhat;
   }
 
   async getKnownAddress(name: string): Promise<string> {
@@ -62,8 +71,9 @@ export class Helpers {
 
   async getContract<T extends Contract = Contract>(
     alias: string,
+    signer?: SignerWithAddress,
   ): Promise<T & { alias?: string }> {
-    const result = await this.getDeployedContract<T>(alias);
+    const result = await this.getDeployedContract<T>(alias, signer);
 
     if (!result) {
       throw new Error(`Contract ${alias} not found`);
@@ -74,6 +84,7 @@ export class Helpers {
 
   async getDeployedContract<T extends Contract = Contract>(
     alias: string,
+    signer?: SignerWithAddress,
   ): Promise<T & { alias?: string }> {
     let result: T & { alias?: string } = null;
 
@@ -84,7 +95,7 @@ export class Helpers {
       } = this.hre;
       const { address, abi } = await get(alias);
 
-      result = new Contract(address, abi, provider) as any;
+      result = new Contract(address, abi, signer || provider) as any;
       result.alias = alias;
     } catch (err) {
       //
@@ -293,6 +304,12 @@ export class Helpers {
     }
 
     console.log(`${kleur.blue('→')} ${message}: ${kleur.green(text)}`);
+  }
+
+  exitWithError(message: string): void {
+    console.log(`${kleur.red('→')} ${kleur.red(message)}`);
+    // eslint-disable-next-line no-process-exit
+    process.exit(0);
   }
 
   logExit(): void {
