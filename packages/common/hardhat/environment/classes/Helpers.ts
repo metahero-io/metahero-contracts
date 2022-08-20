@@ -57,7 +57,7 @@ export class Helpers {
     return Wallet.fromMnemonic(
       mnemonic || HARDHAT_MNEMONIC,
       `${HARDHAT_PATH_PREFIX}${index}`,
-    ).connect(provider);
+    ).connect(provider as any);
   }
 
   createSigners(

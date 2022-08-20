@@ -38,9 +38,6 @@ jobs:
       - name: Run bootstrap and link
         run: npm run bootstrap -- --no-ci
 
-      - name: Run link
-        run: npm run link
-
       - name: Run compile
         run: npm run compile
 
