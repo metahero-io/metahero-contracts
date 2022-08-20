@@ -50,6 +50,9 @@ export function buildConfig(
     solidity,
     networks: DEFAULT_HARDHAT_NETWORKS_CONFIG,
     external,
+    typechain: {
+      outDir: 'typechain',
+    },
     mocha: {
       timeout: 50000,
     },
