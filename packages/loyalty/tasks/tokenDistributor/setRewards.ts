@@ -1,6 +1,5 @@
 import { task, types } from 'hardhat/config';
 import { TASK_NAME_PREFIX, parseAmount } from './common';
-import { MetaheroLoyaltyTokenDistributor, ERC20 } from '../../typechain';
 
 const TASK_NAME = `${TASK_NAME_PREFIX}:set-rewards`;
 
@@ -27,13 +26,12 @@ task(TASK_NAME, 'Sets MetaheroLoyaltyTokenDistributor rewards')
 
       const [signer] = await getSigners();
 
-      const token = await getDeployedContract<ERC20>('MetaheroToken', signer);
+      const token = await getDeployedContract('MetaheroToken', signer);
 
-      const tokenDistributor =
-        await getDeployedContract<MetaheroLoyaltyTokenDistributor>(
-          'MetaheroLoyaltyTokenDistributor',
-          signer,
-        );
+      const tokenDistributor = await getDeployedContract(
+        'MetaheroLoyaltyTokenDistributor',
+        signer,
+      );
 
       const balance = await token.balanceOf(tokenDistributor.address);
 

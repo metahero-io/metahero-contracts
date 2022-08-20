@@ -1,5 +1,4 @@
 import { task, types } from 'hardhat/config';
-import { MetaheroLoyaltyTokenDistributor } from '../../typechain';
 import { TASK_NAME_PREFIX } from './common';
 
 const TASK_NAME = `${TASK_NAME_PREFIX}:remove-invitation`;
@@ -30,11 +29,10 @@ task(
 
       const [signer] = await getSigners();
 
-      const tokenDistributor =
-        await getDeployedContract<MetaheroLoyaltyTokenDistributor>(
-          'MetaheroLoyaltyTokenDistributor',
-          signer,
-        );
+      const tokenDistributor = await getDeployedContract(
+        'MetaheroLoyaltyTokenDistributor',
+        signer,
+      );
 
       const invitation = await tokenDistributor.getInvitation(invitationId);
 

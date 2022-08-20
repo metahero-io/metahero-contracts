@@ -1,5 +1,4 @@
 import { task, types } from 'hardhat/config';
-import { MetaheroLoyaltyTokenDistributor } from '../../typechain';
 import { TASK_NAME_PREFIX, parseAmount, parsePercentage } from './common';
 
 const TASK_NAME = `${TASK_NAME_PREFIX}:add-invitation`;
@@ -108,11 +107,10 @@ task(TASK_NAME, 'Adds invitation to MetaheroLoyaltyTokenDistributor contract')
 
       const [signer] = await getSigners();
 
-      const tokenDistributor =
-        await getDeployedContract<MetaheroLoyaltyTokenDistributor>(
-          'MetaheroLoyaltyTokenDistributor',
-          signer,
-        );
+      const tokenDistributor = await getDeployedContract(
+        'MetaheroLoyaltyTokenDistributor',
+        signer,
+      );
 
       const invitation = await tokenDistributor.getInvitation(invitationId);
 
