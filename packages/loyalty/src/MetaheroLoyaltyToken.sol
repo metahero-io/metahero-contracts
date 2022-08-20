@@ -86,6 +86,8 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
   error PaymentTokenIsTheZeroAddress();
   error TokenAuctionIsTheZeroAddress();
   error TokenDistributorIsTheZeroAddress();
+  error TokenRewardsWithdrawalIsLocked();
+  error NoTokenRewardsForWithdrawn();
 
   // events
 
@@ -121,6 +123,8 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     uint256 weight,
     uint256 unlockWithdrawalAt
   );
+
+  event TokenRewardsWithdrawn(uint256 tokenId, uint256 rewards);
 
   // modifiers
 
@@ -251,8 +255,10 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
       uint256 earlyWithdrawalTax
     )
   {
+    uint256 totalSnapshotsRewards = _calcTotalSnapshotsRewards();
+
     unchecked {
-      totalRewards = _totalTokensRewards + _totalSnapshotsRewards;
+      totalRewards = _totalTokensRewards + totalSnapshotsRewards;
     }
 
     return (_totalTokensDeposits, totalRewards, _earlyWithdrawalTax);
@@ -271,14 +277,20 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     TokenDetails memory tokenDetails = _tokenDetails[tokenId];
 
     if (tokenDetails.state == TokenStates.Minted) {
+      uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
+
       owner = ownerOf(tokenId);
 
       deposit = tokenDetails.deposit;
 
+      uint256 snapshotRewards = _calcTokenSnapshotRewards(
+        currentSnapshotId,
+        tokenDetails.snapshotId,
+        tokenDetails.weight
+      );
+
       unchecked {
-        rewards =
-          tokenDetails.rewards +
-          _calcTokenSnapshotRewards(tokenDetails);
+        rewards = tokenDetails.rewards + snapshotRewards;
       }
 
       unlockWithdrawalAt = tokenDetails.unlockWithdrawalAt;
@@ -309,6 +321,15 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     emit TokenBaseURIUpdated(tokenBaseURI);
   }
 
+  function depositRewards(uint256 amount) external {
+    address sender = _msgSender();
+    uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
+
+    _paymentToken.transferFrom(sender, address(this), amount);
+
+    _syncSnapshot(currentSnapshotId);
+  }
+
   function mintToken(
     address owner,
     uint256 deposit,
@@ -316,7 +337,7 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     uint256 weight,
     uint256 unlockWithdrawalAt
   ) external onlyTokenDistributor returns (uint256 tokenId) {
-    uint256 snapshotId = _computeSnapshotId(block.timestamp);
+    uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
 
     unchecked {
       tokenId = ++_tokenIdCounter;
@@ -325,7 +346,7 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     TokenDetails storage tokenDetails = _tokenDetails[tokenId];
 
     tokenDetails.state = TokenStates.Minted;
-    tokenDetails.snapshotId = snapshotId;
+    tokenDetails.snapshotId = currentSnapshotId;
     tokenDetails.deposit = deposit;
     tokenDetails.rewards = rewards;
     tokenDetails.weight = weight;
@@ -339,11 +360,11 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
 
     _mint(owner, tokenId);
 
-    _syncSnapshot(snapshotId);
+    _syncSnapshot(currentSnapshotId);
 
     emit TokenMinted(
       tokenId,
-      snapshotId,
+      currentSnapshotId,
       deposit,
       rewards,
       weight,
@@ -351,6 +372,54 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     );
 
     return tokenId;
+  }
+
+  function withdrawTokenRewards(uint256 tokenId) external {
+    address sender = _msgSender();
+
+    TokenDetails storage tokenDetails = _tokenDetails[tokenId];
+
+    if (tokenDetails.state != TokenStates.Minted) {
+      revert InvalidTokenState();
+    }
+
+    if (sender != ownerOf(tokenId)) {
+      revert MsgSenderIsNotTheTokenOwner();
+    }
+
+    if (tokenDetails.unlockWithdrawalAt > block.timestamp) {
+      revert TokenRewardsWithdrawalIsLocked();
+    }
+
+    uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
+
+    uint256 snapshotRewards = _calcTokenSnapshotRewards(
+      currentSnapshotId,
+      tokenDetails.snapshotId,
+      tokenDetails.weight
+    );
+
+    uint256 rewards;
+
+    unchecked {
+      rewards = tokenDetails.rewards + snapshotRewards;
+    }
+
+    if (rewards == 0) {
+      revert NoTokenRewardsForWithdrawn();
+    }
+
+    unchecked {
+      _totalSnapshotsRewards -= snapshotRewards;
+      _totalTokensRewards -= tokenDetails.rewards;
+    }
+
+    tokenDetails.snapshotId = currentSnapshotId;
+    tokenDetails.rewards = 0;
+
+    _paymentToken.transfer(sender, rewards);
+
+    emit TokenRewardsWithdrawn(tokenId, rewards);
   }
 
   function burnToken(uint256 tokenId) external {
@@ -375,7 +444,13 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
           MAX_PERCENTAGE;
       }
     } else {
-      uint256 snapshotRewards = _calcTokenSnapshotRewards(tokenDetails);
+      uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
+
+      uint256 snapshotRewards = _calcTokenSnapshotRewards(
+        currentSnapshotId,
+        tokenDetails.snapshotId,
+        tokenDetails.weight
+      );
 
       unchecked {
         withdrawal =
@@ -429,7 +504,7 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     uint256 tokenId,
     uint256 unlockWithdrawalAt
   ) external onlyTokenAuction {
-    uint256 snapshotId = _computeSnapshotId(block.timestamp);
+    uint256 currentSnapshotId = _computeSnapshotId(block.timestamp);
 
     TokenDetails storage tokenDetails = _tokenDetails[tokenId];
 
@@ -438,7 +513,7 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     }
 
     tokenDetails.state = TokenStates.Minted;
-    tokenDetails.snapshotId = snapshotId;
+    tokenDetails.snapshotId = currentSnapshotId;
     tokenDetails.unlockWithdrawalAt = unlockWithdrawalAt;
 
     unchecked {
@@ -448,11 +523,11 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
 
     _mint(owner, tokenId);
 
-    _syncSnapshot(snapshotId);
+    _syncSnapshot(currentSnapshotId);
 
     emit TokenResurrected(
       tokenId,
-      snapshotId,
+      currentSnapshotId,
       tokenDetails.deposit,
       tokenDetails.weight,
       unlockWithdrawalAt
@@ -478,24 +553,41 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     return result;
   }
 
-  function _calcTokenSnapshotRewards(TokenDetails memory tokenDetails)
-    private
-    view
-    returns (uint256 result)
-  {
+  function _calcTokenSnapshotRewards(
+    uint256 currentSnapshotId,
+    uint256 tokenSnapshotId,
+    uint256 tokenWeight
+  ) private view returns (uint256 result) {
     uint256 len = _snapshotIds.length;
 
     if (len != 0) {
-      uint256 index = _snapshots[tokenDetails.snapshotId].index;
-      uint256 lastIndex = len - 1;
+      uint256 index;
 
-      for (; index <= lastIndex; ) {
-        Snapshot memory snapshot = _snapshots[_snapshotIds[index]];
+      unchecked {
+        index = len - 1;
+      }
 
-        unchecked {
-          result += (tokenDetails.weight * snapshot.rewards) / snapshot.weights;
+      for (;;) {
+        uint256 snapshotId = _snapshotIds[index];
 
-          ++index;
+        if (snapshotId < currentSnapshotId) {
+          if (snapshotId < tokenSnapshotId) {
+            break;
+          }
+
+          Snapshot memory snapshot = _snapshots[snapshotId];
+
+          unchecked {
+            result += (tokenWeight * snapshot.rewards) / snapshot.weights;
+          }
+        }
+
+        if (index == 0) {
+          break;
+        } else {
+          unchecked {
+            --index;
+          }
         }
       }
     }
@@ -503,9 +595,20 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     return result;
   }
 
+  function _calcTotalSnapshotsRewards() private view returns (uint256 result) {
+    result = _paymentToken.balanceOf(address(this));
+
+    unchecked {
+      result -= _totalTokensDeposits;
+      result -= _totalTokensRewards;
+    }
+
+    return result;
+  }
+
   // private functions
 
-  function _syncSnapshot(uint256 snapshotId) private {
+  function _syncSnapshot(uint256 currentSnapshotId) private {
     if (_totalTokensWeights == 0) {
       return;
     }
@@ -513,33 +616,30 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     uint256 rewards;
 
     {
-      uint256 temp = _paymentToken.balanceOf(address(this));
+      uint256 totalSnapshotsRewards = _calcTotalSnapshotsRewards();
 
-      unchecked {
-        temp -= _totalTokensDeposits;
-        temp -= _totalTokensRewards;
-      }
-
-      if (temp != _totalSnapshotsRewards) {
+      if (totalSnapshotsRewards != _totalSnapshotsRewards) {
         unchecked {
-          rewards = temp - _totalSnapshotsRewards;
+          rewards = totalSnapshotsRewards - _totalSnapshotsRewards;
         }
 
-        _totalSnapshotsRewards = temp;
+        _totalSnapshotsRewards = totalSnapshotsRewards;
       }
+    }
+
+    if (rewards == 0) {
+      return;
     }
 
     uint256 len = _snapshotIds.length;
 
     if (len == 0) {
-      if (rewards != 0) {
-        Snapshot storage snapshot = _snapshots[snapshotId];
+      Snapshot storage snapshot = _snapshots[currentSnapshotId];
 
-        snapshot.weights = _totalTokensWeights;
-        snapshot.rewards = rewards;
+      snapshot.weights = _totalTokensWeights;
+      snapshot.rewards = rewards;
 
-        _snapshotIds.push(snapshotId);
-      }
+      _snapshotIds.push(currentSnapshotId);
 
       return;
     }
@@ -551,25 +651,26 @@ contract MetaheroLoyaltyToken is Ownable, Initializable, ERC721Enumerable {
     }
 
     uint256 latestSnapshotId = _snapshotIds[latestIndex];
-    Snapshot storage latestSnapshot = _snapshots[latestSnapshotId];
 
-    latestSnapshot.weights = _totalTokensWeights;
+    if (latestSnapshotId == currentSnapshotId) {
+      Snapshot storage snapshot = _snapshots[latestSnapshotId];
 
-    unchecked {
-      latestSnapshot.rewards += rewards;
-    }
+      snapshot.weights = _totalTokensWeights;
 
-    if (
-      latestSnapshot.rewards != 0 && //
-      latestSnapshotId != snapshotId
-    ) {
-      Snapshot storage snapshot = _snapshots[snapshotId];
+      unchecked {
+        snapshot.rewards += rewards;
+      }
+    } else {
+      Snapshot storage snapshot = _snapshots[currentSnapshotId];
+
+      snapshot.weights = _totalTokensWeights;
+      snapshot.rewards = rewards;
 
       unchecked {
         snapshot.index = latestIndex + 1;
       }
 
-      _snapshotIds.push(snapshotId);
+      _snapshotIds.push(currentSnapshotId);
     }
   }
 }

@@ -3,6 +3,7 @@ import { helpers, ethers } from 'hardhat';
 import { expect } from 'chai';
 import { MetaheroLoyaltyToken, ERC20PresetFixedSupply } from '../typechain';
 import { MAX_PERCENTAGE } from './constants';
+import { constants } from 'ethers';
 
 const {
   constants: { AddressZero },
@@ -45,6 +46,10 @@ describe('MetaheroLoyaltyToken', () => {
     );
 
     loyaltyToken = await deployContract('MetaheroLoyaltyToken');
+
+    await processTransaction(
+      paymentToken.approve(loyaltyToken.address, constants.MaxUint256),
+    );
   });
 
   const createBeforeHook = (
@@ -307,7 +312,7 @@ describe('MetaheroLoyaltyToken', () => {
 
         expect(output.owner).to.eq(account.address);
         expect(output.deposit).to.eq(accountDeposit);
-        expect(output.rewards).to.eq(accountRewards + snapshotsRewards);
+        expect(output.rewards).to.eq(accountRewards);
         expect(output.unlockWithdrawalAt).to.eq(unlockWithdrawalAt);
       });
 
@@ -336,9 +341,11 @@ describe('MetaheroLoyaltyToken', () => {
     });
   });
 
-  describe('# external functions (views)', () => {
+  describe('# external functions', () => {
     describe('setTokenBaseURI()', () => {
       const tokenBaseURI = 'test';
+
+      createBeforeHook();
 
       it('expect to revert when msg.sender is not the token owner', async () => {
         await expect(
@@ -354,6 +361,22 @@ describe('MetaheroLoyaltyToken', () => {
         await expect(tx)
           .to.emit(loyaltyToken, 'TokenBaseURIUpdated')
           .withArgs(tokenBaseURI);
+      });
+    });
+
+    describe('depositRewards()', () => {
+      const rewards = 1000;
+
+      createBeforeHook();
+
+      it('expect to deposit rewards', async () => {
+        const { tx } = await processTransaction(
+          loyaltyToken.depositRewards(rewards),
+        );
+
+        await expect(tx)
+          .to.emit(paymentToken, 'Transfer')
+          .withArgs(deployer.address, loyaltyToken.address, rewards);
       });
     });
 
@@ -438,6 +461,132 @@ describe('MetaheroLoyaltyToken', () => {
             weight,
             unlockWithdrawalAt,
           );
+      });
+    });
+
+    describe('withdrawTokenRewards()', () => {
+      const tokenId = 1;
+      const deposit = 1000;
+      const rewards = 100;
+      const weight = 1;
+      const unlockTime = 1000;
+
+      createBeforeHook();
+
+      before(async () => {
+        const timestamp = await increaseNextBlockTimestamp();
+
+        // id: 1
+
+        await processTransaction(
+          paymentToken.transfer(loyaltyToken.address, deposit),
+        );
+
+        await processTransaction(
+          loyaltyToken
+            .connect(tokenDistributor)
+            .mintToken(
+              account.address,
+              deposit,
+              0,
+              weight,
+              timestamp + unlockTime,
+            ),
+        );
+      });
+
+      it("expect to revert when token doesn't exist", async () => {
+        await expect(loyaltyToken.withdrawTokenRewards(100)).revertedWith(
+          'InvalidTokenState()',
+        );
+      });
+
+      it('expect to revert when msg.sender is not the token owner', async () => {
+        await expect(loyaltyToken.withdrawTokenRewards(1)).revertedWith(
+          'MsgSenderIsNotTheTokenOwner()',
+        );
+      });
+
+      it('expect to revert when withdrawal is locked', async () => {
+        await expect(
+          loyaltyToken.connect(account).withdrawTokenRewards(1),
+        ).revertedWith('TokenRewardsWithdrawalIsLocked()');
+      });
+
+      describe('# when withdrawal is unlocked', () => {
+        before(async () => {
+          await increaseNextBlockTimestamp(unlockTime);
+        });
+
+        it('expect to revert when there is no rewards to withdraw', async () => {
+          await expect(
+            loyaltyToken.connect(account).withdrawTokenRewards(1),
+          ).revertedWith('NoTokenRewardsForWithdrawn()');
+        });
+
+        describe('# withdraw on #1 snapshot', () => {
+          before(async () => {
+            await processTransaction(loyaltyToken.depositRewards(rewards));
+
+            await increaseNextBlockTimestamp(snapshotWindowMinLength);
+          });
+
+          it('expect to withdraw rewards', async () => {
+            const { tx } = await processTransaction(
+              loyaltyToken.connect(account).withdrawTokenRewards(1),
+            );
+
+            await expect(tx)
+              .to.emit(loyaltyToken, 'TokenRewardsWithdrawn')
+              .withArgs(tokenId, rewards);
+          });
+        });
+
+        describe('# withdraw on #2 snapshot', () => {
+          before(async () => {
+            await processTransaction(loyaltyToken.depositRewards(rewards));
+
+            await increaseNextBlockTimestamp(snapshotWindowMinLength);
+          });
+
+          it('expect to withdraw rewards', async () => {
+            const { tx } = await processTransaction(
+              loyaltyToken.connect(account).withdrawTokenRewards(1),
+            );
+
+            await expect(tx)
+              .to.emit(loyaltyToken, 'TokenRewardsWithdrawn')
+              .withArgs(tokenId, rewards);
+          });
+        });
+
+        describe('# withdraw on #3 snapshot', () => {
+          before(async () => {
+            await processTransaction(
+              paymentToken.transfer(loyaltyToken.address, deposit),
+            );
+
+            await processTransaction(
+              loyaltyToken
+                .connect(tokenDistributor)
+                .mintToken(account.address, deposit, 0, weight, 1),
+            );
+
+            await processTransaction(loyaltyToken.depositRewards(rewards));
+
+            await increaseNextBlockTimestamp(snapshotWindowMinLength);
+          });
+
+          it('expect to withdraw rewards', async () => {
+            const { tx } = await processTransaction(
+              loyaltyToken.connect(account).withdrawTokenRewards(1),
+            );
+
+            await expect(tx)
+              .to.emit(loyaltyToken, 'TokenRewardsWithdrawn')
+              .withArgs(tokenId, rewards / 2);
+          });
+        });
       });
     });
 
