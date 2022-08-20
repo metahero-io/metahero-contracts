@@ -39,13 +39,8 @@ task(TASK_NAME, 'Adds invitation to MetaheroLoyaltyTokenDistributor contract')
         maxWithdrawalLockTime: number;
       },
       {
-        helpers: {
-          getSigners,
-          getDeployedContract,
-          logNetwork,
-          logTransaction,
-          exitWithError,
-        },
+        deployments: { read, execute },
+        helpers: { getAccounts, logNetwork, logTransaction, exitWithError },
         ethers: { utils },
       },
     ) => {
@@ -105,14 +100,13 @@ task(TASK_NAME, 'Adds invitation to MetaheroLoyaltyTokenDistributor contract')
         }
       }
 
-      const [signer] = await getSigners();
+      const [from] = await getAccounts();
 
-      const tokenDistributor = await getDeployedContract(
+      const invitation = await read(
         'MetaheroLoyaltyTokenDistributor',
-        signer,
+        'getInvitation',
+        invitationId,
       );
-
-      const invitation = await tokenDistributor.getInvitation(invitationId);
 
       if (invitation.state !== 0) {
         exitWithError('Invitation already exists');
@@ -121,7 +115,12 @@ task(TASK_NAME, 'Adds invitation to MetaheroLoyaltyTokenDistributor contract')
       try {
         console.log('Adding invitation...');
 
-        const { hash, wait } = await tokenDistributor.addInvitation(
+        const { transactionHash } = await execute(
+          'MetaheroLoyaltyTokenDistributor',
+          {
+            from,
+          },
+          'addInvitation',
           invitationId,
           treeRoot,
           depositPower,
@@ -133,9 +132,7 @@ task(TASK_NAME, 'Adds invitation to MetaheroLoyaltyTokenDistributor contract')
           maxWithdrawalLockTime,
         );
 
-        await wait();
-
-        logTransaction(hash);
+        logTransaction(transactionHash);
       } catch (err) {
         exitWithError('Transaction reverted');
       }

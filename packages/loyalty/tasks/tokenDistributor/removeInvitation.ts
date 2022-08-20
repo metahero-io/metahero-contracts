@@ -14,27 +14,21 @@ task(
         invitationId: number;
       },
       {
-        helpers: {
-          getSigners,
-          getDeployedContract,
-          logNetwork,
-          logTransaction,
-          exitWithError,
-        },
+        deployments: { read, execute },
+        helpers: { getAccounts, logNetwork, logTransaction, exitWithError },
       },
     ) => {
       logNetwork(false);
 
       const { invitationId } = args;
 
-      const [signer] = await getSigners();
+      const [from] = await getAccounts();
 
-      const tokenDistributor = await getDeployedContract(
+      const invitation = await read(
         'MetaheroLoyaltyTokenDistributor',
-        signer,
+        'getInvitation',
+        invitationId,
       );
-
-      const invitation = await tokenDistributor.getInvitation(invitationId);
 
       if (invitation.state !== 1) {
         exitWithError("Invitation doesn't exist");
@@ -43,13 +37,16 @@ task(
       try {
         console.log('Removing invitation...');
 
-        const { hash, wait } = await tokenDistributor.removeInvitation(
+        const { transactionHash } = await execute(
+          'MetaheroLoyaltyTokenDistributor',
+          {
+            from,
+          },
+          'removeInvitation',
           invitationId,
         );
 
-        await wait();
-
-        logTransaction(hash);
+        logTransaction(transactionHash);
       } catch (err) {
         exitWithError('Transaction reverted');
       }

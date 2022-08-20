@@ -11,54 +11,59 @@ task(TASK_NAME, 'Sets MetaheroLoyaltyTokenDistributor rewards')
         amount: string;
       },
       {
-        helpers: {
-          getSigners,
-          getDeployedContract,
-          logNetwork,
-          logTransaction,
-          exitWithError,
-        },
+        deployments: { get, read, execute },
+        helpers: { logNetwork, logTransaction, exitWithError, getAccounts },
       },
     ) => {
       logNetwork(false);
 
       const amount = parseAmount(args.amount);
 
-      const [signer] = await getSigners();
+      const [from] = await getAccounts();
 
-      const token = await getDeployedContract('MetaheroToken', signer);
-
-      const tokenDistributor = await getDeployedContract(
+      const { address: tokenDistributor } = await get(
         'MetaheroLoyaltyTokenDistributor',
-        signer,
       );
 
-      const balance = await token.balanceOf(tokenDistributor.address);
+      const balance = await read(
+        'MetaheroToken',
+        'balanceOf',
+        tokenDistributor,
+      );
 
       try {
         if (balance.gt(0)) {
           console.log('Releasing rewards...');
 
-          const { hash, wait } = await tokenDistributor.releaseRewards();
+          const { transactionHash } = await execute(
+            'MetaheroLoyaltyTokenDistributor',
+            {
+              from,
+            },
+            'releaseRewards',
+          );
 
-          await wait();
+          logTransaction(transactionHash);
 
-          logTransaction(hash);
-
-          console.log();
+          if (amount.gt(0)) {
+            console.log();
+          }
         }
 
         if (amount.gt(0)) {
           console.log('Transferring rewards...');
 
-          const { hash, wait } = await token.transfer(
-            tokenDistributor.address,
+          const { transactionHash } = await execute(
+            'MetaheroToken',
+            {
+              from,
+            },
+            'transfer',
+            tokenDistributor,
             amount,
           );
 
-          await wait();
-
-          logTransaction(hash);
+          logTransaction(transactionHash);
         }
       } catch (err) {
         exitWithError('Transaction reverted');

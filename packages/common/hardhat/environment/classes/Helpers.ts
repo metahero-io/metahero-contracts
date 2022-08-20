@@ -71,9 +71,8 @@ export class Helpers {
 
   async getContract<T extends Contract = Contract>(
     alias: string,
-    signer?: SignerWithAddress,
   ): Promise<T & { alias?: string }> {
-    const result = await this.getDeployedContract<T>(alias, signer);
+    const result = await this.getDeployedContract<T>(alias);
 
     if (!result) {
       throw new Error(`Contract ${alias} not found`);
@@ -84,7 +83,6 @@ export class Helpers {
 
   async getDeployedContract<T extends Contract = Contract>(
     alias: string,
-    signer?: SignerWithAddress,
   ): Promise<T & { alias?: string }> {
     let result: T & { alias?: string } = null;
 
@@ -95,7 +93,7 @@ export class Helpers {
       } = this.hre;
       const { address, abi } = await get(alias);
 
-      result = new Contract(address, abi, (signer || provider) as any) as any;
+      result = new Contract(address, abi, provider) as any;
       result.alias = alias;
     } catch (err) {
       //
