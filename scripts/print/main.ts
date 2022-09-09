@@ -79,12 +79,12 @@ async function printFrontendEnvs(networkPath: string): Promise<void> {
   );
 
   logReactAppEnv(
-    'BUSD_ADDRESS',
+    'BUSD_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'BUSDToken'),
   );
 
   logReactAppEnv(
-    'WBNB_ADDRESS',
+    'WBNB_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'WBNBToken'),
   );
 
