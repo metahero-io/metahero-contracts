@@ -4,7 +4,7 @@ import { DeployFunction } from 'hardhat-deploy/types';
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
-    helpers: { getAccounts, getKnownAddress },
+    helpers: { getAccounts },
     processNetworkEnvs: {
       getEnvAsAmount, //
       getEnvAsNumber,
@@ -18,10 +18,10 @@ const func: DeployFunction = async (hre) => {
   const [from] = await getAccounts();
   const { address: token } = await get('MetaheroToken');
 
-  const swapRouter = await getKnownAddress('SwapRouter');
-  const swapStableCoin = await getKnownAddress('SwapStableCoin');
+  const { address: swapRouter } = await get('SwapRouter');
+  const { address: busdToken } = await get('BUSDToken');
 
-  const useLPM = !!(swapRouter && swapStableCoin);
+  const useLPM = !!(swapRouter && busdToken);
 
   // dao
 
@@ -73,7 +73,7 @@ const func: DeployFunction = async (hre) => {
         },
         'initialize',
         ENABLE_BURN_LP_AT_VALUE,
-        swapStableCoin,
+        busdToken,
         token,
         swapRouter,
       );

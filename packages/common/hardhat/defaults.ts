@@ -1,6 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import { SUPPORTED_NETWORKS } from './predefined';
-import { Envs, ProcessEnvNames, HARDHAT_MNEMONIC } from './shared';
+import { Envs, ProcessEnvNames, HARDHAT_MNEMONIC } from './common';
 
 export const DEFAULT_HARDHAT_SOLIDITY_CONFIG_0_8: HardhatUserConfig['solidity'] =
   {

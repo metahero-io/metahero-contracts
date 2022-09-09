@@ -13,7 +13,7 @@ $ npm run <command> # runs hardhat command
                     # clean, compile, coverage, test, deploy, verify
                     # 
                     # supported networks:
-                    # bsc, bsc-test, local
+                    # bnb, bnb-test, local
 ```
 
 ## License

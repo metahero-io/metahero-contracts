@@ -4,17 +4,19 @@ import {
   DEFAULT_HARDHAT_SOLIDITY_CONFIG_0_6,
   DEFAULT_HARDHAT_NETWORKS_CONFIG,
 } from './defaults';
-import { NetworkNames } from './shared';
+import { NetworkNames } from './common';
 
 export function buildConfig(
   options: {
     solidityVersion?: '0.8.x' | '0.6.x';
     externalDeployments?: string[];
+    knownContracts?: HardhatUserConfig['knownContracts'];
   } = {},
 ): HardhatUserConfig {
-  const { solidityVersion, externalDeployments } = {
+  const { solidityVersion, externalDeployments, knownContracts } = {
     solidityVersion: '0.8.x',
     externalDeployments: [],
+    knownContracts: {},
     ...options,
   };
 
@@ -53,6 +55,7 @@ export function buildConfig(
     typechain: {
       outDir: 'typechain',
     },
+    knownContracts,
     mocha: {
       timeout: 50000,
     },

@@ -1,8 +1,22 @@
 {
-  "name": "root",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@metahero/contracts",
+  "version": "2.0.0-rc.4",
+  "description": "Metahero contracts",
+  "keywords": [
+    "ERC20",
+    "HERO",
+    "contracts",
+    "ethereum",
+    "solidity"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metahero-io/metahero-contracts.git"
+  },
+  "homepage": "https://metahero.io",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "start": "exit 0",
     "bootstrap": "lerna bootstrap",

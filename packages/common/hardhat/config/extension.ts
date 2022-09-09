@@ -1,8 +1,9 @@
 import { join } from 'path';
-import { extendConfig } from 'hardhat/config';
-import { Envs } from '../shared';
+import { extendConfig, HardhatUserConfig } from 'hardhat/config';
+import { Envs } from '../common';
 
-extendConfig((config) => {
+extendConfig((config, userConfig) => {
+  const { knownContracts } = userConfig;
   const { root } = config.paths;
 
   config.paths = {
@@ -14,7 +15,9 @@ extendConfig((config) => {
 
   const { getEnvAsBool } = Envs.processEnvs;
 
-  (config as any).gasReporter = {
+  config.knownContracts = knownContracts || {};
+
+  (config as any as HardhatUserConfig).gasReporter = {
     enabled: getEnvAsBool('REPORT_GAS'),
     currency: 'USD',
   };

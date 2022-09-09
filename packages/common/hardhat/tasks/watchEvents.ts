@@ -1,7 +1,7 @@
 import kleur from 'kleur';
 import prompts from 'prompts';
 import { task } from 'hardhat/config';
-import { sleep, jsonReplacer } from '../shared';
+import { sleep, jsonReplacer } from '../common';
 
 const TASK_NAME = 'watch-events';
 

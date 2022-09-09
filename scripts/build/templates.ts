@@ -1,13 +1,13 @@
 import { Contract } from './interfaces';
 
-function contractsJS(contracts: Record<string, Contract>): string {
+export function contractsJS(contracts: Record<string, Contract>): string {
   return `/* eslint-disable */
 
 module.exports = ${JSON.stringify(contracts, null, 2)};
 `;
 }
 
-function constantsJS(
+export function constantsJS(
   chainIds: Record<string, number>,
   contracts: Record<string, Contract>,
 ): string {
@@ -26,7 +26,7 @@ module.exports = {
 `;
 }
 
-function constantsTS(
+export function constantsTS(
   chainIds: Record<string, number>,
   contracts: Record<string, Contract>,
 ): string {
@@ -43,9 +43,3 @@ export enum ContractNames {${Object.keys(contracts)
 }
 `;
 }
-
-export default {
-  contractsJS,
-  constantsJS,
-  constantsTS,
-};

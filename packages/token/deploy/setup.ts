@@ -4,7 +4,7 @@ import { BigNumber, constants } from 'ethers';
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { get, read, execute, log },
-    helpers: { getAccounts, getKnownAddress, isLocalNetwork },
+    helpers: { getAccounts, isLocalNetwork },
     ethers: { utils, provider },
   } = hre;
 
@@ -77,10 +77,10 @@ const func: DeployFunction = async (hre) => {
 
     const { timestamp } = await provider.getBlock('latest');
     const deadline = timestamp + 10;
-    const token = await getKnownAddress('MetaheroToken');
-    const swapRouter = await getKnownAddress('SwapRouter');
-    const swapStableCoin = await getKnownAddress('SwapStableCoin');
-    const swapWrappedNative = await getKnownAddress('SwapWrappedNative');
+    const { address: token } = await get('MetaheroToken');
+    const { address: swapRouter } = await get('SwapRouter');
+    const { address: busdToken } = await get('BUSDToken');
+    const { address: wbnbToken } = await get('WBNBToken');
 
     const allPairsLength = (
       await read('SwapFactory', 'allPairsLength')
@@ -95,7 +95,7 @@ const func: DeployFunction = async (hre) => {
         },
         'createPair',
         token,
-        swapWrappedNative,
+        wbnbToken,
       );
     }
 
@@ -107,8 +107,8 @@ const func: DeployFunction = async (hre) => {
           log: true,
         },
         'createPair',
-        swapWrappedNative,
-        swapStableCoin,
+        wbnbToken,
+        busdToken,
       );
     }
 
@@ -124,7 +124,7 @@ const func: DeployFunction = async (hre) => {
     );
 
     await execute(
-      'SwapStableCoin',
+      'BUSDToken',
       {
         from,
         log: true,
@@ -135,7 +135,7 @@ const func: DeployFunction = async (hre) => {
     );
 
     await execute(
-      'SwapStableCoin',
+      'BUSDToken',
       {
         from,
         log: true,
@@ -169,7 +169,7 @@ const func: DeployFunction = async (hre) => {
         value: utils.parseEther('10'),
       },
       'addLiquidityETH',
-      swapStableCoin,
+      busdToken,
       utils.parseEther('100000'),
       utils.parseEther('100000'),
       utils.parseEther('10'),

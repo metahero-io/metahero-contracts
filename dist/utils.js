@@ -14,19 +14,6 @@ function getContractAddress(contractName, chainId = null) {
   return result || null;
 }
 
-function getContractABI(contractName) {
-  let result;
-
-  try {
-    result = contracts[contractName].abi;
-  } catch (err) {
-    //
-  }
-
-  return result || null;
-}
-
 module.exports = {
   getContractAddress,
-  getContractABI,
 };

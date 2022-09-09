@@ -6,8 +6,8 @@ export const HARDHAT_MNEMONIC =
 export const HARDHAT_PATH_PREFIX = `m/44'/60'/0'/0/`;
 
 export enum NetworkNames {
-  Bsc = 'bsc',
-  BscTest = 'bsc-test',
+  Bnb = 'bnb',
+  BnbTest = 'bnb-test',
   Local = 'local',
   Hardhat = 'hardhat',
 }

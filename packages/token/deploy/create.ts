@@ -3,8 +3,7 @@ import { DeployFunction } from 'hardhat-deploy/types';
 const func: DeployFunction = async (hre) => {
   const {
     deployments: { deploy, log },
-    processNetworkEnvs: { getEnvAsAddress },
-    helpers: { getAccounts, setKnownAddress, isLocalNetwork },
+    helpers: { getAccounts, isLocalNetwork },
   } = hre;
 
   log();
@@ -52,7 +51,7 @@ const func: DeployFunction = async (hre) => {
 
     log();
 
-    const { address: wrappedNative } = await deploy('SwapWrappedNative', {
+    const { address: wrappedNative } = await deploy('WBNBToken', {
       contract: 'WrappedNativeMock',
       from,
       log: true,
@@ -60,7 +59,7 @@ const func: DeployFunction = async (hre) => {
 
     log();
 
-    const { address: router } = await deploy('SwapRouter', {
+    await deploy('SwapRouter', {
       contract: 'PancakeRouter',
       from,
       log: true,
@@ -69,18 +68,11 @@ const func: DeployFunction = async (hre) => {
 
     log();
 
-    const { address: stableCoin } = await deploy('SwapStableCoin', {
+    await deploy('BUSDToken', {
       contract: 'ERC20Mock',
       from,
       log: true,
     });
-
-    setKnownAddress('SwapRouter', router);
-    setKnownAddress('SwapStableCoin', stableCoin);
-    setKnownAddress('SwapWrappedNative', wrappedNative);
-  } else {
-    setKnownAddress('SwapRouter', getEnvAsAddress('SWAP_ROUTER'));
-    setKnownAddress('SwapStableCoin', getEnvAsAddress('SWAP_STABLE_COIN'));
   }
 };
 

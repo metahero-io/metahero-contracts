@@ -1,8 +1,8 @@
 /* eslint-disable */
 
 export enum NetworkChainIds {
-  BscTest = 97,
-  Bsc = 56,
+  Bnb = 56,
+  BnbTest = 97,
 }
 
 export enum ContractNames {
@@ -13,4 +13,7 @@ export enum ContractNames {
   MetaheroDAO = 'MetaheroDAO',
   MetaheroLPMForUniswapV2 = 'MetaheroLPMForUniswapV2',
   MetaheroToken = 'MetaheroToken',
+  BUSDToken = 'BUSDToken',
+  WBNBToken = 'WBNBToken',
+  SwapRouter = 'SwapRouter',
 }

@@ -2,8 +2,8 @@
 
 module.exports = {
   NetworkChainIds: {
-    BscTest: 97,
-    Bsc: 56,
+    Bnb: 56,
+    BnbTest: 97,
   },
   ContractNames: {
     ERC20Helper: 'ERC20Helper',
@@ -13,5 +13,8 @@ module.exports = {
     MetaheroDAO: 'MetaheroDAO',
     MetaheroLPMForUniswapV2: 'MetaheroLPMForUniswapV2',
     MetaheroToken: 'MetaheroToken',
+    BUSDToken: 'BUSDToken',
+    WBNBToken: 'WBNBToken',
+    SwapRouter: 'SwapRouter',
   },
 };

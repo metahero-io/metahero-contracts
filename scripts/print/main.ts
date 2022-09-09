@@ -3,9 +3,11 @@ import { readJSON } from 'fs-extra';
 import {
   DEPLOYMENTS_FILE_EXT,
   DEPLOYMENTS_DIR,
+  DEPLOYMENTS_KNOWN_CONTRACTS_FILE,
   PACKAGES_ROOT,
 } from '../common';
-import { NETWORK } from './constants';
+
+const knownContractsMap = new Map<string, Record<string, string>>();
 
 async function getContractAddress(
   packageName: string,
@@ -15,92 +17,89 @@ async function getContractAddress(
   let result: string;
 
   if (packageName) {
-    try {
-      const filePath = join(
-        PACKAGES_ROOT,
-        packageName,
-        DEPLOYMENTS_DIR,
-        networkPath,
-        `${contractName}${DEPLOYMENTS_FILE_EXT}`,
-      );
+    const knownContractsKey = `${packageName}:${networkPath}`;
+    if (!knownContractsMap.has(knownContractsKey)) {
+      let knownContracts: Record<string, string>;
 
-      const { address }: { address: string } = await readJSON(filePath);
+      try {
+        const filePath = join(
+          PACKAGES_ROOT,
+          packageName,
+          DEPLOYMENTS_DIR,
+          networkPath,
+          DEPLOYMENTS_KNOWN_CONTRACTS_FILE,
+        );
+        knownContracts = (await readJSON(filePath)) || {};
+      } catch (err) {
+        knownContracts = {};
+      }
 
-      result = address;
-    } catch (err) {
-      //
+      knownContractsMap.set(knownContractsKey, knownContracts);
+    }
+
+    result = knownContractsMap.get(knownContractsKey)[contractName];
+
+    if (!result) {
+      try {
+        const filePath = join(
+          PACKAGES_ROOT,
+          packageName,
+          DEPLOYMENTS_DIR,
+          networkPath,
+          `${contractName}${DEPLOYMENTS_FILE_EXT}`,
+        );
+
+        const { address }: { address: string } = await readJSON(filePath);
+
+        result = address;
+      } catch (err) {
+        //
+      }
     }
   }
 
   return result || '';
 }
 
-function logFrontendEnv(key: string, value: string): void {
+function logReactAppEnv(key: string, value: string): void {
   if (value) {
     console.log(`REACT_APP_${key}=${value}`);
   }
 }
 
 async function printFrontendEnvs(networkPath: string): Promise<void> {
-  logFrontendEnv(
+  logReactAppEnv(
     'PAYMENT_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'MetaheroToken'),
   );
 
-  logFrontendEnv(
+  logReactAppEnv(
     'SWAP_ROUTER_ADDRESS',
     await getContractAddress('token', networkPath, 'SwapRouter'),
   );
 
-  logFrontendEnv(
+  logReactAppEnv(
     'BUSD_ADDRESS',
-    await getContractAddress('token', networkPath, 'SwapStableCoin'),
+    await getContractAddress('token', networkPath, 'BUSDToken'),
   );
 
-  logFrontendEnv(
+  logReactAppEnv(
     'WBNB_ADDRESS',
-    await getContractAddress('token', networkPath, 'SwapWrappedNative'),
+    await getContractAddress('token', networkPath, 'WBNBToken'),
   );
 
-  logFrontendEnv(
+  logReactAppEnv(
     'ERC20_HELPER_ADDRESS',
     await getContractAddress('helper', networkPath, 'ERC20Helper'),
   );
-
-  logFrontendEnv(
-    'LOYALTY_TOKEN_ADDRESS',
-    await getContractAddress('loyalty', networkPath, 'MetaheroLoyaltyToken'),
-  );
-
-  logFrontendEnv(
-    'LOYALTY_TOKEN_AUCTION_ADDRESS',
-    await getContractAddress(
-      'loyalty',
-      networkPath,
-      'MetaheroLoyaltyTokenAuction',
-    ),
-  );
-
-  logFrontendEnv(
-    'LOYALTY_TOKEN_DISTRIBUTOR_ADDRESS',
-    await getContractAddress(
-      'loyalty',
-      networkPath,
-      'MetaheroLoyaltyTokenDistributor',
-    ),
-  );
 }
 
-export async function main(): Promise<void> {
-  for (const { name, path } of NETWORK) {
-    console.log();
-    console.log(`# ${name}`);
-    console.log();
-    console.log('## Frontend');
-    console.log();
+export async function main(path: string): Promise<void> {
+  console.log();
+  console.log('# Metahero APP');
+  console.log();
 
-    await printFrontendEnvs(path);
+  await printFrontendEnvs(path || 'local');
 
-    console.log();
-  }
+  console.log();
 }

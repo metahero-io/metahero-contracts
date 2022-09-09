@@ -8,7 +8,7 @@ import {
   HARDHAT_MNEMONIC,
   HARDHAT_PATH_PREFIX,
   NetworkNames,
-} from '../../shared';
+} from '../../common';
 
 export class Helpers {
   private signers: SignerWithAddress[];
@@ -25,28 +25,6 @@ export class Helpers {
     } = this.hre;
 
     return name === NetworkNames.Local || name === NetworkNames.Hardhat;
-  }
-
-  async getKnownAddress(name: string): Promise<string> {
-    let result = this.addresses.get(name);
-
-    if (!result) {
-      const {
-        deployments: { get },
-      } = this.hre;
-
-      try {
-        ({ address: result } = await get(name));
-      } catch (err) {
-        //
-      }
-    }
-
-    return result || null;
-  }
-
-  setKnownAddress(name: string, address: string): void {
-    this.addresses.set(name, address);
   }
 
   createSigner(mnemonic?: string, index = 0): Signer & { address?: string } {

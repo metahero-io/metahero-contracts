@@ -1,10 +1,10 @@
 import { task, types } from 'hardhat/config';
 import { HardhatPluginError } from 'hardhat/plugins';
-import { NetworkNames } from '../shared';
+import { NetworkNames } from '../common';
 
 const TASK_VERIFY = 'verify';
 
-task(TASK_VERIFY, 'Verify all contracts')
+task(TASK_VERIFY, 'Verifies contracts')
   .addOptionalParam(
     'all',
     'Verifies all deployed contracts',
@@ -27,13 +27,14 @@ task(TASK_VERIFY, 'Verify all contracts')
     const entries = Object.entries(contracts);
 
     switch (networkName) {
-      case NetworkNames.Bsc:
-      case NetworkNames.BscTest: {
-        const apiKey = getEnvValue('etherscan.apiKey');
+      case NetworkNames.Bnb:
+      case NetworkNames.BnbTest: {
+        const envKey = 'etherscan.apiKey';
+        const apiKey = getEnvValue(envKey);
 
         if (!apiKey) {
           throw new HardhatPluginError(
-            `Undefined ${buildEnvKey('etherscan.apiKey')} environment variable`,
+            `Undefined ${buildEnvKey(envKey)} environment variable`,
           );
         }
 
