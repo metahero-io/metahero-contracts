@@ -61,45 +61,79 @@ async function getContractAddress(
   return result || '';
 }
 
-function logReactAppEnv(key: string, value: string): void {
+function logFrontendEnv(key: string, value: string): void {
   if (value) {
     console.log(`REACT_APP_${key}=${value}`);
   }
 }
 
+function logBackendEnv(key: string, value: string): void {
+  if (value) {
+    console.log(`CONTRACTS_${key}=${value}`);
+  }
+}
+
 async function printFrontendEnvs(networkPath: string): Promise<void> {
-  logReactAppEnv(
+  logFrontendEnv(
     'PAYMENT_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'MetaheroToken'),
   );
 
-  logReactAppEnv(
-    'SWAP_ROUTER_ADDRESS',
-    await getContractAddress('token', networkPath, 'SwapRouter'),
-  );
-
-  logReactAppEnv(
+  logFrontendEnv(
     'BUSD_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'BUSDToken'),
   );
 
-  logReactAppEnv(
+  logFrontendEnv(
     'WBNB_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'WBNBToken'),
   );
 
-  logReactAppEnv(
+  logFrontendEnv(
     'ERC20_HELPER_ADDRESS',
     await getContractAddress('helper', networkPath, 'ERC20Helper'),
+  );
+
+  logFrontendEnv(
+    'SWAP_ROUTER_ADDRESS',
+    await getContractAddress('token', networkPath, 'SwapRouter'),
+  );
+}
+
+async function printBackendEnvs(networkPath: string): Promise<void> {
+  logBackendEnv(
+    'PAYMENT_TOKEN_ADDRESS',
+    await getContractAddress('token', networkPath, 'MetaheroToken'),
+  );
+
+  logBackendEnv(
+    'BUSD_TOKEN_ADDRESS',
+    await getContractAddress('token', networkPath, 'BUSDToken'),
+  );
+
+  logBackendEnv(
+    'WBNB_TOKEN_ADDRESS',
+    await getContractAddress('token', networkPath, 'WBNBToken'),
+  );
+
+  logBackendEnv(
+    'SWAP_ROUTER_ADDRESS',
+    await getContractAddress('token', networkPath, 'SwapRouter'),
   );
 }
 
 export async function main(path: string): Promise<void> {
   console.log();
-  console.log('# Metahero APP');
+  console.log('# Frontend');
   console.log();
 
   await printFrontendEnvs(path || 'local');
+
+  console.log();
+  console.log('# Backend');
+  console.log();
+
+  await printBackendEnvs(path || 'local');
 
   console.log();
 }
