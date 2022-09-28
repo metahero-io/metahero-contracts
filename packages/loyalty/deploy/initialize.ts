@@ -15,7 +15,6 @@ const func: DeployFunction = async (hre) => {
 
   const { address: paymentToken } = await get('MetaheroToken');
   const { address: token } = await get('MetaheroLoyaltyToken');
-  const { address: auction } = await get('MetaheroLoyaltyTokenAuction');
   const { address: distributor } = await get('MetaheroLoyaltyTokenDistributor');
 
   // token
@@ -43,42 +42,10 @@ const func: DeployFunction = async (hre) => {
       },
       'initialize',
       paymentToken,
-      auction,
       distributor,
       SNAPSHOT_WINDOW_MIN_LENGTH,
       EARLY_WITHDRAWAL_TAX,
       TOKEN_BASE_URL,
-    );
-  }
-
-  // auction
-
-  if (await read('MetaheroLoyaltyTokenAuction', 'initialized')) {
-    log('MetaheroLoyaltyTokenAuction already initialized');
-  } else {
-    const AUCTION_TIME = getEnvAsNumber(
-      'AUCTION_TIME',
-      2 * 24 * 60 * 60, // 2 days
-    );
-
-    const UNLOCK_WITHDRAWAL_MAX_TIME = getEnvAsNumber(
-      'UNLOCK_WITHDRAWAL_MAX_TIME',
-      365 * 24 * 60 * 60, // 365 days
-    );
-
-    await execute(
-      'MetaheroLoyaltyTokenAuction',
-      {
-        from,
-        log: true,
-      },
-      'initialize',
-      token,
-      paymentToken,
-      AUCTION_TIME,
-      UNLOCK_WITHDRAWAL_MAX_TIME,
-      [],
-      [],
     );
   }
 

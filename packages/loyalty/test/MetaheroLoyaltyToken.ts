@@ -30,12 +30,11 @@ describe('MetaheroLoyaltyToken', () => {
   let loyaltyToken: MetaheroLoyaltyToken;
   let deployer: SignerWithAddress;
   let account: SignerWithAddress;
-  let tokenAuction: SignerWithAddress;
   let tokenDistributor: SignerWithAddress;
   let snapshotBaseTimestamp: number;
 
   before(async () => {
-    [deployer, account, tokenAuction, tokenDistributor] = await getSigners();
+    [deployer, account, tokenDistributor] = await getSigners();
 
     paymentToken = await deployContract(
       'ERC20PresetFixedSupply',
@@ -71,7 +70,6 @@ describe('MetaheroLoyaltyToken', () => {
         await processTransaction(
           loyaltyToken.initialize(
             paymentToken.address,
-            tokenAuction.address,
             tokenDistributor.address,
             snapshotWindowMinLength,
             earlyWithdrawalTax,
@@ -98,7 +96,6 @@ describe('MetaheroLoyaltyToken', () => {
           .initialize(
             paymentToken.address,
             randomAddress(),
-            randomAddress(),
             snapshotWindowMinLength,
             earlyWithdrawalTax,
             tokenBaseURI,
@@ -111,7 +108,6 @@ describe('MetaheroLoyaltyToken', () => {
         loyaltyToken.initialize(
           AddressZero,
           randomAddress(),
-          randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
           tokenBaseURI,
@@ -119,23 +115,9 @@ describe('MetaheroLoyaltyToken', () => {
       ).revertedWith('PaymentTokenIsTheZeroAddress()');
     });
 
-    it('expect to revert when token auction is the zero address', async () => {
-      await expect(
-        loyaltyToken.initialize(
-          randomAddress(),
-          AddressZero,
-          randomAddress(),
-          snapshotWindowMinLength,
-          earlyWithdrawalTax,
-          tokenBaseURI,
-        ),
-      ).revertedWith('TokenAuctionIsTheZeroAddress()');
-    });
-
     it('expect to revert when token distributor is the zero address', async () => {
       await expect(
         loyaltyToken.initialize(
-          randomAddress(),
           randomAddress(),
           AddressZero,
           snapshotWindowMinLength,
@@ -150,7 +132,6 @@ describe('MetaheroLoyaltyToken', () => {
         loyaltyToken.initialize(
           randomAddress(),
           randomAddress(),
-          randomAddress(),
           0,
           earlyWithdrawalTax,
           tokenBaseURI,
@@ -161,7 +142,6 @@ describe('MetaheroLoyaltyToken', () => {
     it('expect to revert on invalid early withdrawal tax', async () => {
       await expect(
         loyaltyToken.initialize(
-          randomAddress(),
           randomAddress(),
           randomAddress(),
           snapshotWindowMinLength,
@@ -179,7 +159,6 @@ describe('MetaheroLoyaltyToken', () => {
       const { tx } = await processTransaction(
         loyaltyToken.initialize(
           paymentToken.address,
-          tokenAuction.address,
           tokenDistributor.address,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
@@ -191,7 +170,6 @@ describe('MetaheroLoyaltyToken', () => {
         .to.emit(loyaltyToken, 'Initialized')
         .withArgs(
           paymentToken.address,
-          tokenAuction.address,
           tokenDistributor.address,
           snapshotBaseTimestamp,
           snapshotWindowMinLength,
@@ -206,7 +184,6 @@ describe('MetaheroLoyaltyToken', () => {
       await expect(
         loyaltyToken.initialize(
           paymentToken.address,
-          randomAddress(),
           randomAddress(),
           snapshotWindowMinLength,
           earlyWithdrawalTax,
@@ -245,12 +222,6 @@ describe('MetaheroLoyaltyToken', () => {
             accountWeight,
             unlockWithdrawalAt,
           ),
-      );
-
-      await processTransaction(
-        loyaltyToken
-          .connect(tokenAuction)
-          .markTokenAsBurned(2, accountDeposit, accountWeight),
       );
     });
 
@@ -302,7 +273,8 @@ describe('MetaheroLoyaltyToken', () => {
 
         expect(output.earlyWithdrawalTax).to.eq(earlyWithdrawalTax);
         expect(output.totalDeposits).to.eq(accountDeposit);
-        expect(output.totalRewards).to.eq(accountRewards + snapshotsRewards);
+        expect(output.totalTokensRewards).to.eq(accountRewards);
+        expect(output.totalSnapshotsRewards).to.eq(snapshotsRewards);
       });
     });
 
@@ -313,6 +285,7 @@ describe('MetaheroLoyaltyToken', () => {
         expect(output.owner).to.eq(account.address);
         expect(output.deposit).to.eq(accountDeposit);
         expect(output.rewards).to.eq(accountRewards);
+        expect(output.snapshotRewards).to.eq(0);
         expect(output.unlockWithdrawalAt).to.eq(unlockWithdrawalAt);
       });
 
@@ -322,21 +295,26 @@ describe('MetaheroLoyaltyToken', () => {
         expect(output.owner).to.eq(AddressZero);
         expect(output.deposit).to.eq(0);
         expect(output.rewards).to.eq(0);
+        expect(output.snapshotRewards).to.eq(0);
         expect(output.unlockWithdrawalAt).to.eq(0);
       });
     });
 
-    describe('getRequiredTokenResurrectionDeposit()', () => {
-      it('expect to return deposit for burned token', async () => {
-        expect(await loyaltyToken.getRequiredTokenResurrectionDeposit(2)).to.eq(
-          accountDeposit,
-        );
-      });
+    describe('getTokenSummaries()', () => {
+      it('expect to return the token summaries', async () => {
+        const output = await loyaltyToken.getTokenSummaries([1, 10]);
 
-      it('expect to return 0 for non-burned token', async () => {
-        expect(await loyaltyToken.getRequiredTokenResurrectionDeposit(1)).to.eq(
-          0,
-        );
+        expect(output[0].owner).to.eq(account.address);
+        expect(output[0].deposit).to.eq(accountDeposit);
+        expect(output[0].rewards).to.eq(accountRewards);
+        expect(output[0].snapshotRewards).to.eq(0);
+        expect(output[0].unlockWithdrawalAt).to.eq(unlockWithdrawalAt);
+
+        expect(output[1].owner).to.eq(AddressZero);
+        expect(output[1].deposit).to.eq(0);
+        expect(output[1].rewards).to.eq(0);
+        expect(output[1].snapshotRewards).to.eq(0);
+        expect(output[1].unlockWithdrawalAt).to.eq(0);
       });
     });
   });
@@ -408,6 +386,7 @@ describe('MetaheroLoyaltyToken', () => {
         await expect(tx)
           .to.emit(loyaltyToken, 'TokenMinted')
           .withArgs(
+            owner,
             tokenId,
             snapshotId,
             deposit,
@@ -429,6 +408,7 @@ describe('MetaheroLoyaltyToken', () => {
         await expect(tx)
           .to.emit(loyaltyToken, 'TokenMinted')
           .withArgs(
+            owner,
             tokenId,
             snapshotId,
             deposit,
@@ -454,6 +434,7 @@ describe('MetaheroLoyaltyToken', () => {
         await expect(tx)
           .to.emit(loyaltyToken, 'TokenMinted')
           .withArgs(
+            owner,
             tokenId,
             snapshotsCount + 1,
             deposit,
@@ -497,7 +478,7 @@ describe('MetaheroLoyaltyToken', () => {
 
       it("expect to revert when token doesn't exist", async () => {
         await expect(loyaltyToken.withdrawTokenRewards(100)).revertedWith(
-          'InvalidTokenState()',
+          'TokenDoesntExist()',
         );
       });
 
@@ -521,7 +502,7 @@ describe('MetaheroLoyaltyToken', () => {
         it('expect to revert when there is no rewards to withdraw', async () => {
           await expect(
             loyaltyToken.connect(account).withdrawTokenRewards(1),
-          ).revertedWith('NoTokenRewardsForWithdrawn()');
+          ).revertedWith('NoTokenRewardsToWithdraw()');
         });
 
         describe('# withdraw on #1 snapshot', () => {
@@ -634,7 +615,7 @@ describe('MetaheroLoyaltyToken', () => {
 
       it("expect to revert when token doesn't exist", async () => {
         await expect(loyaltyToken.burnToken(100)).revertedWith(
-          'InvalidTokenState()',
+          'TokenDoesntExist()',
         );
       });
 
@@ -682,161 +663,6 @@ describe('MetaheroLoyaltyToken', () => {
         await expect(tx)
           .to.emit(loyaltyToken, 'TokenBurned')
           .withArgs(tokenId, withdrawal);
-      });
-    });
-
-    describe('markTokenAsBurned()', () => {
-      const tokenId = 1;
-
-      createBeforeHook();
-
-      before(async () => {
-        await processTransaction(
-          loyaltyToken.connect(tokenAuction).markTokenAsBurned(tokenId, 0, 0),
-        );
-      });
-
-      it('expect to revert when msg.sender is not the token auction', async () => {
-        await expect(loyaltyToken.markTokenAsBurned(2, 0, 0)).revertedWith(
-          'MsgSenderIsNotTheTokenAuction()',
-        );
-      });
-
-      it('expect to revert when token exists', async () => {
-        await expect(
-          loyaltyToken.connect(tokenAuction).markTokenAsBurned(tokenId, 0, 0),
-        ).revertedWith('InvalidTokenState()');
-      });
-
-      it('expect to mark token as burned', async () => {
-        const tokenId = 2;
-        const deposit = 300;
-        const weight = 100;
-
-        const { tx } = await processTransaction(
-          loyaltyToken
-            .connect(tokenAuction)
-            .markTokenAsBurned(tokenId, deposit, weight),
-        );
-
-        await expect(tx)
-          .to.emit(loyaltyToken, 'TokenMarkedAsBurned')
-          .withArgs(tokenId, deposit, weight);
-      });
-    });
-
-    describe('resurrectToken()', () => {
-      const snapshotsCount = 4;
-      const snapshotId = snapshotsCount + 1;
-      const deposit = 100;
-      const weight = 200;
-      const unlockWithdrawalAt = 100;
-      let tokenId = 1;
-
-      createBeforeHook();
-
-      before(async () => {
-        await increaseNextBlockTimestamp(
-          snapshotWindowMinLength * snapshotsCount,
-        );
-
-        await processTransaction(
-          loyaltyToken
-            .connect(tokenAuction)
-            .markTokenAsBurned(tokenId, deposit, weight),
-        );
-      });
-
-      it('expect to revert when msg.sender is not the token auction', async () => {
-        await expect(
-          loyaltyToken.resurrectToken(
-            account.address,
-            tokenId,
-            unlockWithdrawalAt,
-          ),
-        ).revertedWith('MsgSenderIsNotTheTokenAuction()');
-      });
-
-      it('expect to revert when token exists', async () => {
-        await expect(
-          loyaltyToken
-            .connect(tokenAuction)
-            .resurrectToken(account.address, 2, unlockWithdrawalAt),
-        ).revertedWith('InvalidTokenState()');
-      });
-
-      it('expect to resurrect token', async () => {
-        const { tx } = await processTransaction(
-          loyaltyToken
-            .connect(tokenAuction)
-            .resurrectToken(account.address, tokenId, unlockWithdrawalAt),
-        );
-
-        await expect(tx)
-          .to.emit(loyaltyToken, 'TokenResurrected')
-          .withArgs(tokenId, snapshotId, deposit, weight, unlockWithdrawalAt);
-
-        ++tokenId;
-      });
-
-      describe('# transfer rewards before resurrection', () => {
-        before(async () => {
-          await processTransaction(
-            paymentToken.transfer(loyaltyToken.address, deposit),
-          );
-
-          await processTransaction(
-            loyaltyToken
-              .connect(tokenAuction)
-              .markTokenAsBurned(tokenId, deposit, weight),
-          );
-        });
-
-        it('expect to revert when msg.sender is not the token auction', async () => {
-          const { tx } = await processTransaction(
-            loyaltyToken
-              .connect(tokenAuction)
-              .resurrectToken(account.address, tokenId, unlockWithdrawalAt),
-          );
-
-          await expect(tx)
-            .to.emit(loyaltyToken, 'TokenResurrected')
-            .withArgs(tokenId, snapshotId, deposit, weight, unlockWithdrawalAt);
-
-          ++tokenId;
-        });
-      });
-
-      describe('# transfer rewards before all', () => {
-        const snapshotId = 1;
-
-        createBeforeHook();
-
-        before(async () => {
-          await processTransaction(
-            paymentToken.transfer(loyaltyToken.address, deposit),
-          );
-
-          await processTransaction(
-            loyaltyToken
-              .connect(tokenAuction)
-              .markTokenAsBurned(tokenId, deposit, weight),
-          );
-        });
-
-        it('expect to revert when msg.sender is not the token auction', async () => {
-          const { tx } = await processTransaction(
-            loyaltyToken
-              .connect(tokenAuction)
-              .resurrectToken(account.address, tokenId, unlockWithdrawalAt),
-          );
-
-          await expect(tx)
-            .to.emit(loyaltyToken, 'TokenResurrected')
-            .withArgs(tokenId, snapshotId, deposit, weight, unlockWithdrawalAt);
-
-          ++tokenId;
-        });
       });
     });
   });

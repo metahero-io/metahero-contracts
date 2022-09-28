@@ -19,13 +19,6 @@ const func: DeployFunction = async (hre) => {
     log: true,
   });
 
-  // auction
-
-  await deploy('MetaheroLoyaltyTokenAuction', {
-    from,
-    log: true,
-  });
-
   // distributor
 
   await deploy('MetaheroLoyaltyTokenDistributor', {

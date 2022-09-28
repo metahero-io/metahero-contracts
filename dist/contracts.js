@@ -4,40 +4,35 @@ module.exports = {
   "ERC20Helper": {
     "addresses": {
       "56": "0x9780AF37513ffd6769B3Fdbc143071947Fa0Ab16",
-      "97": "0x79c285c5c447Ecaf5a651147b3f35f25c63FDd87"
+      "97": "0xe8a6f1926151E338b55d3eb6cEC6ce24BBa17496"
     }
   },
   "MetaheroLoyaltyToken": {
     "addresses": {
-      "97": "0xC55698C5F8845848796c48bC15221101dB8482C6"
-    }
-  },
-  "MetaheroLoyaltyTokenAuction": {
-    "addresses": {
-      "97": "0x839E6E5F2247C5eA3575aFcb0d673fD70a7B5B86"
+      "97": "0xc42b815de5e485A619313b696Ecb0C12cc4Cc7f2"
     }
   },
   "MetaheroLoyaltyTokenDistributor": {
     "addresses": {
-      "97": "0x642e247534c5DA09c4fc8848907334CF047bA2DA"
+      "97": "0x9DEF07b8aa8181b0C8a3e5E17DA8F5E689e5bCf8"
     }
   },
   "MetaheroDAO": {
     "addresses": {
       "56": "0x8369Feb2198D01a2ed5d78E89ca7507983028B42",
-      "97": "0x4536AAdf0c4Bc3582a0102902acAE32a51189b7e"
+      "97": "0xF21D52737e2c5Be950AB73edf4173619C491afE5"
     }
   },
   "MetaheroLPMForUniswapV2": {
     "addresses": {
       "56": "0x5DA5b71B88C42544b642D4AB781B30831EDAC341",
-      "97": "0x59960E65F0784C576E87129fAB481968a4f906C0"
+      "97": "0x0b738d1B124f5a1082F155B92A7e6F5b49Ab8B03"
     }
   },
   "MetaheroToken": {
     "addresses": {
       "56": "0xD40bEDb44C081D2935eebA6eF5a3c8A31A1bBE13",
-      "97": "0x2D0406CEaEa47ca81cDA39AFE099eE0c37D977De"
+      "97": "0x4bdf21169a6f8a069c210CF5868dD7a9cF65349A"
     }
   },
   "BUSDToken": {

@@ -8,7 +8,6 @@ module.exports = {
   ContractNames: {
     ERC20Helper: 'ERC20Helper',
     MetaheroLoyaltyToken: 'MetaheroLoyaltyToken',
-    MetaheroLoyaltyTokenAuction: 'MetaheroLoyaltyTokenAuction',
     MetaheroLoyaltyTokenDistributor: 'MetaheroLoyaltyTokenDistributor',
     MetaheroDAO: 'MetaheroDAO',
     MetaheroLPMForUniswapV2: 'MetaheroLPMForUniswapV2',

@@ -80,6 +80,20 @@ async function printFrontendEnvs(networkPath: string): Promise<void> {
   );
 
   logFrontendEnv(
+    'LOYALTY_TOKEN_ADDRESS',
+    await getContractAddress('loyalty', networkPath, 'MetaheroLoyaltyToken'),
+  );
+
+  logFrontendEnv(
+    'LOYALTY_TOKEN_DISTRIBUTOR_ADDRESS',
+    await getContractAddress(
+      'loyalty',
+      networkPath,
+      'MetaheroLoyaltyTokenDistributor',
+    ),
+  );
+
+  logFrontendEnv(
     'BUSD_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'BUSDToken'),
   );
@@ -107,6 +121,20 @@ async function printBackendEnvs(networkPath: string): Promise<void> {
   );
 
   logBackendEnv(
+    'LOYALTY_TOKEN_ADDRESS',
+    await getContractAddress('loyalty', networkPath, 'MetaheroLoyaltyToken'),
+  );
+
+  logBackendEnv(
+    'LOYALTY_TOKEN_DISTRIBUTOR_ADDRESS',
+    await getContractAddress(
+      'loyalty',
+      networkPath,
+      'MetaheroLoyaltyTokenDistributor',
+    ),
+  );
+
+  logBackendEnv(
     'BUSD_TOKEN_ADDRESS',
     await getContractAddress('token', networkPath, 'BUSDToken'),
   );
@@ -122,18 +150,22 @@ async function printBackendEnvs(networkPath: string): Promise<void> {
   );
 }
 
-export async function main(path: string): Promise<void> {
+export async function main(networkPath: string): Promise<void> {
+  if (!networkPath) {
+    networkPath = 'local';
+  }
+
   console.log();
   console.log('# Frontend');
   console.log();
 
-  await printFrontendEnvs(path || 'local');
+  await printFrontendEnvs(networkPath);
 
   console.log();
   console.log('# Backend');
   console.log();
 
-  await printBackendEnvs(path || 'local');
+  await printBackendEnvs(networkPath);
 
   console.log();
 }

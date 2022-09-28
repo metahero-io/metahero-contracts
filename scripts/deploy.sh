@@ -4,19 +4,19 @@ WORKING_DIR="`dirname \"$0\"`"
 PACKAGES_PATH="`cd "${WORKING_DIR}/../packages"; pwd`"
 NETWORK="${1}"
 
-run-deploy()
+deploy()
 {
     cd ${PACKAGES_PATH}/${1}
     npm run deploy -- --network ${NETWORK}
 }
 
-run-deploy-reset()
+deploy-with-reset()
 {
     cd ${PACKAGES_PATH}/${1}
     npm run deploy -- --network ${NETWORK} --reset
 }
 
-run-deploy-known-contracts-only()
+build-known-contracts()
 {
     cd ${PACKAGES_PATH}/${1}
     npm run deploy -- --network ${NETWORK} --known-contracts-only true
@@ -24,15 +24,17 @@ run-deploy-known-contracts-only()
 
 case ${NETWORK} in
   bnb)
-    run-deploy-known-contracts-only token
+    build-known-contracts token
     ;;
   bnb-test)
-    run-deploy-known-contracts-only token
+    deploy-with-reset token
+    deploy-with-reset helper
+    deploy-with-reset loyalty
     ;;
   local)
-    run-deploy-reset token
-    run-deploy-reset helper
-    run-deploy-reset loyalty
+    deploy-with-reset token
+    deploy-with-reset helper
+    deploy-with-reset loyalty
     ;;
 esac
 

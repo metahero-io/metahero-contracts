@@ -79,7 +79,6 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
       await processTransaction(
         loyaltyToken.initialize(
           paymentToken.address,
-          randomAddress(),
           loyaltyTokenDistributor.address,
           snapshotWindowMinLength,
           earlyWithdrawalTax,
@@ -209,6 +208,14 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
       );
     });
 
+    describe('getDistributionState()', () => {
+      it('expect return correct distribution state', async () => {
+        const output = await loyaltyTokenDistributor.getDistributionState();
+
+        expect(output).eq(0);
+      });
+    });
+
     describe('getInvitation()', () => {
       it('expect return correct invitation', async () => {
         const output = await loyaltyTokenDistributor.getInvitation(
@@ -223,6 +230,26 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
         expect(output.maxRewardsAPY).eq(maxRewardsAPY);
         expect(output.minWithdrawalLockTime).eq(minWithdrawalLockTime);
         expect(output.maxWithdrawalLockTime).eq(maxWithdrawalLockTime);
+      });
+    });
+
+    describe('getInvitations()', () => {
+      it('expect return invitations', async () => {
+        const output = await loyaltyTokenDistributor.getInvitations([
+          invitationId,
+          invitationId,
+        ]);
+
+        for (let index = 0; index < 2; index++) {
+          expect(output[index].treeRoot).eq(treeRoot);
+          expect(output[index].depositPower).eq(depositPower);
+          expect(output[index].minDeposit).eq(minDeposit);
+          expect(output[index].maxDeposit).eq(maxDeposit);
+          expect(output[index].minRewardsAPY).eq(minRewardsAPY);
+          expect(output[index].maxRewardsAPY).eq(maxRewardsAPY);
+          expect(output[index].minWithdrawalLockTime).eq(minWithdrawalLockTime);
+          expect(output[index].maxWithdrawalLockTime).eq(maxWithdrawalLockTime);
+        }
       });
     });
 
@@ -248,37 +275,39 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
   });
 
   describe('# external functions', () => {
-    describe('togglePaused()', () => {
+    describe('setDistributionState()', () => {
       createBeforeHook();
 
       it('expect to revert when msg.sender is not the contract owner', async () => {
         await expect(
-          loyaltyTokenDistributor.connect(account).togglePaused(),
+          loyaltyTokenDistributor.connect(account).setDistributionState(0),
         ).revertedWith('MsgSenderIsNotTheOwner()');
       });
 
-      it('expect to pause when is un-paused', async () => {
+      it('expect to pause distribution', async () => {
         const { tx } = await processTransaction(
-          loyaltyTokenDistributor.togglePaused(),
+          loyaltyTokenDistributor.setDistributionState(1),
         );
 
         await expect(tx)
-          .to.emit(loyaltyTokenDistributor, 'Paused')
-          .withArgs(deployer.address);
-
-        expect(await loyaltyTokenDistributor.paused()).to.eq(true);
+          .to.emit(loyaltyTokenDistributor, 'DistributionStateUpdated')
+          .withArgs(1);
       });
 
-      it('expect to un-pause when is paused', async () => {
+      it('expect to finish distribution', async () => {
         const { tx } = await processTransaction(
-          loyaltyTokenDistributor.togglePaused(),
+          loyaltyTokenDistributor.setDistributionState(2),
         );
 
         await expect(tx)
-          .to.emit(loyaltyTokenDistributor, 'Unpaused')
-          .withArgs(deployer.address);
+          .to.emit(loyaltyTokenDistributor, 'DistributionStateUpdated')
+          .withArgs(2);
+      });
 
-        expect(await loyaltyTokenDistributor.paused()).to.eq(false);
+      it('expect to revert when distribution is finished', async () => {
+        await expect(
+          loyaltyTokenDistributor.setDistributionState(0),
+        ).revertedWith('DistributionIsFinished()');
       });
     });
 
@@ -760,7 +789,7 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
 
           await expect(tx)
             .to.emit(loyaltyTokenDistributor, 'InvitationUsed')
-            .withArgs(invitationId, tokenId);
+            .withArgs(invitationId, tokenId, sender.address);
 
           ++tokenId;
         });
@@ -812,7 +841,7 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
 
           await expect(tx)
             .to.emit(loyaltyTokenDistributor, 'InvitationUsed')
-            .withArgs(invitationId, tokenId);
+            .withArgs(invitationId, tokenId, sender.address);
 
           ++tokenId;
         });
@@ -855,7 +884,7 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
 
           await expect(tx)
             .to.emit(loyaltyTokenDistributor, 'InvitationUsed')
-            .withArgs(invitationId, tokenId);
+            .withArgs(invitationId, tokenId, sender.address);
 
           ++tokenId;
         });
@@ -863,13 +892,15 @@ describe('MetaheroLoyaltyTokenDistributor', () => {
 
       describe('# when paused', () => {
         before(async () => {
-          await processTransaction(loyaltyTokenDistributor.togglePaused());
+          await processTransaction(
+            loyaltyTokenDistributor.setDistributionState(1),
+          );
         });
 
         it('expect to revert', async () => {
           await expect(
             loyaltyTokenDistributor.useInvitation(100, 1, 1, []),
-          ).revertedWith('Pausable: paused');
+          ).revertedWith('DistributionIsNotReady()');
         });
       });
     });

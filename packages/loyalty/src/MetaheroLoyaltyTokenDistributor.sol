@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 
 import "@metahero/common-contracts/src/access/Ownable.sol";
 import "@metahero/common-contracts/src/utils/Initializable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
 import "./MetaheroLoyaltyToken.sol";
 import "./constants.sol";
 
@@ -15,8 +15,14 @@ import "./constants.sol";
  *
  * @author Stanisław Głogowski <stan@metahero.io>
  */
-contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
+contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Context {
   using MerkleProof for bytes32[];
+
+  enum DistributionStates {
+    Ready,
+    Paused,
+    Finished
+  }
 
   enum InvitationStates {
     Unknown,
@@ -42,6 +48,8 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   // state variables
 
+  DistributionStates private _distributionState;
+
   MetaheroLoyaltyToken private _loyaltyToken;
 
   IERC20 private _paymentToken;
@@ -52,6 +60,8 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   // errors
 
+  error DistributionIsFinished();
+  error DistributionIsNotReady();
   error InvalidDeposit();
   error InvalidDepositPower();
   error InvalidInvitationId();
@@ -73,6 +83,8 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   event Initialized(address loyaltyToken, address paymentToken);
 
+  event DistributionStateUpdated(DistributionStates distributionState);
+
   event RewardsReleased(uint256 rewards);
 
   event InvitationAdded(
@@ -89,11 +101,29 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   event InvitationRemoved(uint256 invitationId);
 
-  event InvitationUsed(uint256 invitationId, uint256 tokenId);
+  event InvitationUsed(uint256 invitationId, uint256 tokenId, address owner);
+
+  // modifiers
+
+  modifier onlyWhenReady() {
+    if (_distributionState != DistributionStates.Ready) {
+      revert DistributionIsNotReady();
+    }
+
+    _;
+  }
+
+  modifier onlyWhenNotFinished() {
+    if (_distributionState == DistributionStates.Finished) {
+      revert DistributionIsFinished();
+    }
+
+    _;
+  }
 
   // constructor
 
-  constructor() Ownable() Initializable() Pausable() {
+  constructor() Ownable() Initializable() {
     //
   }
 
@@ -120,12 +150,36 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   // external functions (views)
 
+  function getDistributionState() external view returns (DistributionStates) {
+    return _distributionState;
+  }
+
   function getInvitation(uint256 invitationId)
     external
     view
     returns (Invitation memory)
   {
     return _invitations[invitationId];
+  }
+
+  function getInvitations(uint256[] calldata invitationIds)
+    external
+    view
+    returns (Invitation[] memory result)
+  {
+    uint256 len = invitationIds.length;
+
+    result = new Invitation[](len);
+
+    for (uint256 index; index < len; ) {
+      result[index] = _invitations[invitationIds[index]];
+
+      unchecked {
+        ++index;
+      }
+    }
+
+    return result;
   }
 
   function isInvitationInUse(uint256 invitationId, address account)
@@ -138,12 +192,14 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
 
   // external functions
 
-  function togglePaused() external onlyOwner {
-    if (paused()) {
-      _unpause();
-    } else {
-      _pause();
-    }
+  function setDistributionState(DistributionStates distributionState)
+    external
+    onlyOwner
+    onlyWhenNotFinished
+  {
+    _distributionState = distributionState;
+
+    emit DistributionStateUpdated(distributionState);
   }
 
   function releaseRewards() external onlyOwner {
@@ -168,7 +224,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     uint256 maxRewardsAPY,
     uint256 minWithdrawalLockTime,
     uint256 maxWithdrawalLockTime
-  ) external onlyOwner {
+  ) external onlyOwner onlyWhenNotFinished {
     if (invitationId == 0) {
       revert InvalidInvitationId();
     }
@@ -255,7 +311,7 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
     uint256 deposit,
     uint256 withdrawalLockTime,
     bytes32[] memory proof
-  ) external whenNotPaused {
+  ) external onlyWhenReady {
     if (invitationId == 0) {
       revert InvalidInvitationId();
     }
@@ -350,6 +406,6 @@ contract MetaheroLoyaltyTokenDistributor is Ownable, Initializable, Pausable {
       _paymentToken.transfer(address(_loyaltyToken), rewards);
     }
 
-    emit InvitationUsed(invitationId, tokenId);
+    emit InvitationUsed(invitationId, tokenId, sender);
   }
 }
